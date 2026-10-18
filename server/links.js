@@ -17,11 +17,69 @@ async function fetchJson(url, timeoutMs = 12000) {
   } finally { clearTimeout(t); }
 }
 
+const ATHLETIC_HOSTS = /lululemon|nike\.|adidas|underarmour|gymshark|alphalete|alphacountry|vuori|rhone|tenthousand|onrunning|hoka|brooksrunning|newbalance|reebok|puma/i;
+
 function parseLink(raw) {
   const url = new URL(String(raw).trim());
-  const m = url.pathname.match(/\/products\/([^/?#]+)/);
-  if (!m) throw new Error('not a product link');
-  return { origin: url.origin, handle: m[1], variantId: url.searchParams.get('variant'), clean: `${url.origin}/products/${m[1]}${url.searchParams.get('variant') ? `?variant=${url.searchParams.get('variant')}` : ''}` };
+  const shop = url.pathname.match(/\/products\/([^/?#]+)/);
+  if (shop) {
+    const v = url.searchParams.get('variant');
+    return { kind: 'shopify', origin: url.origin, host: url.host, handle: shop[1], variantId: v, clean: `${url.origin}/products/${shop[1]}${v ? `?variant=${v}` : ''}` };
+  }
+  // Generic: the most word-like path segment is the product slug; colour/sku/variant params identify the piece.
+  const segs = url.pathname.split('/').filter(Boolean);
+  const slug = segs.filter(x => /[a-z]/i.test(x) && /-/.test(x)).sort((a, b) => b.length - a.length)[0] || segs[segs.length - 1];
+  if (!slug) throw new Error('not a product link');
+  const colorId = url.searchParams.get('color') || url.searchParams.get('colour') || url.searchParams.get('variant') || url.searchParams.get('sku') || url.searchParams.get('dwvar_color') || '';
+  const clean = `${url.origin}${url.pathname}${colorId ? `?color=${encodeURIComponent(colorId)}` : ''}`;
+  return { kind: 'generic', origin: url.origin, host: url.host, handle: slug, variantId: colorId || null, clean };
+}
+
+async function fetchText(url, timeoutMs = 12000) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const res = await fetchImpl(url, { signal: ac.signal, headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh) wardrobec/0.1', 'Accept': 'text/html' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
+  } finally { clearTimeout(t); }
+}
+
+/** Pull product facts out of a page: JSON-LD Product first, Open Graph tags second. */
+function extractPageProduct(html) {
+  const out = { title: '', color: '', image: '', brand: '', description: '' };
+  const ld = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
+  for (const m of ld) {
+    let data; try { data = JSON.parse(m[1].trim()); } catch { continue; }
+    const nodes = Array.isArray(data) ? data : (data['@graph'] || [data]);
+    for (const n of nodes) {
+      const type = Array.isArray(n['@type']) ? n['@type'].join(' ') : String(n['@type'] || '');
+      if (!/Product/i.test(type)) continue;
+      out.title = out.title || n.name || '';
+      out.color = out.color || n.color || '';
+      out.brand = out.brand || (typeof n.brand === 'string' ? n.brand : (n.brand && n.brand.name) || '');
+      out.description = out.description || n.description || '';
+      const img = Array.isArray(n.image) ? n.image[0] : n.image;
+      out.image = out.image || (typeof img === 'string' ? img : (img && img.url) || '');
+    }
+  }
+  const meta = (prop) => { const m = html.match(new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]+content=["']([^"']*)["']`, 'i')) || html.match(new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+(?:property|name)=["']${prop}["']`, 'i')); return m ? m[1] : ''; };
+  out.title = out.title || meta('og:title') || (html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '';
+  out.image = out.image || meta('og:image');
+  out.brand = out.brand || meta('product:brand') || meta('og:site_name');
+  out.description = out.description || meta('og:description');
+  out.title = out.title.replace(/&amp;/g, '&').replace(/\s*[|–-]\s*[^|–-]*$/i, (m) => (/lululemon|shop|store|official/i.test(m) ? '' : m)).trim();
+  return out;
+}
+
+function athleticTouch(draft, host) {
+  if (!ATHLETIC_HOSTS.test(host || '')) return draft;
+  if (['top', 'shoes'].includes(draft.category) || draft.subcategory === 'shorts') {
+    if (!draft.occasions.includes('gym')) draft.occasions.push('gym');
+    draft.formality_min = 0;
+    if (draft.subcategory === 'shorts') { draft.subcategory = 'athletic shorts'; draft.formality_max = Math.min(draft.formality_max, 1); draft.warmth = 1; draft.wears_before_wash = 1; }
+  }
+  return draft;
 }
 
 function titleFromHandle(handle) {
@@ -73,7 +131,26 @@ function draftFromProduct(product, variantId, link) {
   draft.variant_matched = !!variant;
   draft.resolved = true;
   if (variantId && !variant) draft.warning = 'variant id not found on this product; colour may be wrong';
-  return draft;
+  return athleticTouch(draft, link.host);
+}
+
+/** Generic page: name, colour and photo from the page's product metadata. */
+function draftFromPage(html, link) {
+  const p = extractPageProduct(html);
+  const name = (p.title || titleFromHandle(link.handle)).replace(/^\s*(men'?s|women'?s|unisex)\s+/i, '').trim();
+  const draft = classify([p.color, name, p.description.slice(0, 120)].filter(Boolean).join(' '));
+  draft.name = [p.color, name].filter(Boolean).join(' ').trim();
+  draft.brand = p.brand || '';
+  draft.url = link.clean;
+  draft.image = imageUrl(p.image);
+  draft.color = (p.color || draft.color || '').toLowerCase();
+  draft.resolved = true;
+  draft.variant_matched = !!p.color;
+  if (!p.color) {
+    draft.warning = link.variantId ? `colour not readable from the page (colour code ${link.variantId}); set it by hand` : 'colour not readable from the page; set it by hand';
+    if (link.variantId) draft.notes = `colour code ${link.variantId}`;
+  }
+  return athleticTouch(draft, link.host);
 }
 
 /** Resolve one link. Never throws: unresolved links return a low-confidence draft named from the URL. */
@@ -81,14 +158,17 @@ async function resolveLink(raw) {
   let link;
   try { link = parseLink(raw); }
   catch (e) { return { name: String(raw).slice(0, 80), url: String(raw), resolved: false, error: e.message, ...blankDraft() }; }
-  const attempts = [`${link.origin}/products/${link.handle}.js`, `${link.origin}/products/${link.handle}.json`];
   let lastErr = 'unreachable';
-  for (const u of attempts) {
-    try { return draftFromProduct(await fetchJson(u), link.variantId, link); }
-    catch (e) { lastErr = e.message; }
+  if (link.kind === 'shopify') {
+    for (const u of [`${link.origin}/products/${link.handle}.js`, `${link.origin}/products/${link.handle}.json`]) {
+      try { return draftFromProduct(await fetchJson(u), link.variantId, link); }
+      catch (e) { lastErr = e.message; }
+    }
   }
-  const draft = classify(titleFromHandle(link.handle));
-  return { ...draft, name: titleFromHandle(link.handle), url: link.clean, brand: '', resolved: false, error: `could not read product data (${lastErr}); check the name and colour`, confidence: 'low' };
+  try { return draftFromPage(await fetchText(link.clean), link); }
+  catch (e) { lastErr = e.message; }
+  const draft = athleticTouch(classify(titleFromHandle(link.handle)), link.host);
+  return { ...draft, name: titleFromHandle(link.handle), url: link.clean, brand: '', resolved: false, notes: link.variantId ? `colour code ${link.variantId}` : '', error: `could not read product data (${lastErr}); check the name and colour`, confidence: 'low' };
 }
 function blankDraft() { const d = classify(''); d.confidence = 'low'; return d; }
 
@@ -105,4 +185,4 @@ async function resolveLinks(raws) {
   return drafts.map((d, i) => ({ ...d, duplicates: seen.get(order[i]).count - 1 }));
 }
 
-module.exports = { parseLink, draftFromProduct, resolveLink, resolveLinks, setFetch };
+module.exports = { parseLink, draftFromProduct, draftFromPage, extractPageProduct, resolveLink, resolveLinks, setFetch };

@@ -390,7 +390,7 @@
     const meta = state.meta || (state.meta = await api('GET', '/api/meta'));
     modal(`
       <h2>Add from product links</h2>
-      <p class="muted small">Paste links from the stores you bought from, one per line. Links that include a <code>?variant=</code> id resolve to the exact colour and photo. Works with any Shopify store; other sites fall back to a name guessed from the link.</p>
+      <p class="muted small">Paste links from the stores you bought from, one per line. Links that include a <code>?variant=</code> id resolve to the exact colour and photo. Shopify stores resolve exactly; other stores (Lululemon, Nike…) are read from the page's product metadata, and a colour that cannot be read is flagged for you to set.</p>
       <textarea id="qa-text" placeholder="https://www.example.com/products/tactical-5-pocket-pant?variant=42030099431511"></textarea>
       <div class="row" style="justify-content:flex-end;margin-top:8px"><button type="button" data-close>Cancel</button><button class="primary" id="qa-resolve">Look up</button></div>
       <div id="qa-preview" style="margin-top:12px"></div>`, (m, close) => {

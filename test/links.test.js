@@ -58,3 +58,34 @@ test('a wrong variant id still resolves the product but warns', async () => {
   assert.equal(d.resolved, true);
   assert.match(d.warning, /variant/);
 });
+
+test('non-Shopify links: slug and colour code parsed, page metadata read, athletic brand → gym shorts', async () => {
+  const html = `<html><head><title>Pace Breaker Linerless Short 7" | Men's Shorts | lululemon</title>
+    <meta property="og:image" content="https://images.lululemon.com/pb.jpg">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"Pace Breaker Linerless Short 7\\"","color":"True Navy","brand":{"@type":"Brand","name":"lululemon"},"image":["https://images.lululemon.com/pb-navy.jpg"]}</script></head><body></body></html>`;
+  links.setFetch(async (url) => {
+    if (/lululemon/.test(url) && /color=72760/.test(url)) return { ok: true, text: async () => html };
+    if (/lululemon/.test(url)) return { ok: true, text: async () => html.replace(/,"color":"True Navy"/, '') };
+    throw new Error('ENOTFOUND');
+  });
+  const urls = [
+    'https://shop.lululemon.com/p/pace-breaker-short-linerless-7-update/jd2tq0pqw6?fp=1&color=72760',
+    'https://shop.lululemon.com/p/pace-breaker-short-linerless-7-update/jd2tq0pqw6?color=72762&fp=1',
+  ];
+  const [a, b] = await links.resolveLinks(urls);
+  assert.equal(a.name, 'True Navy Pace Breaker Linerless Short 7"');
+  assert.equal(a.brand, 'lululemon');
+  assert.equal(a.color_family, 'navy');
+  assert.equal(a.category, 'bottom');
+  assert.equal(a.subcategory, 'athletic shorts');
+  assert.ok(a.occasions.includes('gym'));
+  assert.equal(a.formality_max, 1);
+  assert.equal(a.image, 'https://images.lululemon.com/pb-navy.jpg');
+  assert.equal(a.url, 'https://shop.lululemon.com/p/pace-breaker-short-linerless-7-update/jd2tq0pqw6?color=72760');
+  // Second colour code is a distinct item even though the page gave no colour
+  assert.equal(b.resolved, true);
+  assert.equal(b.variant_matched, false);
+  assert.match(b.warning, /72762/);
+  assert.equal(b.notes, 'colour code 72762');
+  assert.equal(b.subcategory, 'athletic shorts');
+});
