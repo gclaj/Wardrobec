@@ -795,6 +795,73 @@
       "color_family": "red",
       "image": "/images/closet/born-primitive-training-tee-adrenaline.jpg",
       "notes": "Duplicate of Adrenaline Training Tee; you own two."
+    },
+    {
+      "brand": "Old Navy",
+      "category": "top",
+      "subcategory": "t-shirt",
+      "pattern": "solid",
+      "material": "cotton",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://oldnavy.gap.com/browse/product.do?pid=garment-dyed-heavyweight-cropped-t-shirt",
+      "name": "Night Life Heavyweight Cropped T-Shirt",
+      "color": "night life (dusty blue)",
+      "color_family": "blue",
+      "image": "/images/closet/old-navy-heavyweight-tee-night-life.jpg"
+    },
+    {
+      "brand": "Old Navy",
+      "category": "top",
+      "subcategory": "t-shirt",
+      "pattern": "solid",
+      "material": "cotton",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://oldnavy.gap.com/browse/product.do?pid=garment-dyed-heavyweight-cropped-t-shirt",
+      "name": "Lakeshore Heavyweight Cropped T-Shirt",
+      "color": "lakeshore (sage)",
+      "color_family": "green",
+      "image": "/images/closet/old-navy-heavyweight-tee-lakeshore.jpg"
+    },
+    {
+      "brand": "Old Navy",
+      "category": "top",
+      "subcategory": "t-shirt",
+      "pattern": "solid",
+      "material": "cotton",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://oldnavy.gap.com/browse/product.do?pid=garment-dyed-heavyweight-cropped-t-shirt",
+      "name": "Cream Heavyweight Cropped T-Shirt",
+      "color": "cream",
+      "color_family": "white",
+      "image": "/images/closet/old-navy-heavyweight-tee-cream.jpg",
+      "notes": "Colour name not visible in the screenshot; confirm."
     }
   ]
 }
