@@ -338,6 +338,98 @@
       "image": "/images/closet/twillory-air-pants-navy.jpg",
       "url": "https://twillory.com/products/air-chinos-navy",
       "notes": "Breathable; reads as tailored trousers."
+    },
+    {
+      "brand": "Haus",
+      "category": "layer",
+      "subcategory": "quarter-zip",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 2,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 2,
+      "url": "https://gohaus.com/products/mens-performance-quarter-zip",
+      "name": "Navy Performance Airknit Fitted Quarter Zip",
+      "color": "navy",
+      "color_family": "navy",
+      "image": "/images/closet/haus-airknit-quarter-zip-navy.jpg"
+    },
+    {
+      "brand": "Haus",
+      "category": "layer",
+      "subcategory": "quarter-zip",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 2,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 2,
+      "url": "https://gohaus.com/products/mens-performance-quarter-zip",
+      "name": "Sage Performance Airknit Fitted Quarter Zip",
+      "color": "sage",
+      "color_family": "olive",
+      "image": "/images/closet/haus-airknit-quarter-zip-sage.jpg"
+    },
+    {
+      "brand": "Haus",
+      "category": "layer",
+      "subcategory": "quarter-zip",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 2,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 2,
+      "url": "https://gohaus.com/products/mens-performance-quarter-zip",
+      "name": "Cream Performance Airknit Fitted Quarter Zip",
+      "color": "cream",
+      "color_family": "white",
+      "image": "/images/closet/haus-airknit-quarter-zip-cream.jpg"
+    },
+    {
+      "brand": "Haus",
+      "category": "layer",
+      "subcategory": "quarter-zip",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 2,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 2,
+      "url": "https://gohaus.com/products/mens-performance-quarter-zip",
+      "name": "Charcoal Performance Airknit Fitted Quarter Zip",
+      "color": "charcoal",
+      "color_family": "charcoal",
+      "image": "/images/closet/haus-airknit-quarter-zip-charcoal.jpg"
     }
   ]
 }
