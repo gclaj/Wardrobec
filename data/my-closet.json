@@ -862,6 +862,29 @@
       "color_family": "white",
       "image": "/images/closet/old-navy-heavyweight-tee-cream.jpg",
       "notes": "Colour name not visible in the screenshot; confirm."
+    },
+    {
+      "brand": "NOBULL",
+      "name": "Ivory Allday 365",
+      "category": "shoes",
+      "subcategory": "sneakers",
+      "color": "ivory",
+      "color_family": "white",
+      "pattern": "solid",
+      "material": "textile",
+      "formality_min": 0,
+      "formality_max": 2,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 999,
+      "image": "/images/closet/nobull-allday-365-ivory.jpg",
+      "url": "https://www.nobullproject.com/products/allday-365"
     }
   ]
 }
