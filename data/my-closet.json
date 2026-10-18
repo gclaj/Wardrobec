@@ -1160,6 +1160,30 @@
       "color": "navy",
       "color_family": "navy",
       "image": "/images/closet/bylt-ribbed-open-v-polo-navy.jpg"
+    },
+    {
+      "brand": "Charles Tyrwhitt",
+      "name": "Oatmeal Pure Merino Quarter Zip Sweater",
+      "category": "layer",
+      "subcategory": "quarter-zip",
+      "color": "oatmeal",
+      "color_family": "tan",
+      "pattern": "solid",
+      "material": "merino",
+      "formality_min": 2,
+      "formality_max": 4,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual",
+        "formal"
+      ],
+      "seasons": [],
+      "wears_before_wash": 5,
+      "image": "/images/closet/charles-tyrwhitt-merino-quarter-zip-oatmeal.jpg",
+      "url": "https://www.charlestyrwhitt.com/us/pure-merino-quarter-zip-sweater-oatmeal"
     }
   ]
 }
