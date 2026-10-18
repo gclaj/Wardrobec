@@ -7,6 +7,10 @@
 //   temperatures are Fahrenheit (apparent / "feels like" where available)
 
 const { NEUTRALS } = require('./classify');
+const { paletteRating, normalizeProfile, JEWEL, DARK, LIGHT } = require('./profile');
+
+// How much a piece's colour matters, by how close it sits to the face.
+const PALETTE_WEIGHT = { top: 0.9, dress: 0.9, layer: 0.8, outerwear: 0.6, accessory: 0.5, bottom: 0.3, shoes: 0.2 };
 
 const OCCASIONS = {
   gym:             { key: 'gym',             label: 'Gym',             band: [0, 0], ideal: 0, tolerance: 0 },
@@ -160,6 +164,7 @@ function scoreItem(item, slot, ctx) {
   }
   s += itemWeatherPenalty(item, slot, ctx.wx);
   if (item.favorite) s -= 0.7;
+  if (ctx.profile) s -= ctx.pr(item) * (PALETTE_WEIGHT[slot] || 0.3);
   const aff = ctx.affinity ? (ctx.affinity.get(item.id) || 0) : 0;
   s -= aff * 0.6;
   s -= 0.3 * (1 - Math.min(Number(item.wear_count || 0), 10) / 10); // rotate underused pieces in
@@ -186,13 +191,46 @@ function colorPenalty(c, notes) {
   if (nonNeutral.length >= 3) { p += 1.5; notes.push('too many competing colors'); }
   for (const [a, b] of CLASHES) if (nonNeutral.includes(a) && nonNeutral.includes(b)) { p += 1.0; notes.push(`${a} and ${b} fight each other`); }
   const bottomFam = c.bottom && c.bottom.color_family, shoeFam = c.shoes && c.shoes.color_family;
-  if (bottomFam === 'black' && shoeFam === 'brown' && center(c.bottom) >= 3) { p += 0.8; notes.push('brown shoes with black trousers'); }
+  if ((bottomFam === 'black' || bottomFam === 'charcoal') && shoeFam === 'brown' && center(c.bottom) >= 3) { p += 0.8; notes.push('brown shoes with black trousers'); }
   const topFam = (c.top || c.dress || {}).color_family;
   if (topFam && bottomFam && topFam === bottomFam && !NEUTRALS.has(topFam) && topFam !== 'other') { p += 0.5; notes.push('same strong color top and bottom'); }
   if ((topFam === 'navy' && bottomFam === 'black') || (topFam === 'black' && bottomFam === 'navy')) p += 0.3;
   const patterned = ['top', 'dress', 'layer', 'outerwear', 'bottom'].map(k => c[k]).filter(x => x && x.pattern && x.pattern !== 'solid');
   if (patterned.length >= 2) { p += 1.0; notes.push('two patterns competing'); }
   return p;
+}
+
+function profileComboPenalty(c, profile, notes, pr) {
+  let p = 0;
+  const near = ['top', 'dress', 'layer', 'outerwear'].map(k => c[k]).filter(Boolean);
+  // Per-item bonuses were already applied in scoreItem; cap their total so a flattering colour
+  // never becomes a reason to add an unnecessary layer.
+  let bonus = 0;
+  for (const slot of ['top', 'dress', 'layer', 'outerwear', 'bottom', 'shoes']) if (c[slot]) bonus += Math.max(0, pr(c[slot])) * (PALETTE_WEIGHT[slot] || 0.3);
+  if (bonus > 2.0) p += bonus - 2.0;
+  for (const it of near) {
+    const r = pr(it);
+    if (r <= -1.5) notes.push(`${it.name} reads warm or dusty against your colouring`);
+  }
+  if (profile.contrast === 'high') {
+    const fams = near.map(x => x.color_family);
+    const hasDark = fams.some(f => DARK.has(f)) || (c.bottom && DARK.has(c.bottom.color_family));
+    const hasLight = fams.some(f => LIGHT.has(f));
+    const hasJewel = [...near, c.bottom].filter(Boolean).some(x => JEWEL.has(x.color_family) && x.color_family !== 'navy');
+    if (hasDark && hasLight) p -= 0.6;                 // crisp contrast near the face
+    if (hasDark && hasLight && hasJewel) p -= 0.4;     // the full formula
+    if (!hasDark && !hasLight && near.length) p += 0.5; // everything mid-tone: flat on a high-contrast face
+  }
+  return p;
+}
+
+function ratingCache(profile) {
+  const cache = new Map();
+  return (item) => {
+    const key = item.id != null ? item.id : item.name;
+    if (!cache.has(key)) cache.set(key, paletteRating(item, profile));
+    return cache.get(key);
+  };
 }
 
 function setPenalty(c, items, notes) {
@@ -243,6 +281,8 @@ function scoreCombo(c, ctx, items) {
     s += 1.0; // suit jacket at a cookout
   }
   if (c.dress && occ.key === 'gym') s += 10;
+  // Personal colour profile: contrast and the "look formula" (dark base + crisp white + jewel accent)
+  if (ctx.profile) s += profileComboPenalty(c, ctx.profile, notes, ctx.pr);
   // Suits
   s += setPenalty(c, items, notes);
   // Color
@@ -329,6 +369,11 @@ function rationale(ctx, best, chosen) {
   if (wx.isSnow) lines.push('Snow expected: weather-ready footwear prioritised.');
   else if (wx.isRain) lines.push(`Rain likely (${Math.round(wx.precipProb)}%): ${chosen.outerwear && chosen.outerwear.rain_ok ? chosen.outerwear.name + ' sheds water' : 'take an umbrella'}; ${chosen.shoes && chosen.shoes.rain_ok ? 'shoes can take it' : 'shoes will get wet'}.`);
   if (wx.wind >= 20) lines.push(`Wind up to ${Math.round(wx.wind)} mph.`);
+  if (ctx.profile) {
+    const near = ['outerwear', 'layer', 'top', 'dress'].map(k => chosen[k]).filter(Boolean);
+    const good = near.filter(x => ctx.pr(x) >= 1.5).map(x => x.name);
+    if (good.length) lines.push(`${ctx.profile.season || 'Your'} palette: ${good.join(', ')} ${good.length > 1 ? 'brighten' : 'brightens'} you.`);
+  }
   if (best.notes.length) lines.push('Watch-outs: ' + [...new Set(best.notes)].join('; ') + '.');
   return lines;
 }
@@ -346,7 +391,9 @@ function buildOutfit(items, occasionKey, opts = {}) {
     occasion: occ, date: opts.date, wx,
     exclude: opts.exclude || new Set(), affinity: opts.affinity, allowDirty: !!opts.allowDirty,
     ignoreStatus: !!opts.ignoreStatus, rand: opts.deterministic ? null : mulberry32(seed),
+    profile: normalizeProfile(opts.profile),
   };
+  ctx.pr = ctx.profile ? ratingCache(ctx.profile) : () => 0;
   const lock = opts.lock || {};
   const lockedItem = (slot) => lock[slot] ? items.find(i => i.id === lock[slot] && i.category === slot) : null;
 
@@ -465,7 +512,7 @@ function hourlyAt(hourly, time) {
 }
 
 /** Coverage report: can the closet produce a complete outfit for every occasion × temperature × rain? */
-function coverageReport(items) {
+function coverageReport(items, profile) {
   const bands = [
     { key: 'hot', label: 'Hot (85°F+)', temp: 90 }, { key: 'warm', label: 'Warm (70–85)', temp: 76 },
     { key: 'mild', label: 'Mild (55–70)', temp: 62 }, { key: 'cool', label: 'Cool (40–55)', temp: 47 },
@@ -475,7 +522,7 @@ function coverageReport(items) {
   for (const occ of OCCASION_KEYS) {
     for (const band of bands) {
       for (const rain of [false, true]) {
-        const r = buildOutfit(items, occ, { weather: { feelsLike: band.temp, precipProb: rain ? 80 : 5 }, ignoreStatus: true, deterministic: true, fast: true });
+        const r = buildOutfit(items, occ, { weather: { feelsLike: band.temp, precipProb: rain ? 80 : 5 }, ignoreStatus: true, deterministic: true, fast: true, profile });
         let status = 'good';
         const problems = [];
         if (!r.complete) { status = 'gap'; problems.push('missing ' + r.missing.join(', ')); }
@@ -492,5 +539,5 @@ function coverageReport(items) {
 
 module.exports = {
   OCCASIONS, OCCASION_KEYS, targetWarmth, weatherContext, scoreItem, scoreCombo, buildOutfit, planDay,
-  coverageReport, formalityPenalty, freshnessPenalty, outfitWarmth, hashString, mulberry32, hourlyAt,
+  coverageReport, formalityPenalty, freshnessPenalty, outfitWarmth, hashString, mulberry32, hourlyAt, paletteRating,
 };

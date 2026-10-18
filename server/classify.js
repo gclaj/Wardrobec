@@ -4,24 +4,26 @@
 // whole closet in minutes and correct the few guesses that are wrong.
 
 const COLOR_FAMILIES = {
-  black: ['black', 'charcoal', 'jet', 'onyx'],
+  black: ['black', 'jet', 'onyx'],
+  charcoal: ['charcoal', 'anthracite'],
   white: ['white', 'cream', 'ivory', 'off-white', 'ecru', 'bone'],
   gray: ['gray', 'grey', 'heather', 'slate', 'silver', 'graphite', 'ash'],
-  navy: ['navy', 'midnight', 'indigo'],
-  blue: ['blue', 'denim', 'cobalt', 'sky', 'teal', 'royal', 'chambray', 'light-blue', 'powder'],
-  brown: ['brown', 'chocolate', 'coffee', 'walnut', 'mocha', 'chestnut', 'cognac', 'rust'],
+  navy: ['navy', 'midnight', 'indigo', 'ink'],
+  blue: ['blue', 'denim', 'cobalt', 'sapphire', 'sky', 'royal', 'chambray', 'light-blue', 'powder', 'icy', 'ice'],
+  teal: ['teal', 'petrol', 'peacock'],
+  brown: ['brown', 'chocolate', 'coffee', 'walnut', 'mocha', 'chestnut', 'cognac', 'espresso', 'rust', 'rusty', 'copper'],
   tan: ['tan', 'beige', 'khaki', 'camel', 'sand', 'stone', 'taupe', 'oatmeal', 'nude', 'wheat'],
   olive: ['olive', 'army', 'moss', 'sage', 'od'],
-  green: ['green', 'forest', 'emerald', 'hunter', 'mint', 'lime'],
-  red: ['red', 'crimson', 'scarlet', 'cherry'],
+  green: ['green', 'forest', 'emerald', 'hunter', 'pine', 'mint', 'lime'],
+  red: ['red', 'crimson', 'scarlet', 'cherry', 'cranberry'],
   burgundy: ['burgundy', 'maroon', 'wine', 'oxblood', 'bordeaux', 'merlot'],
-  pink: ['pink', 'blush', 'rose', 'salmon', 'coral'],
+  pink: ['pink', 'blush', 'rose', 'salmon', 'coral', 'magenta', 'fuchsia'],
   orange: ['orange', 'tangerine', 'peach', 'apricot'],
   yellow: ['yellow', 'mustard', 'gold', 'lemon'],
   purple: ['purple', 'lavender', 'violet', 'plum', 'lilac', 'mauve'],
   multi: ['multi', 'multicolor', 'multicolour', 'rainbow', 'tie-dye'],
 };
-const NEUTRALS = new Set(['black', 'white', 'gray', 'navy', 'tan', 'brown', 'olive']);
+const NEUTRALS = new Set(['black', 'charcoal', 'white', 'gray', 'navy', 'tan', 'brown', 'olive']);
 
 const PATTERNS = ['striped', 'stripe', 'plaid', 'check', 'checked', 'gingham', 'houndstooth', 'herringbone',
   'floral', 'paisley', 'polka', 'dot', 'dotted', 'camo', 'camouflage', 'graphic', 'print', 'printed',

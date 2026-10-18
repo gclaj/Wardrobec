@@ -35,6 +35,8 @@ First run: open **Settings** and search your city so the forecast can load. Then
 
 **Then it searches.** The best candidates per slot are enumerated in combination and scored on: formality fit, warmth balance, rain and wind handling, colour harmony (clashing pairs, three or more loud colours, brown shoes with black trousers), pattern collisions, split suits, pieces worn in the last few days, laundry state, favourites, and your Like/Dislike history for that occasion. A seeded random jitter keeps each day stable while **Regenerate** produces a genuinely different answer.
 
+**Your personal colour profile** (Settings → Style profile) rates every colour family from -3 to +3, with shade-level overrides ("icy blue" good, "warm beige" bad, "cool red" good, "rusty red" bad) matched against an item's colour or name. Ratings are weighted by how close a piece sits to the face: tops, layers and ties count most, shoes least. A high-contrast profile also rewards the formula of a dark base, crisp white and one jewel-tone accent, and flags mid-tone-only outfits as flat. The Deep Winter preset is built in; every rating is editable. Closet items show a flatters / good / muted / avoid chip so you can see how the engine reads each piece.
+
 **Calendar events** get their own outfit using the hourly forecast at the event time, and outfits for events on the same day never share pieces, because you will actually wear all of them.
 
 **Wear this** logs the outfit, bumps wear counts, and marks pieces dirty once they hit their wash threshold. Dirty items drop out of suggestions until **Laundry done**.
@@ -49,6 +51,7 @@ server/
   routes.js    JSON API
   engine.js    outfit scoring and search (pure functions)
   classify.js  free-text → item attributes
+  profile.js   personal colour profile presets and palette rating
   weather.js   Open-Meteo client, cache, manual override
   store.js     SQLite queries, wear logging, laundry
   db.js        schema
@@ -69,6 +72,7 @@ test/          node:test suites
 | `GET/POST/DELETE /api/events` | Calendar entries with a dress code |
 | `GET /api/weather`, `PUT /api/weather/override` | Forecast and manual weather |
 | `GET /api/coverage` | Gap analysis |
+| `GET /api/profiles`, `PUT /api/settings { style_profile }` | Colour profile presets and the active profile |
 | `GET /api/export`, `POST /api/import` | Backup and restore |
 
 ## Ideas not yet built

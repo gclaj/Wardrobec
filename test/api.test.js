@@ -112,6 +112,17 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   r = await call('POST', '/api/items/bulk', { items: r.data.items });
   assert.equal(r.data.inserted, 2);
 
+  // Style profile round-trips, items get a palette label, and the plan reports it.
+  r = await call('GET', '/api/profiles');
+  const dw = r.data.presets.find(p => p.key === 'deep_winter');
+  r = await call('PUT', '/api/settings', { style_profile: { ...dw, families: { ...dw.families, olive: -2 } } });
+  assert.equal(r.data.style_profile.families.olive, -2);
+  r = await call('GET', '/api/items?category=outerwear');
+  assert.equal(r.data.find(i => /camel/.test(i.name)).palette_label, 'avoid');
+  r = await call('GET', '/api/plan?date=' + today);
+  assert.equal(r.data.profile.label, 'Deep Winter');
+  await call('PUT', '/api/settings', { style_profile: null });
+
   // Coverage and export.
   r = await call('GET', '/api/coverage');
   assert.equal(r.data.cells.length, 40);

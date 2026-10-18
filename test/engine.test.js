@@ -134,3 +134,25 @@ test('an empty closet returns an incomplete, non-crashing outfit', () => {
   assert.equal(o.complete, false);
   assert.deepEqual(o.missing.sort(), ['bottom', 'shoes', 'top']);
 });
+
+test('colour profile pulls flattering colours toward the face and pushes warm tones away', () => {
+  const { PRESETS } = require('../server/profile');
+  const { paletteRating } = require('../server/engine');
+  const mk = (id, category, color_family, name, extra = {}) => ({ id, name, category, subcategory: category, color_family, pattern: 'solid', formality_min: 1, formality_max: 2, warmth: 2, occasions: ['casual'], status: 'clean', ...extra });
+  const items = [mk(1, 'top', 'navy', 'navy polo'), mk(2, 'top', 'tan', 'camel polo'), mk(3, 'bottom', 'gray', 'grey chinos'), mk(4, 'shoes', 'white', 'white sneakers')];
+  const plain = buildOutfit(items, 'casual', { weather: { feelsLike: 70 }, deterministic: true });
+  const winter = buildOutfit(items, 'casual', { weather: { feelsLike: 70 }, deterministic: true, profile: PRESETS.deep_winter });
+  assert.equal(winter.slots.top.name, 'navy polo');
+  assert.ok(paletteRating(mk(9, 'top', 'blue', 'icy blue shirt'), PRESETS.deep_winter) > 0);
+  assert.ok(paletteRating(mk(9, 'top', 'tan', 'warm beige sweater'), PRESETS.deep_winter) < -1);
+  assert.ok(paletteRating(mk(9, 'top', 'red', 'rusty red sweater'), PRESETS.deep_winter) < 0, 'shade overrides family');
+  assert.ok(paletteRating(mk(9, 'top', 'red', 'cranberry sweater'), PRESETS.deep_winter) > 0);
+  assert.ok(winter.rationale.some(l => /palette/i.test(l)));
+  assert.ok(plain.rationale.every(l => !/palette/i.test(l)));
+});
+
+test('a flattering colour is never a reason to add a layer in the heat', () => {
+  const { PRESETS } = require('../server/profile');
+  const o = buildOutfit(closet(), 'business_casual', { weather: { feelsLike: 88 }, deterministic: true, profile: PRESETS.deep_winter });
+  assert.ok(!o.slots.layer && !o.slots.outerwear, o.items.map(i => i.name).join(', '));
+});

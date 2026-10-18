@@ -6,6 +6,7 @@ const weather = require('./weather');
 const { classify, classifyMany } = require('./classify');
 const { getSetting, setSetting, allSettings } = require('./db');
 const { sampleItems } = require('./seed');
+const { PRESETS, normalizeProfile, paletteRating, ratingLabel } = require('./profile');
 
 class HttpError extends Error { constructor(status, message) { super(message); this.status = status; } }
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -13,18 +14,18 @@ const isDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || '');
 
 function settingsOf(db) {
   const s = allSettings(db);
-  return { units: 'F', location_name: '', lat: null, lon: null, timezone: null, ...s };
+  return { units: 'F', location_name: '', lat: null, lon: null, timezone: null, style_profile: null, ...s };
 }
 
 async function weatherFor(db, date) {
   const settings = settingsOf(db);
   const r = await weather.getWeather(db, settings, date);
-  return { ...r, settings };
+  return { ...r, settings, profile: settings.style_profile };
 }
 
 /** Build a complete plan for a date: weather, four standard outfits, event outfits. */
 async function plan(db, date, query = {}) {
-  const { weather: wx, source, reason } = await weatherFor(db, date);
+  const { weather: wx, source, reason, profile } = await weatherFor(db, date);
   const items = store.listItems(db);
   const events = store.listEvents(db, { date });
   const affinity = {};
@@ -33,7 +34,7 @@ async function plan(db, date, query = {}) {
   for (const [k, v] of Object.entries(query)) if (k.startsWith('attempt_')) attempts[k.slice(8)] = Number(v) || 0;
   const standard = {};
   for (const key of engine.OCCASION_KEYS) {
-    standard[key] = engine.buildOutfit(items, key, { date, weather: wx, attempt: attempts[key] ?? Number(query.attempt || 0), affinity: affinity[key] });
+    standard[key] = engine.buildOutfit(items, key, { date, weather: wx, attempt: attempts[key] ?? Number(query.attempt || 0), affinity: affinity[key], profile });
   }
   const used = new Set();
   const eventPlans = [];
@@ -41,18 +42,22 @@ async function plan(db, date, query = {}) {
     const at = wx && wx.hourly ? engine.hourlyAt(wx.hourly, ev.time) : null;
     const outfit = engine.buildOutfit(items, ev.occasion, {
       date, weather: at || wx, attempt: attempts['event' + ev.id] ?? 0, affinity: affinity[ev.occasion],
-      exclude: new Set(used), seedSalt: 'event' + ev.id,
+      exclude: new Set(used), seedSalt: 'event' + ev.id, profile,
     });
     for (const it of outfit.items) used.add(it.id);
     eventPlans.push({ event: ev, weatherAt: at, outfit });
   }
   const { hourly, ...wxSummary } = wx || {};
-  return { date, weather: wx ? wxSummary : null, weatherSource: source, weatherReason: reason, hourly: hourly || [], standard, events: eventPlans, itemCount: items.length, wornToday: store.history(db, 200).filter(h => h.date === date) };
+  const np = normalizeProfile(profile);
+  return { date, weather: wx ? wxSummary : null, weatherSource: source, weatherReason: reason, hourly: hourly || [], standard, events: eventPlans, itemCount: items.length, profile: np ? { season: np.season, label: np.label } : null, wornToday: store.history(db, 200).filter(h => h.date === date) };
 }
 
 const routes = [
   // ----- items -----
-  ['GET', '/api/items', ({ db, query }) => store.listItems(db, query)],
+  ['GET', '/api/items', ({ db, query }) => {
+    const profile = normalizeProfile(settingsOf(db).style_profile);
+    return store.listItems(db, query).map(i => { const r = paletteRating(i, profile); return { ...i, palette_rating: r, palette_label: profile ? ratingLabel(r) : null }; });
+  }],
   ['POST', '/api/items', ({ db, body }) => store.insertItem(db, body)],
   ['POST', '/api/items/bulk', ({ db, body }) => {
     const drafts = Array.isArray(body) ? body : body.items;
@@ -75,7 +80,8 @@ const routes = [
     return store.updateItem(db, params.id, patch);
   }],
   ['POST', '/api/laundry/done', ({ db }) => ({ cleaned: store.laundryDone(db) })],
-  ['GET', '/api/coverage', ({ db }) => engine.coverageReport(store.listItems(db).filter(i => i.status !== 'retired'))],
+  ['GET', '/api/coverage', ({ db }) => engine.coverageReport(store.listItems(db).filter(i => i.status !== 'retired'), settingsOf(db).style_profile)],
+  ['GET', '/api/profiles', () => ({ presets: Object.values(PRESETS) })],
 
   // ----- planning -----
   ['GET', '/api/plan', async ({ db, query }) => {
@@ -85,14 +91,14 @@ const routes = [
   ['POST', '/api/outfits/generate', async ({ db, body }) => {
     const date = isDate(body.date) ? body.date : todayISO();
     if (!engine.OCCASIONS[body.occasion]) throw new HttpError(400, 'unknown occasion');
-    const { weather: wx, source } = await weatherFor(db, date);
+    const { weather: wx, source, profile } = await weatherFor(db, date);
     let w = wx;
     if (wx && wx.hourly && body.time) w = engine.hourlyAt(wx.hourly, body.time) || wx;
     if (body.weather) w = { ...(w || {}), ...body.weather };
     const outfit = engine.buildOutfit(store.listItems(db), body.occasion, {
       date, weather: w, attempt: Number(body.attempt || 0), affinity: store.affinityMap(db, body.occasion),
       exclude: new Set((body.exclude || []).map(Number)), lock: body.lock || {}, allowDirty: !!body.allowDirty,
-      seedSalt: body.salt || '',
+      seedSalt: body.salt || '', profile,
     });
     return { ...outfit, weatherSource: source };
   }],
@@ -163,11 +169,19 @@ const routes = [
   // ----- settings -----
   ['GET', '/api/settings', ({ db }) => settingsOf(db)],
   ['PUT', '/api/settings', ({ db, body }) => {
-    const allowed = ['units', 'location_name', 'lat', 'lon', 'timezone'];
+    const allowed = ['units', 'location_name', 'lat', 'lon', 'timezone', 'style_profile'];
     for (const k of allowed) if (k in body) {
       let v = body[k];
       if (k === 'lat' || k === 'lon') v = v === '' || v == null ? null : Number(v);
       if (k === 'units') v = v === 'C' ? 'C' : 'F';
+      if (k === 'style_profile') {
+        if (!v || typeof v !== 'object' || !v.key || v.key === 'none') v = null;
+        else {
+          const fam = {}; for (const [f, r] of Object.entries(v.families || {})) fam[f] = Math.max(-3, Math.min(3, Number(r) || 0));
+          const sh = {}; for (const [f, r] of Object.entries(v.shades || {})) if (f.trim()) sh[f.trim().toLowerCase()] = Math.max(-3, Math.min(3, Number(r) || 0));
+          v = { key: String(v.key), label: String(v.label || v.key), season: String(v.season || ''), undertone: String(v.undertone || ''), contrast: ['high', 'medium', 'low'].includes(v.contrast) ? v.contrast : 'any', families: fam, shades: sh, notes: String(v.notes || '') };
+        }
+      }
       setSetting(db, k, v);
     }
     if ('lat' in body || 'lon' in body) db.prepare('DELETE FROM weather_cache').run();

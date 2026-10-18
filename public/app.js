@@ -31,7 +31,7 @@
     return close;
   }
 
-  const COLOR_HEX = { black: '#1d1d1f', white: '#f3f3f1', gray: '#8a8f98', navy: '#1f2f56', blue: '#3f7ed9', brown: '#6b4a2b', tan: '#c8b08a', olive: '#6b7a3a', green: '#2f8a4a', red: '#c0392b', burgundy: '#6e1b2e', pink: '#e58fb0', orange: '#e67e22', yellow: '#e3c233', purple: '#6c4ab6', multi: 'linear-gradient(135deg,#e74c3c,#f1c40f,#2ecc71,#3498db)', other: '#b5b8c0' };
+  const COLOR_HEX = { black: '#1d1d1f', charcoal: '#3b3f46', white: '#f3f3f1', gray: '#8a8f98', navy: '#1f2f56', blue: '#3f7ed9', teal: '#0f5f6b', brown: '#6b4a2b', tan: '#c8b08a', olive: '#6b7a3a', green: '#2f8a4a', red: '#c0392b', burgundy: '#6e1b2e', pink: '#e58fb0', orange: '#e67e22', yellow: '#e3c233', purple: '#6c4ab6', multi: 'linear-gradient(135deg,#e74c3c,#f1c40f,#2ecc71,#3498db)', other: '#b5b8c0' };
   const CAT_ABBR = { top: 'TOP', bottom: 'BTM', dress: 'DRS', layer: 'LYR', outerwear: 'OUT', shoes: 'SHO', accessory: 'ACC' };
   function swatch(item, cls = '') {
     if (item.image) return `<div class="swatch ${cls}"><img src="${esc(item.image)}" alt=""></div>`;
@@ -67,7 +67,7 @@
     const isToday = state.date === todayISO();
     app.innerHTML = `
       <div class="row between" style="margin-bottom:14px">
-        <div><h1>${isToday ? 'Today' : fmtDate(state.date, { weekday: 'long' })}</h1><div class="muted">${fmtDate(state.date)}</div></div>
+        <div><h1>${isToday ? 'Today' : fmtDate(state.date, { weekday: 'long' })}</h1><div class="muted">${fmtDate(state.date)}${plan.profile ? ` · <a href="#settings" class="chip accent" title="Colour profile applied to every pick">${esc(plan.profile.label)} palette</a>` : ''}</div></div>
         <div class="row">
           <button class="small" id="prev-day">‹</button>
           <input type="date" id="date-pick" value="${state.date}" style="width:auto">
@@ -258,10 +258,15 @@
     const formality = i.formality_min === i.formality_max ? `F${i.formality_min}` : `F${i.formality_min}–${i.formality_max}`;
     return `<div class="card compact item-card ${i.status !== 'clean' ? 'dirty' : ''}" data-item="${i.id}">
       <div class="top">${swatch(i)}<div><div class="title">${esc(i.name)}${i.favorite ? ' <span title="favorite" style="color:var(--warn)">★</span>' : ''}</div><div class="meta">${esc(title(i.category))}${i.subcategory ? ' · ' + esc(i.subcategory) : ''}${i.material ? ' · ' + esc(i.material) : ''}</div></div></div>
-      <div class="chips"><span class="chip" title="formality 0 athletic … 5 black tie">${formality}</span><span class="chip" title="warmth 1 hot … 5 cold">W${i.warmth}</span>${i.rain_ok ? '<span class="chip">rain ok</span>' : ''}${i.pattern && i.pattern !== 'solid' ? `<span class="chip">${esc(i.pattern)}</span>` : ''}${(i.occasions || []).map(o => `<span class="chip accent">${esc(title(o))}</span>`).join('')}${i.status !== 'clean' ? `<span class="chip warn">${esc(i.status)}</span>` : ''}</div>
+      <div class="chips"><span class="chip" title="formality 0 athletic … 5 black tie">${formality}</span><span class="chip" title="warmth 1 hot … 5 cold">W${i.warmth}</span>${i.rain_ok ? '<span class="chip">rain ok</span>' : ''}${i.pattern && i.pattern !== 'solid' ? `<span class="chip">${esc(i.pattern)}</span>` : ''}${(i.occasions || []).map(o => `<span class="chip accent">${esc(title(o))}</span>`).join('')}${i.status !== 'clean' ? `<span class="chip warn">${esc(i.status)}</span>` : ''}${paletteChip(i)}</div>
       <div class="meta">${i.wear_count ? `worn ${i.wear_count}×` : 'never worn'}${i.last_worn ? ', last ' + esc(i.last_worn) : ''}${i.wears_before_wash < 999 ? ` · wash every ${i.wears_before_wash}` : ''}</div>
       <div class="foot"><button class="small" data-act="toggle">${i.status === 'clean' ? 'Mark dirty' : 'Mark clean'}</button><button class="small ghost" data-act="edit">Edit</button><button class="small ghost danger" data-act="delete">Delete</button></div>
     </div>`;
+  }
+  function paletteChip(i) {
+    if (!i.palette_label || i.palette_label === 'neutral') return '';
+    const cls = { flatters: 'good', good: 'good', muted: 'warn', avoid: 'bad' }[i.palette_label] || '';
+    return `<span class="chip ${cls}" title="colour profile rating ${i.palette_rating > 0 ? '+' : ''}${i.palette_rating}">${esc(i.palette_label)}</span>`;
   }
   function wireItemCard(card, refresh) {
     const id = Number(card.dataset.item);
@@ -460,6 +465,11 @@
           ${overrides.length ? `<div class="stack" style="margin-bottom:10px">${overrides.map(o => `<div class="row between small"><span>${esc(o.date)}: ${tempFmt(o.tempHigh)} / ${tempFmt(o.tempLow)}, rain ${o.precipProb}%</span><button class="small ghost" data-del-ov="${o.date}">Remove</button></div>`).join('')}</div>` : ''}
           <button id="add-ov">Enter weather for a date</button>
         </div>
+        <div class="card" id="profile-card" style="grid-column:1 / -1"><h3>Style profile</h3><p class="muted small">Your personal colour analysis. The engine rewards pieces in flattering colours, most strongly for anything near your face (tops, layers, ties), and penalises colours that wash you out or overpower you. Edit any rating; the Deep Winter preset comes from your colour report.</p>
+          <div class="row" style="margin-bottom:10px"><select id="prof-preset" style="width:auto"></select><select id="prof-contrast" style="width:auto"><option value="any">Contrast: not set</option><option value="high">Contrast: high (dark base + crisp white)</option><option value="medium">Contrast: medium</option><option value="low">Contrast: low</option></select><button class="small ghost" id="prof-reset">Reset to preset</button></div>
+          <div id="prof-body"></div>
+          <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="primary" id="prof-save">Save profile</button></div>
+        </div>
         <div class="card"><h3>How the engine thinks</h3>
           <p class="small">Every item has a <b>formality range</b> (0 athletic to 5 black tie) and a <b>warmth</b> rating (1 hot-weather to 5 deep cold). Each occasion has a dress-code band: Gym 0, Casual 1–2, Business Casual 3, Formal 4–5.</p>
           <p class="small">The day's apparent temperature sets a warmth target; the engine stacks top, layer and outerwear to hit it, keeps shoes and outerwear rain-ready when rain is likely, and penalises colour clashes, duplicate patterns, split suits, and anything worn in the last few days. Like and Dislike nudge pieces up or down for that occasion.</p>
@@ -481,7 +491,41 @@
       catch (err) { toast(err.message, true); }
     });
     $('#add-ov').addEventListener('click', () => overrideModal(state.date, () => renderSettings(app)));
+    await wireProfile(app, s);
     app.querySelectorAll('[data-del-ov]').forEach(b => b.addEventListener('click', async () => { await api('DELETE', `/api/weather/override/${b.dataset.delOv}`); renderSettings(app); }));
+  }
+
+  async function wireProfile(app, s) {
+    const { presets } = await api('GET', '/api/profiles');
+    let prof = s.style_profile ? JSON.parse(JSON.stringify(s.style_profile)) : null;
+    const sel = $('#prof-preset');
+    sel.innerHTML = presets.map(p => `<option value="${p.key}" ${(prof ? prof.key : 'none') === p.key ? 'selected' : ''}>${esc(p.label)}</option>`).join('');
+    $('#prof-contrast').value = prof ? prof.contrast : 'any';
+    const fams = Object.keys(COLOR_HEX);
+    const draw = () => {
+      const body = $('#prof-body');
+      if (!prof) { body.innerHTML = '<p class="muted small">No colour profile. Every colour scores the same; only harmony rules apply.</p>'; return; }
+      body.innerHTML = `
+        ${prof.notes ? `<p class="small"><b>${esc(prof.season || prof.label)}</b> · ${esc(prof.notes)}</p>` : ''}
+        <h4 style="margin-top:8px">Colour families</h4>
+        <div class="grid cols-4" style="gap:8px 14px">${fams.map(f => `<label style="display:flex;align-items:center;gap:8px;color:var(--text)"><span class="swatch" style="background:${COLOR_HEX[f]};width:22px;height:22px;border-radius:6px"></span><span style="width:70px">${f}</span><input type="range" min="-3" max="3" step="0.5" data-fam="${f}" value="${prof.families[f] ?? 0}" style="padding:0"><b style="width:30px;text-align:right" data-fam-val="${f}">${fmtR(prof.families[f] ?? 0)}</b></label>`).join('')}</div>
+        <h4 style="margin-top:14px">Specific shades <span class="muted small" style="font-weight:400">override the family when the word appears in an item's colour or name</span></h4>
+        <div id="shade-list" class="chips" style="margin-bottom:8px">${Object.entries(prof.shades).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<span class="chip ${v >= 1.5 ? 'good' : v <= -1.5 ? 'bad' : v < 0 ? 'warn' : ''}">${esc(k)} ${fmtR(v)} <a href="#" data-del-shade="${esc(k)}" title="remove" style="margin-left:4px;color:inherit">×</a></span>`).join('')}</div>
+        <div class="row"><input id="shade-name" placeholder="shade, e.g. icy blue" style="width:200px"><input id="shade-val" type="number" min="-3" max="3" step="0.5" value="2" style="width:80px"><button class="small" id="shade-add">Add shade</button></div>`;
+      body.querySelectorAll('[data-fam]').forEach(r => r.addEventListener('input', () => { prof.families[r.dataset.fam] = Number(r.value); body.querySelector(`[data-fam-val="${r.dataset.fam}"]`).textContent = fmtR(r.value); }));
+      body.querySelectorAll('[data-del-shade]').forEach(a => a.addEventListener('click', (e) => { e.preventDefault(); delete prof.shades[a.dataset.delShade]; draw(); }));
+      $('#shade-add', body).addEventListener('click', () => { const n = $('#shade-name', body).value.trim().toLowerCase(); if (!n) return; prof.shades[n] = Number($('#shade-val', body).value); draw(); });
+    };
+    const fmtR = (v) => (Number(v) > 0 ? '+' : '') + Number(v);
+    const loadPreset = (key) => { const p = presets.find(x => x.key === key); prof = key === 'none' ? null : JSON.parse(JSON.stringify(p)); $('#prof-contrast').value = prof ? prof.contrast : 'any'; draw(); };
+    sel.addEventListener('change', () => loadPreset(sel.value));
+    $('#prof-reset').addEventListener('click', () => loadPreset(sel.value));
+    $('#prof-contrast').addEventListener('change', () => { if (prof) prof.contrast = $('#prof-contrast').value; });
+    $('#prof-save').addEventListener('click', async () => {
+      try { state.settings = await api('PUT', '/api/settings', { style_profile: prof }); toast(prof ? 'Profile saved. Picks now favour your palette.' : 'Profile cleared.'); }
+      catch (err) { toast(err.message, true); }
+    });
+    draw();
   }
 
   function overrideModal(date, onSaved) {
