@@ -543,6 +543,28 @@
       "color": "stone",
       "color_family": "gray",
       "image": "/images/closet/born-primitive-versatile-short-7-stone.jpg"
+    },
+    {
+      "brand": "Born Primitive",
+      "name": "Dark Wash Flex Stretchy Athletic Fit Jean",
+      "category": "bottom",
+      "subcategory": "jeans",
+      "color": "dark wash",
+      "color_family": "navy",
+      "pattern": "solid",
+      "material": "denim",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 4,
+      "image": "/images/closet/born-primitive-flex-jean-dark-wash.jpg",
+      "url": "https://bornprimitive.com/products/flex-stretchy-athletic-fit-jean"
     }
   ]
 }
