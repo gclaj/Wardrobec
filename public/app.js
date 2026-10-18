@@ -227,6 +227,7 @@
         <div class="row">
           <button class="primary" id="add-item">Add item</button>
           <button id="quick-add">Quick add</button>
+          <button id="link-add">Add from links</button>
           <button id="laundry-done" title="Mark everything dirty as clean again">Laundry done</button>
           <button class="ghost" id="more-menu">More…</button>
         </div>
@@ -248,6 +249,7 @@
     const fc = $('#f-clear'); if (fc) fc.addEventListener('click', () => { state.filters = {}; renderCloset(app); });
     $('#add-item').addEventListener('click', () => itemModal(null, () => renderCloset(app)));
     $('#quick-add').addEventListener('click', () => quickAddModal(() => renderCloset(app)));
+    $('#link-add').addEventListener('click', () => linkAddModal(() => renderCloset(app)));
     $('#laundry-done').addEventListener('click', async () => { const r = await api('POST', '/api/laundry/done'); toast(`${r.cleaned} item${r.cleaned === 1 ? '' : 's'} back in rotation`); renderCloset(app); });
     $('#more-menu').addEventListener('click', () => moreMenu(() => renderCloset(app)));
     app.querySelectorAll('[data-item]').forEach(card => wireItemCard(card, () => renderCloset(app)));
@@ -258,7 +260,7 @@
   function itemCard(i) {
     const formality = i.formality_min === i.formality_max ? `F${i.formality_min}` : `F${i.formality_min}–${i.formality_max}`;
     return `<div class="card compact item-card ${i.status !== 'clean' ? 'dirty' : ''}" data-item="${i.id}">
-      <div class="top">${swatch(i)}<div><div class="title">${esc(i.name)}${i.favorite ? ' <span title="favorite" style="color:var(--warn)">★</span>' : ''}</div><div class="meta">${esc(title(i.category))}${i.subcategory ? ' · ' + esc(i.subcategory) : ''}${i.material ? ' · ' + esc(i.material) : ''}</div></div></div>
+      <div class="top">${swatch(i)}<div><div class="title">${esc(i.name)}${i.favorite ? ' <span title="favorite" style="color:var(--warn)">★</span>' : ''}</div><div class="meta">${i.brand ? esc(i.brand) + ' · ' : ''}${esc(title(i.category))}${i.subcategory ? ' · ' + esc(i.subcategory) : ''}${i.material ? ' · ' + esc(i.material) : ''}${i.url ? ` · <a href="${esc(i.url)}" target="_blank" rel="noopener">link</a>` : ''}</div></div></div>
       <div class="chips"><span class="chip" title="formality 0 athletic … 5 black tie">${formality}</span><span class="chip" title="warmth 1 hot … 5 cold">W${i.warmth}</span>${i.rain_ok ? '<span class="chip">rain ok</span>' : ''}${i.pattern && i.pattern !== 'solid' ? `<span class="chip">${esc(i.pattern)}</span>` : ''}${(i.occasions || []).map(o => `<span class="chip accent">${esc(title(o))}</span>`).join('')}${i.status !== 'clean' ? `<span class="chip warn">${esc(i.status)}</span>` : ''}${paletteChip(i)}</div>
       <div class="meta">${i.wear_count ? `worn ${i.wear_count}×` : 'never worn'}${i.last_worn ? ', last ' + esc(i.last_worn) : ''}${i.wears_before_wash < 999 ? ` · wash every ${i.wears_before_wash}` : ''}</div>
       <div class="foot"><button class="small" data-act="toggle">${i.status === 'clean' ? 'Mark dirty' : 'Mark clean'}</button><button class="small ghost" data-act="edit">Edit</button><button class="small ghost danger" data-act="delete">Delete</button></div>
@@ -292,7 +294,7 @@
   // ---------- item form ----------
   async function itemModal(item, onSaved) {
     const meta = state.meta || (state.meta = await api('GET', '/api/meta'));
-    const it = item || { name: '', category: 'top', subcategory: '', color: '', color_family: 'other', pattern: 'solid', material: '', formality_min: 1, formality_max: 2, warmth: 2, rain_ok: false, wind_ok: false, occasions: ['casual'], status: 'clean', wears_before_wash: 1, favorite: false, set_id: '', image: '', notes: '' };
+    const it = item || { name: '', brand: '', url: '', category: 'top', subcategory: '', color: '', color_family: 'other', pattern: 'solid', material: '', formality_min: 1, formality_max: 2, warmth: 2, rain_ok: false, wind_ok: false, occasions: ['casual'], status: 'clean', wears_before_wash: 1, favorite: false, set_id: '', image: '', notes: '' };
     const fams = Object.keys(COLOR_HEX);
     const html = `
       <h2>${item ? 'Edit item' : 'Add item'}</h2>
@@ -315,6 +317,8 @@
           <div class="field wide"><label>Occasions</label><div class="row">${Object.values(meta.occasions).map(o => `<label style="display:flex;gap:6px;align-items:center;color:var(--text);font-size:.9rem"><input type="checkbox" name="occ" value="${o.key}" ${it.occasions.includes(o.key) ? 'checked' : ''}>${o.label}</label>`).join('')}</div></div>
           <div class="field wide row"><label style="display:flex;gap:6px;align-items:center;color:var(--text);font-size:.9rem"><input type="checkbox" name="rain_ok" ${it.rain_ok ? 'checked' : ''}>Fine in rain</label><label style="display:flex;gap:6px;align-items:center;color:var(--text);font-size:.9rem"><input type="checkbox" name="wind_ok" ${it.wind_ok ? 'checked' : ''}>Blocks wind</label><label style="display:flex;gap:6px;align-items:center;color:var(--text);font-size:.9rem"><input type="checkbox" name="favorite" ${it.favorite ? 'checked' : ''}>Favorite</label></div>
           <div class="field wide"><label>Photo (optional)</label><div class="row"><input type="file" id="img-file" accept="image/*" style="width:auto"><span id="img-preview">${it.image ? swatch(it) : ''}</span>${it.image ? '<button type="button" class="small ghost" id="img-clear">Remove</button>' : ''}</div></div>
+          <div class="field"><label>Brand</label><input name="brand" value="${esc(it.brand || '')}"></div>
+          <div class="field"><label>Product link</label><input name="url" value="${esc(it.url || '')}" placeholder="https://…"></div>
           <div class="field wide"><label>Notes</label><input name="notes" value="${esc(it.notes)}"></div>
         </div>
         <div class="row" style="justify-content:flex-end;margin-top:8px">${item ? '' : '<button type="button" id="autofill">Auto-fill from name</button>'}<button type="button" data-close>Cancel</button><button class="primary" type="submit">Save</button></div>
@@ -352,6 +356,58 @@
     });
   }
 
+  // ---------- draft preview table (shared by quick add and add-from-links) ----------
+  function draftTable(m, drafts, meta, onSave, opts = {}) {
+    $('#qa-preview', m).innerHTML = `
+      <div style="overflow:auto"><table><thead><tr>${opts.images ? '<th></th>' : ''}<th>Name</th>${opts.images ? '<th>Brand</th>' : ''}<th>Category</th><th>Type</th><th>Color</th><th>Form.</th><th>Warmth</th><th>Rain</th><th>Occasions</th></tr></thead><tbody>
+      ${drafts.map((d, i) => `<tr data-i="${i}" ${d.confidence === 'low' || d.resolved === false ? 'style="background:var(--warn-soft)"' : ''}>
+        ${opts.images ? `<td>${d.image ? `<div class="swatch"><img src="${esc(d.image)}" alt=""></div>` : ''}</td>` : ''}
+        <td><input data-k="name" value="${esc(d.name)}">${d.error ? `<div class="small" style="color:var(--bad)">${esc(d.error)}</div>` : ''}${d.warning ? `<div class="small" style="color:var(--warn)">${esc(d.warning)}</div>` : ''}${d.duplicates ? `<div class="small muted">pasted ${d.duplicates + 1}×, added once</div>` : ''}</td>
+        ${opts.images ? `<td><input data-k="brand" value="${esc(d.brand || '')}" style="min-width:90px"></td>` : ''}
+        <td><select data-k="category">${meta.categories.map(c => `<option value="${c}" ${d.category === c ? 'selected' : ''}>${title(c)}</option>`).join('')}</select></td>
+        <td><input data-k="subcategory" value="${esc(d.subcategory)}" style="min-width:90px"></td>
+        <td><select data-k="color_family">${Object.keys(COLOR_HEX).map(c => `<option value="${c}" ${d.color_family === c ? 'selected' : ''}>${c}</option>`).join('')}</select></td>
+        <td style="white-space:nowrap"><input data-k="formality_min" type="number" min="0" max="5" value="${d.formality_min}" style="width:46px">–<input data-k="formality_max" type="number" min="0" max="5" value="${d.formality_max}" style="width:46px"></td>
+        <td><input data-k="warmth" type="number" min="1" max="5" value="${d.warmth}" style="width:50px"></td>
+        <td><input data-k="rain_ok" type="checkbox" ${d.rain_ok ? 'checked' : ''}></td>
+        <td style="white-space:nowrap">${Object.keys(meta.occasions).map(o => `<label style="display:inline-flex;gap:3px;margin-right:6px;color:var(--text)"><input type="checkbox" data-occ="${o}" ${d.occasions.includes(o) ? 'checked' : ''}>${o === 'business_casual' ? 'biz' : o}</label>`).join('')}</td>
+      </tr>`).join('')}</tbody></table></div>
+      <p class="small muted" style="margin-top:8px">Amber rows need a look: ${opts.images ? 'the store could not be read or the variant was not found' : 'the type was not recognised'}. Fix the cells and save.</p>
+      <div class="row" style="justify-content:flex-end"><button class="primary" id="qa-save">Add ${drafts.length} item${drafts.length === 1 ? '' : 's'}</button></div>`;
+    $('#qa-save', m).addEventListener('click', async () => {
+      const rows = [...m.querySelectorAll('tr[data-i]')].map(tr => {
+        const d = { ...drafts[Number(tr.dataset.i)] };
+        tr.querySelectorAll('[data-k]').forEach(el => { d[el.dataset.k] = el.type === 'checkbox' ? el.checked : el.value; });
+        d.occasions = [...tr.querySelectorAll('[data-occ]')].filter(cb => cb.checked).map(cb => cb.dataset.occ);
+        for (const k of ['confidence', 'resolved', 'error', 'warning', 'duplicates', 'variant_matched']) delete d[k];
+        return d;
+      });
+      onSave(rows);
+    });
+  }
+
+  async function linkAddModal(onSaved) {
+    const meta = state.meta || (state.meta = await api('GET', '/api/meta'));
+    modal(`
+      <h2>Add from product links</h2>
+      <p class="muted small">Paste links from the stores you bought from, one per line. Links that include a <code>?variant=</code> id resolve to the exact colour and photo. Works with any Shopify store; other sites fall back to a name guessed from the link.</p>
+      <textarea id="qa-text" placeholder="https://www.example.com/products/tactical-5-pocket-pant?variant=42030099431511"></textarea>
+      <div class="row" style="justify-content:flex-end;margin-top:8px"><button type="button" data-close>Cancel</button><button class="primary" id="qa-resolve">Look up</button></div>
+      <div id="qa-preview" style="margin-top:12px"></div>`, (m, close) => {
+      $('#qa-resolve', m).addEventListener('click', async () => {
+        const text = $('#qa-text', m).value; if (!text.trim()) return;
+        $('#qa-preview', m).innerHTML = '<p class="muted small">Reading product pages…</p>';
+        let drafts;
+        try { drafts = (await api('POST', '/api/items/from-links', { text })).items; }
+        catch (err) { $('#qa-preview', m).innerHTML = `<p class="small" style="color:var(--bad)">${esc(err.message)}</p>`; return; }
+        draftTable(m, drafts, meta, async (rows) => {
+          try { const r = await api('POST', '/api/items/bulk', { items: rows }); toast(`Added ${r.inserted} items`); close(); onSaved && onSaved(); }
+          catch (err) { toast(err.message, true); }
+        }, { images: true });
+      });
+    });
+  }
+
   // ---------- quick add ----------
   async function quickAddModal(onSaved) {
     const meta = state.meta || (state.meta = await api('GET', '/api/meta'));
@@ -365,27 +421,7 @@
       $('#qa-classify', m).addEventListener('click', async () => {
         const text = $('#qa-text', m).value; if (!text.trim()) return;
         drafts = (await api('POST', '/api/items/classify', { text })).items;
-        $('#qa-preview', m).innerHTML = `
-          <div style="overflow:auto"><table><thead><tr><th>Name</th><th>Category</th><th>Type</th><th>Color</th><th>Form.</th><th>Warmth</th><th>Rain</th><th>Occasions</th></tr></thead><tbody>
-          ${drafts.map((d, i) => `<tr data-i="${i}" ${d.confidence === 'low' ? 'style="background:var(--warn-soft)"' : ''}>
-            <td><input data-k="name" value="${esc(d.name)}"></td>
-            <td><select data-k="category">${meta.categories.map(c => `<option value="${c}" ${d.category === c ? 'selected' : ''}>${title(c)}</option>`).join('')}</select></td>
-            <td><input data-k="subcategory" value="${esc(d.subcategory)}" style="min-width:90px"></td>
-            <td><select data-k="color_family">${Object.keys(COLOR_HEX).map(c => `<option value="${c}" ${d.color_family === c ? 'selected' : ''}>${c}</option>`).join('')}</select></td>
-            <td style="white-space:nowrap"><input data-k="formality_min" type="number" min="0" max="5" value="${d.formality_min}" style="width:46px">–<input data-k="formality_max" type="number" min="0" max="5" value="${d.formality_max}" style="width:46px"></td>
-            <td><input data-k="warmth" type="number" min="1" max="5" value="${d.warmth}" style="width:50px"></td>
-            <td><input data-k="rain_ok" type="checkbox" ${d.rain_ok ? 'checked' : ''}></td>
-            <td style="white-space:nowrap">${Object.keys(meta.occasions).map(o => `<label style="display:inline-flex;gap:3px;margin-right:6px;color:var(--text)"><input type="checkbox" data-occ="${o}" ${d.occasions.includes(o) ? 'checked' : ''}>${o === 'business_casual' ? 'biz' : o}</label>`).join('')}</td>
-          </tr>`).join('')}</tbody></table></div>
-          <p class="small muted" style="margin-top:8px">Amber rows were not recognised; set their category by hand.</p>
-          <div class="row" style="justify-content:flex-end"><button class="primary" id="qa-save">Add ${drafts.length} item${drafts.length === 1 ? '' : 's'}</button></div>`;
-        $('#qa-save', m).addEventListener('click', async () => {
-          const rows = [...m.querySelectorAll('tr[data-i]')].map(tr => {
-            const d = { ...drafts[Number(tr.dataset.i)] };
-            tr.querySelectorAll('[data-k]').forEach(el => { d[el.dataset.k] = el.type === 'checkbox' ? el.checked : el.value; });
-            d.occasions = [...tr.querySelectorAll('[data-occ]')].filter(cb => cb.checked).map(cb => cb.dataset.occ);
-            delete d.confidence; return d;
-          });
+        draftTable(m, drafts, meta, async (rows) => {
           try { const r = await api('POST', '/api/items/bulk', { items: rows }); toast(`Added ${r.inserted} items`); close(); onSaved && onSaved(); }
           catch (err) { toast(err.message, true); }
         });

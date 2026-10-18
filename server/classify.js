@@ -45,7 +45,7 @@ const RULES = [
   { kw: ['joggers', 'sweatpants', 'track pants', 'training pants', 'warm-up pants'], category: 'bottom', sub: 'joggers', warmth: 3, formality: [0, 1], occ: ['gym', 'casual'], wbw: 2 },
   { kw: ['tank top', 'tank', 'singlet', 'muscle tee'], category: 'top', sub: 'tank top', warmth: 1, formality: [0, 1], occ: ['gym'], wbw: 1 },
   { kw: ['performance tee', 'dri-fit', 'drifit', 'workout shirt', 'training shirt', 'gym shirt', 'tech tee', 'running shirt', 'athletic shirt', 'compression'], category: 'top', sub: 'performance tee', warmth: 1, formality: [0, 0], occ: ['gym'], wbw: 1 },
-  { kw: ['quarter zip', 'quarter-zip', 'half zip', 'half-zip', '1/4 zip'], category: 'layer', sub: 'quarter-zip', warmth: 3, formality: [0, 3], occ: ['gym', 'casual', 'business_casual'], wbw: 4 },
+  { kw: ['quarter zip', 'quarter-zip', 'quarterzip', 'half zip', 'half-zip', '1/4 zip', 'quarter zip pullover'], category: 'layer', sub: 'quarter-zip', warmth: 3, formality: [0, 3], occ: ['gym', 'casual', 'business_casual'], wbw: 4 },
   { kw: ['hoodie', 'hooded sweatshirt'], category: 'layer', sub: 'hoodie', warmth: 3, formality: [0, 1], occ: ['gym', 'casual'], wbw: 4 },
   { kw: ['sweatshirt', 'crewneck sweatshirt'], category: 'layer', sub: 'sweatshirt', warmth: 3, formality: [0, 1], occ: ['gym', 'casual'], wbw: 4 },
   { kw: ['windbreaker', 'running jacket', 'track jacket', 'shell jacket', 'softshell'], category: 'outerwear', sub: 'windbreaker', warmth: 2, formality: [0, 1], occ: ['gym', 'casual'], rain: true, wind: true, wbw: 15 },
@@ -95,7 +95,9 @@ const RULES = [
   { kw: ['tuxedo trousers', 'tuxedo pants'], category: 'bottom', sub: 'tuxedo trousers', warmth: 3, formality: [5, 5], occ: ['formal'], wbw: 4 },
   { kw: ['suit trousers', 'suit pants'], category: 'bottom', sub: 'suit trousers', warmth: 3, formality: [4, 5], occ: ['formal'], wbw: 4 },
   { kw: ['dress pants', 'dress trousers', 'wool trousers', 'slacks', 'trousers'], category: 'bottom', sub: 'dress trousers', warmth: 3, formality: [3, 4], occ: ['business_casual', 'formal'], wbw: 4 },
-  { kw: ['chinos', 'khakis'], category: 'bottom', sub: 'chinos', warmth: 3, formality: [1, 3], occ: ['casual', 'business_casual'], wbw: 3 },
+  { kw: ['chinos', 'khakis', 'chino pants', 'chino'], category: 'bottom', sub: 'chinos', warmth: 3, formality: [1, 3], occ: ['casual', 'business_casual'], wbw: 3 },
+  { kw: ['5-pocket pants', '5 pocket pants', 'five-pocket pants', 'five pocket pants', '5-pocket pant', 'five-pocket pant', '5-pocket', 'five-pocket'], category: 'bottom', sub: 'five-pocket pants', warmth: 3, formality: [1, 3], occ: ['casual', 'business_casual'], wbw: 3 },
+  { kw: ['utility pants', 'utility pant', 'tactical pants', 'tactical pant', 'work pants', 'work pant'], category: 'bottom', sub: 'utility pants', warmth: 3, formality: [1, 2], occ: ['casual'], wbw: 3 },
   { kw: ['cords', 'corduroys', 'corduroy pants'], category: 'bottom', sub: 'corduroys', warmth: 4, formality: [1, 3], occ: ['casual', 'business_casual'], wbw: 3 },
   { kw: ['jeans', 'denim pants'], category: 'bottom', sub: 'jeans', warmth: 3, formality: [1, 2], occ: ['casual'], wbw: 4 },
   { kw: ['cargo'], category: 'bottom', sub: 'cargo pants', warmth: 3, formality: [1, 1], occ: ['casual'], wbw: 3 },
@@ -184,7 +186,8 @@ function matchRule(text) {
   let best = null, bestLen = 0;
   for (const rule of RULES) {
     for (const kw of rule.kw) {
-      if (padded.includes(' ' + kw + ' ') || padded.includes(' ' + kw + 's ')) {
+      const forms = [kw, kw + 's', kw.endsWith('s') ? kw.slice(0, -1) : null].filter(Boolean);
+      if (forms.some(f => padded.includes(' ' + f + ' '))) {
         if (kw.length > bestLen) { best = rule; bestLen = kw.length; }
       }
     }
@@ -231,10 +234,11 @@ function classify(text) {
     if (!draft.occasions.includes('formal')) draft.occasions.push('formal');
   }
   if (t.includes('casual') && !draft.occasions.includes('casual') && draft.formality_min <= 2) draft.occasions.push('casual');
-  if (['gym', 'workout', 'training', 'athletic', 'running', 'performance'].some(m => t.includes(m)) && !draft.occasions.includes('gym')) {
+  if (['gym', 'workout', 'training', 'athletic', 'running'].some(m => t.includes(m)) && !draft.occasions.includes('gym')) {
     draft.occasions.push('gym');
     draft.formality_min = 0;
   }
+  if (t.includes('performance') && ['top', 'layer'].includes(draft.category) && !draft.occasions.includes('gym')) draft.occasions.push('gym');
   // Pattern narrows formality at the top end a little (loud patterns rarely black tie).
   if (['graphic', 'camo'].includes(pattern)) draft.formality_max = Math.min(draft.formality_max, 1);
   if (draft.formality_min > draft.formality_max) draft.formality_min = draft.formality_max;

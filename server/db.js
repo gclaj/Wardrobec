@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS items (
   favorite INTEGER DEFAULT 0,
   set_id TEXT DEFAULT '',            -- pairs suit jackets with their trousers, etc.
   image TEXT DEFAULT '',             -- data URL or http URL
+  brand TEXT DEFAULT '',
+  url TEXT DEFAULT '',               -- where it was bought
   notes TEXT DEFAULT '',
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
@@ -89,7 +91,16 @@ function openDb(file) {
   const db = new DatabaseSync(file || ':memory:');
   db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
   db.exec(SCHEMA);
+  migrate(db);
   return db;
+}
+
+// Additive migrations for databases created by earlier versions.
+function migrate(db) {
+  const cols = new Set(db.prepare('PRAGMA table_info(items)').all().map(c => c.name));
+  for (const [name, ddl] of [['brand', "TEXT DEFAULT ''"], ['url', "TEXT DEFAULT ''"]]) {
+    if (!cols.has(name)) db.exec(`ALTER TABLE items ADD COLUMN ${name} ${ddl}`);
+  }
 }
 
 function parseItem(row) {

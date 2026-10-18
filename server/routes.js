@@ -7,6 +7,7 @@ const { classify, classifyMany } = require('./classify');
 const { getSetting, setSetting, allSettings } = require('./db');
 const { sampleItems, capsuleItems } = require('./seed');
 const { PRESETS, normalizeProfile, paletteRating, ratingLabel } = require('./profile');
+const links = require('./links');
 
 class HttpError extends Error { constructor(status, message) { super(message); this.status = status; } }
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -68,6 +69,13 @@ const routes = [
     if (typeof body.text === 'string') return { items: classifyMany(body.text) };
     if (Array.isArray(body.lines)) return { items: body.lines.map(classify) };
     throw new HttpError(400, 'send { text } with one item per line');
+  }],
+  ['POST', '/api/items/from-links', async ({ body }) => {
+    const raws = Array.isArray(body.urls) ? body.urls : String(body.text || '').split(/\s+/);
+    const urls = raws.map(s => String(s).trim()).filter(s => /^https?:\/\//i.test(s));
+    if (!urls.length) throw new HttpError(400, 'paste one or more product links');
+    if (urls.length > 50) throw new HttpError(400, 'at most 50 links per batch');
+    return { items: await links.resolveLinks(urls) };
   }],
   ['GET', '/api/items/:id', ({ db, params }) => store.getItem(db, params.id) || (() => { throw new HttpError(404, 'not found'); })()],
   ['PUT', '/api/items/:id', ({ db, params, body }) => store.updateItem(db, params.id, body)],

@@ -4,7 +4,7 @@ const { parseItem, serializeItem } = require('./db');
 
 const ITEM_FIELDS = ['name', 'category', 'subcategory', 'color', 'color_family', 'pattern', 'material',
   'formality_min', 'formality_max', 'warmth', 'rain_ok', 'wind_ok', 'occasions', 'seasons', 'status',
-  'last_worn', 'wear_count', 'wears_since_wash', 'wears_before_wash', 'favorite', 'set_id', 'image', 'notes'];
+  'last_worn', 'wear_count', 'wears_since_wash', 'wears_before_wash', 'favorite', 'set_id', 'image', 'notes', 'brand', 'url'];
 const CATEGORIES = ['top', 'bottom', 'dress', 'layer', 'outerwear', 'shoes', 'accessory'];
 const STATUSES = ['clean', 'dirty', 'laundry', 'retired'];
 
@@ -42,7 +42,7 @@ function listItems(db, filters = {}) {
   const where = [], args = [];
   if (filters.category) { where.push('category = ?'); args.push(filters.category); }
   if (filters.status) { where.push('status = ?'); args.push(filters.status); }
-  if (filters.q) { where.push('(lower(name) LIKE ? OR lower(subcategory) LIKE ? OR lower(color) LIKE ? OR lower(notes) LIKE ?)'); const q = `%${String(filters.q).toLowerCase()}%`; args.push(q, q, q, q); }
+  if (filters.q) { where.push('(lower(name) LIKE ? OR lower(subcategory) LIKE ? OR lower(color) LIKE ? OR lower(notes) LIKE ? OR lower(brand) LIKE ?)'); const q = `%${String(filters.q).toLowerCase()}%`; args.push(q, q, q, q, q); }
   const sql = `SELECT * FROM items ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY category, name`;
   let rows = db.prepare(sql).all(...args).map(parseItem);
   if (filters.occasion) rows = rows.filter(r => r.occasions.includes(filters.occasion));

@@ -127,6 +127,14 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   r = await call('POST', '/api/seed', { set: 'capsule' });
   assert.equal(r.data.inserted, 22);
 
+  // Add-from-links endpoint (store mocked as unreachable here) returns editable drafts; brand/url persist.
+  r = await call('POST', '/api/items/from-links', { text: 'https://twillory.com/products/air-chinos-navy?variant=44654656979131 not-a-link' });
+  assert.equal(r.status, 200); assert.equal(r.data.items.length, 1); assert.equal(r.data.items[0].resolved, false);
+  r = await call('POST', '/api/items', { ...r.data.items[0], name: 'Navy Air Chinos', brand: 'Twillory' });
+  assert.equal(r.data.brand, 'Twillory'); assert.match(r.data.url, /air-chinos-navy/);
+  r = await call('GET', '/api/items?q=twillory');
+  assert.equal(r.data.length, 1);
+
   // Coverage and export.
   r = await call('GET', '/api/coverage');
   assert.equal(r.data.cells.length, 40);

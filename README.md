@@ -14,6 +14,8 @@ npm test             # engine, classifier and API tests
 
 Requires Node 22.13 or newer (for `node:sqlite`). Data lives in `data/wardrobe.db`; set `WARDROBE_DB`, `PORT` or `HOST` to change defaults.
 
+**Add from links** (Closet page) takes product URLs from the stores you bought from. Any Shopify store resolves to the exact variant colour, photo and brand when the link carries a `?variant=` id; other sites fall back to a name guessed from the link for you to correct.
+
 First run: open **Settings** and search your city so the forecast can load. Then open **Closet** and use **Quick add** to paste your clothes one per line ("navy wool blazer", "grey running shorts"). The classifier fills in category, colour, formality, warmth and rain-readiness; correct anything it guesses wrong.
 
 ## How it decides
@@ -53,6 +55,7 @@ server/
   routes.js    JSON API
   engine.js    outfit scoring and search (pure functions)
   classify.js  free-text → item attributes
+  links.js     product links (Shopify variants) → item drafts
   profile.js   personal colour profile presets and palette rating
   weather.js   Open-Meteo client, cache, manual override
   store.js     SQLite queries, wear logging, laundry
@@ -70,7 +73,7 @@ test/          node:test suites
 | `POST /api/outfits/generate` | One outfit with `lock` (pin slots), `exclude`, `attempt` |
 | `POST /api/outfits/wear` | Log an outfit and update laundry state |
 | `POST /api/outfits/feedback` | Like / dislike a combination |
-| `GET/POST/PUT/DELETE /api/items` | Inventory; `POST /api/items/classify` and `/bulk` for quick add |
+| `GET/POST/PUT/DELETE /api/items` | Inventory; `POST /api/items/classify`, `/from-links` and `/bulk` for bulk entry |
 | `GET/POST/DELETE /api/events` | Calendar entries with a dress code |
 | `GET /api/weather`, `PUT /api/weather/override` | Forecast and manual weather |
 | `GET /api/coverage` | Gap analysis |
