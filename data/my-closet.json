@@ -701,6 +701,100 @@
       "color": "khaki",
       "color_family": "tan",
       "image": "/images/closet/old-navy-tech-hybrid-chino-short-khaki.jpg"
+    },
+    {
+      "brand": "Born Primitive",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://bornprimitive.com/products/versatile-short-w-compression-7",
+      "name": "Black Versatile Short 7\" (second pair)",
+      "color": "black",
+      "color_family": "black",
+      "image": "/images/closet/born-primitive-versatile-short-7-black.jpg",
+      "notes": "Duplicate of Black Versatile Short 7\"; you own two."
+    },
+    {
+      "brand": "Born Primitive",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://bornprimitive.com/products/versatile-short-w-compression-7",
+      "name": "Stone Versatile Short 7\" (second pair)",
+      "color": "stone",
+      "color_family": "gray",
+      "image": "/images/closet/born-primitive-versatile-short-7-stone.jpg",
+      "notes": "Duplicate of Stone Versatile Short 7\"; you own two."
+    },
+    {
+      "brand": "Born Primitive",
+      "category": "top",
+      "subcategory": "performance tee",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://bornprimitive.com/products/training-tee",
+      "name": "Hunter Training Tee (second one)",
+      "color": "hunter",
+      "color_family": "green",
+      "image": "/images/closet/born-primitive-training-tee-hunter.jpg",
+      "notes": "Duplicate of Hunter Training Tee; you own two."
+    },
+    {
+      "brand": "Born Primitive",
+      "category": "top",
+      "subcategory": "performance tee",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://bornprimitive.com/products/training-tee",
+      "name": "Adrenaline Training Tee (second one)",
+      "color": "adrenaline (red)",
+      "color_family": "red",
+      "image": "/images/closet/born-primitive-training-tee-adrenaline.jpg",
+      "notes": "Duplicate of Adrenaline Training Tee; you own two."
     }
   ]
 }
