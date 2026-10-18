@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wardrobec</title>
+  <meta name="description" content="Daily outfit options for gym, casual, business casual and formal, adjusted to the weather and your calendar.">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232f5d8a'/%3E%3Cpath d='M16 7l-6 5v13h12V12z' fill='%23fff'/%3E%3C/svg%3E">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#today">Wardrobec</a>
+    <nav class="nav">
+      <a href="#today" data-view="today">Today</a>
+      <a href="#closet" data-view="closet">Closet</a>
+      <a href="#events" data-view="events">Events</a>
+      <a href="#history" data-view="history">History</a>
+      <a href="#settings" data-view="settings">Settings</a>
+    </nav>
+  </header>
+  <main id="app" class="container"><p class="muted">Loading…</p></main>
+  <div id="modal-root"></div>
+  <div id="toast" class="toast" hidden></div>
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "wardrobec",
+  "version": "0.1.0",
+  "description": "A personal wardrobe assistant that knows every item you own and proposes gym, casual, business-casual and formal outfits each day, adjusted for the weather and your calendar.",
+  "main": "server/index.js",
+  "private": true,
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node --no-warnings=ExperimentalWarning server/index.js",
+    "dev": "node --no-warnings=ExperimentalWarning --watch server/index.js",
+    "seed": "node --no-warnings=ExperimentalWarning server/seed.js",
+    "test": "node --no-warnings=ExperimentalWarning --test \"test/**/*.test.js\""
+  },
+  "license": "MIT"
+}

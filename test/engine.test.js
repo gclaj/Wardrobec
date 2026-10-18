@@ -1,0 +1,136 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { buildOutfit, targetWarmth, coverageReport, formalityPenalty, OCCASIONS, freshnessPenalty } = require('../server/engine');
+const { sampleItems } = require('../server/seed');
+
+const closet = () => sampleItems().map((d, i) => ({ ...d, id: i + 1, status: 'clean', wear_count: 0, last_worn: null }));
+const names = (o) => o.items.map(i => i.name);
+
+test('warmth target scales with temperature', () => {
+  assert.ok(targetWarmth(90) < targetWarmth(60));
+  assert.ok(targetWarmth(60) < targetWarmth(20));
+  assert.equal(targetWarmth(82), 1);
+  assert.ok(Math.abs(targetWarmth(40) - 4) < 0.01);
+  assert.ok(targetWarmth(20, 'gym') < targetWarmth(20), 'gym target is damped');
+});
+
+test('formality: athletic gear is ineligible outside the gym, suits ineligible for casual', () => {
+  const shorts = { formality_min: 0, formality_max: 0, occasions: ['gym'], category: 'bottom' };
+  assert.equal(formalityPenalty(shorts, OCCASIONS.formal), null);
+  assert.equal(formalityPenalty(shorts, OCCASIONS.gym), 0);
+  const suitJacket = { formality_min: 4, formality_max: 5, occasions: ['formal'], category: 'layer' };
+  assert.equal(formalityPenalty(suitJacket, OCCASIONS.casual), null);
+  assert.ok(formalityPenalty(suitJacket, OCCASIONS.formal) < 0.5);
+});
+
+test('each occasion produces a complete outfit in every weather band', () => {
+  const items = closet();
+  for (const occ of Object.keys(OCCASIONS)) {
+    for (const temp of [95, 75, 60, 45, 25]) {
+      for (const rain of [0, 90]) {
+        const o = buildOutfit(items, occ, { date: '2026-10-18', weather: { feelsLike: temp, precipProb: rain } });
+        assert.ok(o.complete, `${occ} at ${temp}F rain ${rain}: missing ${o.missing}`);
+        assert.ok(o.slots.shoes, 'has shoes');
+        assert.ok(o.slots.dress || (o.slots.top && o.slots.bottom));
+      }
+    }
+  }
+});
+
+test('gym outfits only use athletic pieces', () => {
+  const o = buildOutfit(closet(), 'gym', { weather: { feelsLike: 70 } });
+  for (const it of o.items) assert.ok(it.occasions.includes('gym') || it.formality_max === 0, it.name);
+});
+
+test('formal outfits wear a jacket and never gym shoes', () => {
+  const o = buildOutfit(closet(), 'formal', { weather: { feelsLike: 70 } });
+  assert.ok(o.slots.layer && ['suit jacket', 'blazer', 'tuxedo jacket'].includes(o.slots.layer.subcategory), 'jacket present');
+  assert.ok(o.slots.shoes.formality_min >= 2);
+});
+
+test('suits stay together', () => {
+  const items = closet();
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const o = buildOutfit(items, 'formal', { weather: { feelsLike: 65 }, attempt });
+    const sets = new Set(o.items.filter(i => i.set_id).map(i => i.set_id));
+    assert.ok(sets.size <= 1, `attempt ${attempt} mixed suits: ${names(o)}`);
+  }
+});
+
+test('cold weather adds outerwear, hot weather removes it', () => {
+  const items = closet();
+  const cold = buildOutfit(items, 'casual', { weather: { feelsLike: 25 } });
+  assert.ok(cold.slots.outerwear, 'coat in the cold: ' + names(cold));
+  assert.ok(cold.slots.bottom.subcategory !== 'shorts');
+  const hot = buildOutfit(items, 'casual', { weather: { feelsLike: 92 } });
+  assert.ok(!hot.slots.outerwear || hot.slots.outerwear.warmth <= 2, 'no heavy coat in heat: ' + names(hot));
+  assert.ok(hot.slots.top.warmth <= 2);
+});
+
+test('rain prefers rain-ready shoes and outerwear, and adds an umbrella', () => {
+  const items = closet();
+  const o = buildOutfit(items, 'business_casual', { weather: { feelsLike: 55, precipProb: 85 } });
+  assert.ok(o.slots.shoes.rain_ok, 'rain-ok shoes: ' + o.slots.shoes.name);
+  assert.ok(!o.slots.outerwear || o.slots.outerwear.rain_ok, 'rain-ok outerwear');
+  assert.ok(o.accessories.some(a => a.subcategory === 'umbrella'));
+});
+
+test('business casual does not resort to shorts in the heat when trousers exist', () => {
+  const o = buildOutfit(closet(), 'business_casual', { weather: { feelsLike: 90 } });
+  assert.notEqual(o.slots.bottom.subcategory, 'shorts', names(o).join(', '));
+  assert.notEqual(o.slots.bottom.subcategory, 'athletic shorts');
+});
+
+test('recently worn and dirty pieces are avoided; excluded ids never appear', () => {
+  const items = closet();
+  const base = buildOutfit(items, 'casual', { date: '2026-10-18', weather: { feelsLike: 65 }, deterministic: true });
+  const top = base.slots.top;
+  const dirtied = items.map(i => i.id === top.id ? { ...i, status: 'dirty' } : i);
+  const next = buildOutfit(dirtied, 'casual', { date: '2026-10-18', weather: { feelsLike: 65 }, deterministic: true });
+  assert.notEqual(next.slots.top.id, top.id, 'dirty top not reused');
+  assert.ok(freshnessPenalty({ last_worn: '2026-10-17' }, '2026-10-18') > freshnessPenalty({ last_worn: '2026-10-01' }, '2026-10-18'));
+  const ex = buildOutfit(items, 'casual', { weather: { feelsLike: 65 }, exclude: new Set([top.id]) });
+  assert.ok(!ex.items.some(i => i.id === top.id));
+});
+
+test('locks pin a slot and alternatives are offered for swaps', () => {
+  const items = closet();
+  const o = buildOutfit(items, 'casual', { weather: { feelsLike: 65 } });
+  const altTop = o.alternatives.top[0].item;
+  const locked = buildOutfit(items, 'casual', { weather: { feelsLike: 65 }, lock: { top: altTop.id, bottom: o.slots.bottom.id, shoes: o.slots.shoes.id } });
+  assert.equal(locked.slots.top.id, altTop.id);
+  assert.equal(locked.slots.bottom.id, o.slots.bottom.id);
+  assert.equal(locked.slots.shoes.id, o.slots.shoes.id);
+});
+
+test('regenerate (attempt) changes the result for the same day', () => {
+  const items = closet();
+  const seen = new Set();
+  for (let a = 0; a < 8; a++) seen.add(names(buildOutfit(items, 'casual', { date: '2026-10-18', weather: { feelsLike: 65 }, attempt: a })).join('|'));
+  assert.ok(seen.size > 1);
+});
+
+test('color rules: three loud colours or a clash costs more than neutrals', () => {
+  const mk = (id, category, color_family, extra = {}) => ({ id, name: `${color_family} ${category}`, category, subcategory: category, color_family, pattern: 'solid', formality_min: 1, formality_max: 2, warmth: 2, occasions: ['casual'], status: 'clean', ...extra });
+  const neutral = [mk(1, 'top', 'white'), mk(2, 'bottom', 'navy'), mk(3, 'shoes', 'brown')];
+  const loud = [mk(1, 'top', 'red'), mk(2, 'bottom', 'orange'), mk(3, 'shoes', 'purple')];
+  const a = buildOutfit(neutral, 'casual', { weather: { feelsLike: 70 }, deterministic: true });
+  const b = buildOutfit(loud, 'casual', { weather: { feelsLike: 70 }, deterministic: true });
+  assert.ok(b.score > a.score + 1.5, `${a.score} vs ${b.score}`);
+});
+
+test('coverage report flags gaps in a closet with no rain gear', () => {
+  const items = closet().filter(i => !i.rain_ok && i.subcategory !== 'umbrella');
+  const rep = coverageReport(items);
+  const rainy = rep.cells.filter(c => c.rain);
+  assert.ok(rainy.some(c => c.status !== 'good' || c.problems.length), 'at least one rainy cell is weak');
+  const full = coverageReport(closet());
+  assert.equal(full.cells.filter(c => c.status === 'gap').length, 0);
+});
+
+test('an empty closet returns an incomplete, non-crashing outfit', () => {
+  const o = buildOutfit([], 'casual', { weather: { feelsLike: 65 } });
+  assert.equal(o.complete, false);
+  assert.deepEqual(o.missing.sort(), ['bottom', 'shoes', 'top']);
+});
