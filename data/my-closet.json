@@ -587,6 +587,76 @@
       "wears_before_wash": 1,
       "image": "/images/closet/lululemon-license-to-train-7-army-green.jpg",
       "url": "https://shop.lululemon.com/p/mens-shorts/License-to-Train-Linerless-Short-7"
+    },
+    {
+      "brand": "BYLT",
+      "name": "Charcoal Executive Pant 2.0 (Slim Fit)",
+      "category": "bottom",
+      "subcategory": "dress trousers",
+      "color": "charcoal",
+      "color_family": "charcoal",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 2,
+      "formality_max": 4,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "business_casual",
+        "formal"
+      ],
+      "seasons": [],
+      "wears_before_wash": 4,
+      "image": "/images/closet/bylt-executive-pant-charcoal.jpg",
+      "url": "https://byltbasics.com/products/executive-pant-2-0"
+    },
+    {
+      "brand": "BYLT",
+      "category": "bottom",
+      "subcategory": "chinos",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 1,
+      "formality_max": 3,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "url": "https://byltbasics.com/products/everyday-pant-2-0",
+      "name": "Grey Everyday Pant 2.0 (Slim Fit)",
+      "color": "grey-blue",
+      "color_family": "gray",
+      "image": "/images/closet/bylt-everyday-pant-slim-grey.jpg",
+      "notes": "Colour name not visible in the screenshot; confirm."
+    },
+    {
+      "brand": "BYLT",
+      "category": "bottom",
+      "subcategory": "chinos",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 1,
+      "formality_max": 3,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "url": "https://byltbasics.com/products/everyday-pant-2-0",
+      "name": "Navy Everyday Pant 2.0 (Classic Fit)",
+      "color": "navy",
+      "color_family": "navy",
+      "image": "/images/closet/bylt-everyday-pant-classic-navy.jpg"
     }
   ]
 }
