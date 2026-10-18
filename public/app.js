@@ -204,11 +204,12 @@
   }
 
   function emptyCloset() {
-    return `<div class="card empty"><h3>Your closet is empty</h3><p>Wardrobec can only recommend what it knows you own. Add your clothes, or load the sample closet to see how it works.</p><div class="row" style="justify-content:center"><button class="primary" id="go-quick">Quick-add my clothes</button><button id="load-capsule">Load my 20-piece capsule</button><button id="load-sample">Load sample closet</button></div></div>`;
+    return `<div class="card empty"><h3>Your closet is empty</h3><p>Wardrobec can only recommend what it knows you own. Add your clothes, or load the sample closet to see how it works.</p><div class="row" style="justify-content:center"><button class="primary" id="load-mine">Load my closet file</button><button id="go-quick">Quick-add my clothes</button><button id="load-capsule">Load my 20-piece capsule</button><button id="load-sample">Load sample closet</button></div></div>`;
   }
   function wireEmpty(app) {
     $('#go-quick', app).addEventListener('click', () => { location.hash = '#closet'; setTimeout(quickAddModal, 50); });
     $('#load-sample', app).addEventListener('click', async () => { await api('POST', '/api/seed'); toast('Sample closet loaded'); route(); });
+    $('#load-mine', app).addEventListener('click', async () => { try { const r = await api('POST', '/api/seed', { set: 'mine' }); toast(`Loaded ${r.inserted} pieces`); route(); } catch (err) { toast(err.message, true); } });
     $('#load-capsule', app).addEventListener('click', async () => { await api('POST', '/api/seed', { set: 'capsule' }); toast('Capsule loaded'); route(); });
   }
 
@@ -429,10 +430,12 @@
     });
   }
 
-  function moreMenu(refresh) {
+  async function moreMenu(refresh) {
+    state.meta = state.meta || await api('GET', '/api/meta');
     modal(`<h2>Closet data</h2><div class="stack">
       <div class="row"><button id="exp">Export JSON</button><span class="muted small">Everything: items, events, history, settings.</span></div>
       <div class="row"><label class="btn" style="margin:0">Import JSON <input type="file" id="imp" accept="application/json" hidden></label><span class="muted small">Adds items from an export file (does not delete existing items).</span></div>
+      ${state.meta && state.meta.hasClosetFile ? '<div class="row"><button class="primary" id="seed-mine">Load my closet file</button><span class="muted small">Your own pieces with photos, from data/my-closet.json. Safe to press again; already-loaded pieces are skipped.</span></div>' : ''}
       <div class="row"><button id="seed-capsule">Load my 20-piece capsule</button><span class="muted small">The capsule from your personal style guide (plus belt and cap).</span></div>
       <div class="row"><button id="seed">Load sample closet</button><span class="muted small">Adds an 80-piece demonstration wardrobe.</span></div>
       <div class="row"><button class="danger" id="reset">Delete everything</button><span class="muted small">Removes all items, events and history. Settings are kept.</span></div>
@@ -440,6 +443,7 @@
       $('#exp', m).addEventListener('click', async () => { const data = await api('GET', '/api/export'); const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `wardrobec-${todayISO()}.json`; a.click(); });
       $('#imp', m).addEventListener('change', async (e) => { const f = e.target.files[0]; if (!f) return; try { const data = JSON.parse(await f.text()); const r = await api('POST', '/api/import', { items: data.items || data }); toast(`Imported ${r.inserted} items`); close(); refresh(); } catch (err) { toast(err.message, true); } });
       $('#seed', m).addEventListener('click', async () => { await api('POST', '/api/seed'); toast('Sample closet loaded'); close(); refresh(); });
+      const sm = $('#seed-mine', m); if (sm) sm.addEventListener('click', async () => { try { const r = await api('POST', '/api/seed', { set: 'mine' }); toast(`Loaded ${r.inserted} of your pieces${r.skipped ? `, ${r.skipped} already there` : ''}`); close(); refresh(); } catch (err) { toast(err.message, true); } });
       $('#seed-capsule', m).addEventListener('click', async () => { const r = await api('POST', '/api/seed', { set: 'capsule' }); toast(`Capsule loaded: ${r.inserted} pieces`); close(); refresh(); });
       $('#reset', m).addEventListener('click', async () => { if (prompt('Type DELETE to remove every item, event and log entry.') === 'DELETE') { await api('POST', '/api/reset', { confirm: 'DELETE' }); toast('Closet emptied'); close(); refresh(); } });
     });

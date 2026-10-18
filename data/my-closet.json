@@ -1,0 +1,229 @@
+{
+  "note": "Owner closet. Load from Closet → More… → Load my closet file. Photos live in public/images/closet.",
+  "items": [
+    {
+      "name": "Light Grey Forge Tank",
+      "category": "top",
+      "subcategory": "tank top",
+      "color": "light grey",
+      "color_family": "gray",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "brand": "Alpha Country",
+      "image": "/images/closet/alpha-forge-tank-light-grey.jpg",
+      "url": "https://thealphacountry.com/products/mens-forge-tank"
+    },
+    {
+      "name": "Black Forge Tank",
+      "category": "top",
+      "subcategory": "tank top",
+      "color": "black",
+      "color_family": "black",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "brand": "Alpha Country",
+      "image": "/images/closet/alpha-forge-tank-black.jpg",
+      "url": "https://thealphacountry.com/products/mens-forge-tank"
+    },
+    {
+      "name": "Kodiak Woodsman Stretchy Flannel",
+      "category": "top",
+      "subcategory": "flannel shirt",
+      "color": "kodiak (brown plaid)",
+      "color_family": "brown",
+      "pattern": "checked",
+      "material": "flannel",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 2,
+      "brand": "Born Primitive",
+      "image": "/images/closet/born-primitive-woodsman-flannel-kodiak.jpg",
+      "url": "https://bornprimitive.com/products/woodsman-stretchy-flannel",
+      "notes": "Wears open over a tee as a light layer too."
+    },
+    {
+      "name": "Black Tactical Short",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "color": "black",
+      "color_family": "black",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "brand": "Ten Thousand",
+      "image": "/images/closet/ten-thousand-tactical-short-black.jpg",
+      "url": "https://www.tenthousand.cc/products/tactical-short"
+    },
+    {
+      "name": "Khaki Tactical Utility Pant",
+      "category": "bottom",
+      "subcategory": "utility pants",
+      "color": "khaki",
+      "color_family": "tan",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "brand": "Ten Thousand",
+      "image": "/images/closet/ten-thousand-tactical-utility-pant-khaki.jpg",
+      "url": "https://www.tenthousand.cc/products/tactical-utility-pant"
+    },
+    {
+      "name": "Black Tactical Utility Pant",
+      "category": "bottom",
+      "subcategory": "utility pants",
+      "color": "black",
+      "color_family": "black",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "brand": "Ten Thousand",
+      "image": "/images/closet/ten-thousand-tactical-utility-pant-black.jpg",
+      "url": "https://www.tenthousand.cc/products/tactical-utility-pant"
+    },
+    {
+      "name": "Gray Tactical Utility Pant",
+      "category": "bottom",
+      "subcategory": "utility pants",
+      "color": "gray",
+      "color_family": "gray",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "brand": "Ten Thousand",
+      "image": "/images/closet/ten-thousand-tactical-utility-pant-gray.jpg",
+      "url": "https://www.tenthousand.cc/products/tactical-utility-pant"
+    },
+    {
+      "name": "Black Tactical 5-Pocket Pant",
+      "category": "bottom",
+      "subcategory": "five-pocket pants",
+      "color": "black",
+      "color_family": "black",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 1,
+      "formality_max": 3,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "brand": "Ten Thousand",
+      "image": "/images/closet/ten-thousand-tactical-5-pocket-pant-black.jpg",
+      "url": "https://www.tenthousand.cc/products/tactical-5-pocket-pant"
+    },
+    {
+      "name": "OD Green Tactical 5-Pocket Pant",
+      "category": "bottom",
+      "subcategory": "five-pocket pants",
+      "color": "od green",
+      "color_family": "olive",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 1,
+      "formality_max": 3,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "brand": "Ten Thousand",
+      "image": "/images/closet/ten-thousand-tactical-5-pocket-pant-od-green.jpg",
+      "url": "https://www.tenthousand.cc/products/tactical-5-pocket-pant"
+    },
+    {
+      "name": "Gray Tactical 5-Pocket Pant",
+      "category": "bottom",
+      "subcategory": "five-pocket pants",
+      "color": "gray",
+      "color_family": "gray",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 1,
+      "formality_max": 3,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "brand": "Ten Thousand",
+      "image": "/images/closet/ten-thousand-tactical-5-pocket-pant-gray.jpg",
+      "url": "https://www.tenthousand.cc/products/tactical-5-pocket-pant"
+    }
+  ]
+}

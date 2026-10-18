@@ -14,6 +14,8 @@ npm test             # engine, classifier and API tests
 
 Requires Node 22.13 or newer (for `node:sqlite`). Data lives in `data/wardrobe.db`; set `WARDROBE_DB`, `PORT` or `HOST` to change defaults.
 
+**Your own closet file**: `data/my-closet.json` holds the owner's pieces with photos under `public/images/closet/`. Load it from Closet → More… → Load my closet file (idempotent; pieces already present are skipped). Add new pieces to the file or straight in the app.
+
 **Add from links** (Closet page) takes product URLs from the stores you bought from. Any Shopify store resolves to the exact variant colour, photo and brand when the link carries a `?variant=` id. Other stores (Lululemon, Nike and the like) are read from the page's product metadata (JSON-LD and Open Graph); a `color=` code keeps each link a distinct item, and a colour the page does not expose is flagged for you to set. Athletic brands classify tops, shorts and shoes as gym-ready.
 
 First run: open **Settings** and search your city so the forecast can load. Then open **Closet** and use **Quick add** to paste your clothes one per line ("navy wool blazer", "grey running shorts"). The classifier fills in category, colour, formality, warmth and rain-readiness; correct anything it guesses wrong.

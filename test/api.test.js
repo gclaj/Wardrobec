@@ -123,6 +123,16 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   assert.equal(r.data.profile.label, 'Deep Winter');
   await call('PUT', '/api/settings', { style_profile: null });
 
+  // The owner's closet file loads with photos and is idempotent.
+  r = await call('POST', '/api/seed', { set: 'mine' });
+  assert.equal(r.data.inserted, 10);
+  r = await call('POST', '/api/seed', { set: 'mine' });
+  assert.equal(r.data.inserted, 0); assert.equal(r.data.skipped, 10);
+  r = await call('GET', '/api/items?q=ten thousand');
+  assert.equal(r.data.length, 7);
+  assert.ok(r.data.every(i => i.image.startsWith('/images/closet/')));
+  r = await fetch(base + r.data[0].image); assert.equal(r.status, 200); assert.match(r.headers.get('content-type'), /image\/jpeg/);
+
   // The capsule seed loads as a second set.
   r = await call('POST', '/api/seed', { set: 'capsule' });
   assert.equal(r.data.inserted, 22);

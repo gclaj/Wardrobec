@@ -8,6 +8,14 @@ const { getSetting, setSetting, allSettings } = require('./db');
 const { sampleItems, capsuleItems } = require('./seed');
 const { PRESETS, normalizeProfile, paletteRating, ratingLabel } = require('./profile');
 const links = require('./links');
+const fs = require('node:fs');
+const path = require('node:path');
+const CLOSET_FILE = process.env.MY_CLOSET || path.join(__dirname, '..', 'data', 'my-closet.json');
+function closetFileItems() {
+  if (!fs.existsSync(CLOSET_FILE)) return null;
+  const data = JSON.parse(fs.readFileSync(CLOSET_FILE, 'utf8'));
+  return Array.isArray(data) ? data : data.items;
+}
 
 class HttpError extends Error { constructor(status, message) { super(message); this.status = status; } }
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -211,13 +219,24 @@ const routes = [
     const drafts = body.items.map(({ id, created_at, updated_at, ...rest }) => rest);
     return { inserted: store.insertItems(db, drafts) };
   }],
-  ['POST', '/api/seed', ({ db, body, query }) => ({ inserted: store.insertItems(db, (body.set || query.set) === 'capsule' ? capsuleItems() : sampleItems()) })],
+  ['POST', '/api/seed', ({ db, body, query }) => {
+    const set = body.set || query.set;
+    if (set === 'mine') {
+      const items = closetFileItems();
+      if (!items) throw new HttpError(404, `no closet file at ${CLOSET_FILE}`);
+      // Skip pieces already loaded (same name and brand) so the button is safe to press twice.
+      const have = new Set(store.listItems(db).map(i => `${i.brand}|${i.name}`.toLowerCase()));
+      const fresh = items.filter(i => !have.has(`${i.brand || ''}|${i.name}`.toLowerCase()));
+      return { inserted: store.insertItems(db, fresh), skipped: items.length - fresh.length };
+    }
+    return { inserted: store.insertItems(db, set === 'capsule' ? capsuleItems() : sampleItems()) };
+  }],
   ['POST', '/api/reset', ({ db, body }) => {
     if (body.confirm !== 'DELETE') throw new HttpError(400, 'send { confirm: "DELETE" }');
     for (const t of ['item_affinity', 'wear_log', 'outfit_feedback', 'events', 'items']) db.prepare(`DELETE FROM ${t}`).run();
     return { ok: true };
   }],
-  ['GET', '/api/meta', () => ({ occasions: engine.OCCASIONS, categories: store.CATEGORIES, statuses: store.STATUSES })],
+  ['GET', '/api/meta', () => ({ occasions: engine.OCCASIONS, categories: store.CATEGORIES, statuses: store.STATUSES, hasClosetFile: fs.existsSync(CLOSET_FILE) })],
 ];
 
 function compile() {
