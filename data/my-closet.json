@@ -430,6 +430,119 @@
       "color": "charcoal",
       "color_family": "charcoal",
       "image": "/images/closet/haus-airknit-quarter-zip-charcoal.jpg"
+    },
+    {
+      "brand": "Born Primitive",
+      "category": "top",
+      "subcategory": "performance tee",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://bornprimitive.com/products/training-tee",
+      "name": "Adrenaline Training Tee",
+      "color": "adrenaline (red)",
+      "color_family": "red",
+      "image": "/images/closet/born-primitive-training-tee-adrenaline.jpg"
+    },
+    {
+      "brand": "Born Primitive",
+      "category": "top",
+      "subcategory": "performance tee",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://bornprimitive.com/products/training-tee",
+      "name": "Hunter Training Tee",
+      "color": "hunter",
+      "color_family": "green",
+      "image": "/images/closet/born-primitive-training-tee-hunter.jpg"
+    },
+    {
+      "brand": "Born Primitive",
+      "name": "Black Network Short Sleeve Shirt",
+      "category": "top",
+      "subcategory": "short-sleeve button-down shirt",
+      "color": "black",
+      "color_family": "black",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 2,
+      "formality_max": 3,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "image": "/images/closet/born-primitive-network-short-sleeve-black.jpg",
+      "url": "https://bornprimitive.com/products/network-short-sleeve"
+    },
+    {
+      "brand": "Born Primitive",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://bornprimitive.com/products/versatile-short-w-compression-7",
+      "name": "Black Versatile Short 7\"",
+      "color": "black",
+      "color_family": "black",
+      "image": "/images/closet/born-primitive-versatile-short-7-black.jpg"
+    },
+    {
+      "brand": "Born Primitive",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://bornprimitive.com/products/versatile-short-w-compression-7",
+      "name": "Stone Versatile Short 7\"",
+      "color": "stone",
+      "color_family": "gray",
+      "image": "/images/closet/born-primitive-versatile-short-7-stone.jpg"
     }
   ]
 }
