@@ -31,8 +31,36 @@ const SAMPLE = [
   'white pocket square', 'silver cufflinks', 'black umbrella', 'black sunglasses',
 ];
 
-function sampleItems() {
-  return SAMPLE.map(entry => {
+// The owner's 20-piece capsule from their personal style guide, plus the belt and cap worn in every look.
+const CAPSULE = [
+  { text: 'navy blazer', formality_min: 3, formality_max: 4 },
+  { text: 'light blue dress shirt' },
+  { text: 'white button-down shirt' },
+  { text: 'gray oxford flannel button-down shirt', warmth: 3, pattern: 'solid' },
+  { text: 'navy henley' },
+  { text: 'olive quarter-zip', occasions: ['casual', 'business_casual', 'gym'] },
+  { text: 'oatmeal sweater', color: 'oatmeal', color_family: 'tan' },
+  { text: 'vintage red t-shirt', color: 'vintage red', color_family: 'red', occasions: ['casual', 'gym'] },
+  { text: 'white t-shirt', occasions: ['casual', 'gym'] },
+  { text: 'black performance hoodie' },
+  { text: 'khaki chinos' },
+  { text: 'olive 5-pocket pants', subcategory: 'five-pocket pants', formality_min: 1, formality_max: 2 },
+  { text: 'navy 5-pocket pants', subcategory: 'five-pocket pants', formality_min: 1, formality_max: 3 },
+  { text: 'dark blue jeans' },
+  { text: 'gray 7-inch athletic shorts', occasions: ['gym', 'casual'], formality_min: 0, formality_max: 1 },
+  { text: 'black jogger pants', subcategory: 'joggers', occasions: ['gym', 'casual'], formality_min: 0, formality_max: 1 },
+  { text: 'white sneakers' },
+  { text: 'brown loafers' },
+  { text: 'brown suede chukka boots' },
+  { text: 'black sling day backpack bag', subcategory: 'bag', formality_min: 0, formality_max: 2, occasions: ['gym', 'casual'] },
+  { text: 'brown leather belt' },
+  { text: 'navy baseball cap' },
+];
+
+function capsuleItems() { return build(CAPSULE); }
+
+function build(list) {
+  return list.map(entry => {
     const text = typeof entry === 'string' ? entry : entry.text;
     const draft = classify(text);
     delete draft.confidence;
@@ -42,7 +70,9 @@ function sampleItems() {
   });
 }
 
-module.exports = { sampleItems };
+function sampleItems() { return build(SAMPLE); }
+
+module.exports = { sampleItems, capsuleItems };
 
 if (require.main === module) {
   // `npm run seed` loads the sample closet into the configured database.

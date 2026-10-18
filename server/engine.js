@@ -16,7 +16,7 @@ const OCCASIONS = {
   gym:             { key: 'gym',             label: 'Gym',             band: [0, 0], ideal: 0, tolerance: 0 },
   casual:          { key: 'casual',          label: 'Casual',          band: [1, 2], ideal: 1.5, tolerance: 1 },
   business_casual: { key: 'business_casual', label: 'Business Casual', band: [3, 3], ideal: 3, tolerance: 1 },
-  formal:          { key: 'formal',          label: 'Formal',          band: [4, 5], ideal: 4.5, tolerance: 0 },
+  formal:          { key: 'formal',          label: 'Formal',          band: [4, 5], ideal: 4.5, tolerance: 1 },
 };
 const OCCASION_KEYS = Object.keys(OCCASIONS);
 
@@ -195,12 +195,13 @@ function colorPenalty(c, notes) {
   const topFam = (c.top || c.dress || {}).color_family;
   if (topFam && bottomFam && topFam === bottomFam && !NEUTRALS.has(topFam) && topFam !== 'other') { p += 0.5; notes.push('same strong color top and bottom'); }
   if ((topFam === 'navy' && bottomFam === 'black') || (topFam === 'black' && bottomFam === 'navy')) p += 0.3;
+  if (topFam === 'white' && bottomFam === 'white') { p += 1.0; notes.push('white head to toe'); }
   const patterned = ['top', 'dress', 'layer', 'outerwear', 'bottom'].map(k => c[k]).filter(x => x && x.pattern && x.pattern !== 'solid');
   if (patterned.length >= 2) { p += 1.0; notes.push('two patterns competing'); }
   return p;
 }
 
-function profileComboPenalty(c, profile, notes, pr) {
+function profileComboPenalty(c, profile, notes, pr, occasionKey) {
   let p = 0;
   const near = ['top', 'dress', 'layer', 'outerwear'].map(k => c[k]).filter(Boolean);
   // Per-item bonuses were already applied in scoreItem; cap their total so a flattering colour
@@ -212,7 +213,7 @@ function profileComboPenalty(c, profile, notes, pr) {
     const r = pr(it);
     if (r <= -1.5) notes.push(`${it.name} reads warm or dusty against your colouring`);
   }
-  if (profile.contrast === 'high') {
+  if (profile.contrast === 'high' && occasionKey !== 'gym') {
     const fams = near.map(x => x.color_family);
     const hasDark = fams.some(f => DARK.has(f)) || (c.bottom && DARK.has(c.bottom.color_family));
     const hasLight = fams.some(f => LIGHT.has(f));
@@ -282,7 +283,7 @@ function scoreCombo(c, ctx, items) {
   }
   if (c.dress && occ.key === 'gym') s += 10;
   // Personal colour profile: contrast and the "look formula" (dark base + crisp white + jewel accent)
-  if (ctx.profile) s += profileComboPenalty(c, ctx.profile, notes, ctx.pr);
+  if (ctx.profile) s += profileComboPenalty(c, ctx.profile, notes, ctx.pr, occ.key);
   // Suits
   s += setPenalty(c, items, notes);
   // Color
@@ -457,7 +458,7 @@ function buildOutfit(items, occasionKey, opts = {}) {
     items: Object.values(slots),
     accessories: accessories.map(a => ({ ...stripInternal(a), why: a._why })),
     score: round(best.score),
-    fit: fitLabel(best.score),
+    fit: missing.length ? 'incomplete' : fitLabel(best.score),
     warmth: round(best.warmth),
     targetWarmth: round(wx.target),
     rationale: rationale(ctx, best, chosen),

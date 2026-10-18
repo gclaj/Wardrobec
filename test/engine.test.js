@@ -156,3 +156,30 @@ test('a flattering colour is never a reason to add a layer in the heat', () => {
   const o = buildOutfit(closet(), 'business_casual', { weather: { feelsLike: 88 }, deterministic: true, profile: PRESETS.deep_winter });
   assert.ok(!o.slots.layer && !o.slots.outerwear, o.items.map(i => i.name).join(', '));
 });
+
+test('formal reaches one step down with a penalty, but suit trousers always win when present', () => {
+  const { capsuleItems } = require('../server/seed');
+  const capsule = capsuleItems().map((d, i) => ({ ...d, id: i + 1, status: 'clean' }));
+  const o = buildOutfit(capsule, 'formal', { weather: { feelsLike: 60 }, deterministic: true });
+  assert.ok(o.complete, 'capsule can dress formal via chinos');
+  assert.equal(o.slots.bottom.subcategory, 'chinos');
+  assert.notEqual(o.fit, 'excellent');
+  const full = buildOutfit(closet(), 'formal', { weather: { feelsLike: 60 }, deterministic: true });
+  assert.ok(full.slots.bottom.formality_min >= 4, full.slots.bottom.name);
+  const empty = buildOutfit(capsule.filter(i => i.category !== 'shoes'), 'formal', { weather: { feelsLike: 60 } });
+  assert.equal(empty.fit, 'incomplete');
+});
+
+test('Deep Autumn and Deep Winter presets disagree where the reports disagree, agree on navy and burgundy', () => {
+  const { PRESETS, paletteRating } = require('../server/profile');
+  const mk = (name, color_family) => ({ id: 1, name, color_family, color: '' });
+  assert.ok(paletteRating(mk('khaki chinos', 'tan'), PRESETS.deep_autumn) > 0);
+  assert.ok(paletteRating(mk('khaki chinos', 'tan'), PRESETS.deep_winter) < 0);
+  assert.ok(paletteRating(mk('icy blue shirt', 'blue'), PRESETS.deep_autumn) < 0);
+  assert.ok(paletteRating(mk('icy blue shirt', 'blue'), PRESETS.deep_winter) > 0);
+  for (const key of ['deep_winter', 'deep_autumn', 'shared_ground']) {
+    assert.ok(paletteRating(mk('navy blazer', 'navy'), PRESETS[key]) >= 1.5, key);
+    assert.ok(paletteRating(mk('burgundy tie', 'burgundy'), PRESETS[key]) >= 1.5, key);
+  }
+  assert.equal(paletteRating(mk('khaki chinos', 'tan'), PRESETS.shared_ground), 0);
+});

@@ -8,7 +8,7 @@ No external runtime dependencies: Node 22's built-in HTTP server and SQLite driv
 
 ```bash
 npm start            # http://127.0.0.1:3000
-npm run seed         # optional: load the 80-piece sample closet
+npm run seed         # optional: load the 80-piece sample closet (Closet → More… also offers the 20-piece capsule)
 npm test             # engine, classifier and API tests
 ```
 
@@ -36,6 +36,8 @@ First run: open **Settings** and search your city so the forecast can load. Then
 **Then it searches.** The best candidates per slot are enumerated in combination and scored on: formality fit, warmth balance, rain and wind handling, colour harmony (clashing pairs, three or more loud colours, brown shoes with black trousers), pattern collisions, split suits, pieces worn in the last few days, laundry state, favourites, and your Like/Dislike history for that occasion. A seeded random jitter keeps each day stable while **Regenerate** produces a genuinely different answer.
 
 **Your personal colour profile** (Settings → Style profile) rates every colour family from -3 to +3, with shade-level overrides ("icy blue" good, "warm beige" bad, "cool red" good, "rusty red" bad) matched against an item's colour or name. Ratings are weighted by how close a piece sits to the face: tops, layers and ties count most, shoes least. A high-contrast profile also rewards the formula of a dark base, crisp white and one jewel-tone accent, and flags mid-tone-only outfits as flat. The Deep Winter preset is built in; every rating is editable. Closet items show a flatters / good / muted / avoid chip so you can see how the engine reads each piece.
+
+Three presets ship: **Deep Winter** and **Deep Autumn**, each built from one of the owner's colour reports, and **Shared ground**, which rewards only the colours both reports agree on (navy, charcoal, olive, forest, burgundy, deep blue, espresso) and leaves contested colours neutral.
 
 **Calendar events** get their own outfit using the hourly forecast at the event time, and outfits for events on the same day never share pieces, because you will actually wear all of them.
 

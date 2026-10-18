@@ -5,7 +5,7 @@ const engine = require('./engine');
 const weather = require('./weather');
 const { classify, classifyMany } = require('./classify');
 const { getSetting, setSetting, allSettings } = require('./db');
-const { sampleItems } = require('./seed');
+const { sampleItems, capsuleItems } = require('./seed');
 const { PRESETS, normalizeProfile, paletteRating, ratingLabel } = require('./profile');
 
 class HttpError extends Error { constructor(status, message) { super(message); this.status = status; } }
@@ -203,7 +203,7 @@ const routes = [
     const drafts = body.items.map(({ id, created_at, updated_at, ...rest }) => rest);
     return { inserted: store.insertItems(db, drafts) };
   }],
-  ['POST', '/api/seed', ({ db }) => ({ inserted: store.insertItems(db, sampleItems()) })],
+  ['POST', '/api/seed', ({ db, body, query }) => ({ inserted: store.insertItems(db, (body.set || query.set) === 'capsule' ? capsuleItems() : sampleItems()) })],
   ['POST', '/api/reset', ({ db, body }) => {
     if (body.confirm !== 'DELETE') throw new HttpError(400, 'send { confirm: "DELETE" }');
     for (const t of ['item_affinity', 'wear_log', 'outfit_feedback', 'events', 'items']) db.prepare(`DELETE FROM ${t}`).run();

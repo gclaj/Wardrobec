@@ -123,6 +123,10 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   assert.equal(r.data.profile.label, 'Deep Winter');
   await call('PUT', '/api/settings', { style_profile: null });
 
+  // The capsule seed loads as a second set.
+  r = await call('POST', '/api/seed', { set: 'capsule' });
+  assert.equal(r.data.inserted, 22);
+
   // Coverage and export.
   r = await call('GET', '/api/coverage');
   assert.equal(r.data.cells.length, 40);
