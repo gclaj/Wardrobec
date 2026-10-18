@@ -1067,6 +1067,30 @@
       "image": "",
       "url": "https://www.fabletics.com/products/the-one-jogger",
       "notes": "No photo yet; add one from the Edit form."
+    },
+    {
+      "brand": "Altama",
+      "name": "Black Maritime Assault Mid Boots",
+      "category": "shoes",
+      "subcategory": "mid-top boots",
+      "color": "black",
+      "color_family": "black",
+      "pattern": "solid",
+      "material": "canvas",
+      "formality_min": 0,
+      "formality_max": 2,
+      "warmth": 3,
+      "rain_ok": true,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 999,
+      "image": "/images/closet/altama-maritime-assault-mid-black.jpg",
+      "url": "https://www.tacticalgear.com/mens-altama-maritime-assault-mid-boots",
+      "notes": "Lugged sole, drains and dries fast; fine in rain."
     }
   ]
 }
