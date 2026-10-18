@@ -1091,6 +1091,29 @@
       "image": "/images/closet/altama-maritime-assault-mid-black.jpg",
       "url": "https://www.tacticalgear.com/mens-altama-maritime-assault-mid-boots",
       "notes": "Lugged sole, drains and dries fast; fine in rain."
+    },
+    {
+      "brand": "lululemon",
+      "name": "Steel Blue Smooth Spacer Quarter Zip",
+      "category": "layer",
+      "subcategory": "quarter-zip",
+      "color": "steel blue",
+      "color_family": "blue",
+      "pattern": "solid",
+      "material": "spacer knit",
+      "formality_min": 1,
+      "formality_max": 3,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 4,
+      "image": "/images/closet/lululemon-smooth-spacer-quarter-zip-steel-blue.jpg",
+      "url": "https://shop.lululemon.com/p/mens-hoodies-and-sweatshirts/Smooth-Spacer-Quarter-Zip"
     }
   ]
 }
