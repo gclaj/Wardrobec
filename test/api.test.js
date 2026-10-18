@@ -125,9 +125,9 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
 
   // The owner's closet file loads with photos and is idempotent.
   r = await call('POST', '/api/seed', { set: 'mine' });
-  assert.equal(r.data.inserted, 13);
+  assert.equal(r.data.inserted, 15);
   r = await call('POST', '/api/seed', { set: 'mine' });
-  assert.equal(r.data.inserted, 0); assert.equal(r.data.skipped, 13);
+  assert.equal(r.data.inserted, 0); assert.equal(r.data.skipped, 15);
   r = await call('GET', '/api/items?q=ten thousand');
   assert.equal(r.data.length, 7);
   assert.ok(r.data.every(i => i.image.startsWith('/images/closet/')));
@@ -143,7 +143,7 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   r = await call('POST', '/api/items', { ...r.data.items[0], name: 'Navy Air Chinos', brand: 'Twillory' });
   assert.equal(r.data.brand, 'Twillory'); assert.match(r.data.url, /air-chinos-navy/);
   r = await call('GET', '/api/items?q=twillory');
-  assert.equal(r.data.length, 1);
+  assert.ok(r.data.some(i => i.name === 'Navy Air Chinos'), 'brand is searchable');
 
   // Coverage and export.
   r = await call('GET', '/api/coverage');

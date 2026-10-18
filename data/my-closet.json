@@ -290,6 +290,54 @@
       "color": "warm ash grey",
       "color_family": "tan",
       "image": "/images/closet/lululemon-pace-breaker-7-warm-ash-grey.jpg"
+    },
+    {
+      "name": "Navy Leader Blazer",
+      "brand": "Twillory",
+      "category": "layer",
+      "subcategory": "blazer",
+      "color": "navy",
+      "color_family": "navy",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 3,
+      "formality_max": 5,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "business_casual",
+        "formal"
+      ],
+      "seasons": [],
+      "wears_before_wash": 8,
+      "image": "/images/closet/twillory-leader-blazer-navy.jpg",
+      "url": "https://twillory.com/products/leader",
+      "notes": "Pairs with the navy AIR pants as a suit."
+    },
+    {
+      "name": "Navy AIR Pants",
+      "brand": "Twillory",
+      "category": "bottom",
+      "subcategory": "dress trousers",
+      "color": "navy",
+      "color_family": "navy",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 2,
+      "formality_max": 4,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "business_casual",
+        "formal"
+      ],
+      "seasons": [],
+      "wears_before_wash": 4,
+      "image": "/images/closet/twillory-air-pants-navy.jpg",
+      "url": "https://twillory.com/products/air-chinos-navy",
+      "notes": "Breathable; reads as tailored trousers."
     }
   ]
 }
