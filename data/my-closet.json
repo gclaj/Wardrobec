@@ -885,6 +885,164 @@
       "wears_before_wash": 999,
       "image": "/images/closet/nobull-allday-365-ivory.jpg",
       "url": "https://www.nobullproject.com/products/allday-365"
+    },
+    {
+      "brand": "Fabletics",
+      "category": "bottom",
+      "subcategory": "dress trousers",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 2,
+      "formality_max": 3,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "url": "https://www.fabletics.com/products/the-don-trouser",
+      "name": "Deep Navy Don Trouser (Slim Fit)",
+      "color": "deep navy",
+      "color_family": "navy",
+      "image": "/images/closet/fabletics-don-trouser-slim-deep-navy.jpg"
+    },
+    {
+      "brand": "Fabletics",
+      "category": "bottom",
+      "subcategory": "dress trousers",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 2,
+      "formality_max": 3,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "url": "https://www.fabletics.com/products/the-don-trouser",
+      "name": "Onyx Don Trouser (Classic Fit)",
+      "color": "onyx",
+      "color_family": "charcoal",
+      "image": "/images/closet/fabletics-don-trouser-classic-onyx.jpg"
+    },
+    {
+      "brand": "Fabletics",
+      "category": "bottom",
+      "subcategory": "dress trousers",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 2,
+      "formality_max": 3,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 3,
+      "url": "https://www.fabletics.com/products/the-don-trouser",
+      "name": "Black Don Trouser (Classic Fit)",
+      "color": "black",
+      "color_family": "black",
+      "image": "/images/closet/fabletics-don-trouser-classic-black.jpg"
+    },
+    {
+      "brand": "Fabletics",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://www.fabletics.com/products/the-one-short",
+      "name": "Black One Short Lined 5\"",
+      "color": "black",
+      "color_family": "black",
+      "image": "/images/closet/fabletics-one-short-lined-5-black.jpg"
+    },
+    {
+      "brand": "Fabletics",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://www.fabletics.com/products/the-one-short",
+      "name": "Black One Short 7\"",
+      "color": "black",
+      "color_family": "black",
+      "image": "/images/closet/fabletics-one-short-7-black.jpg"
+    },
+    {
+      "brand": "Fabletics",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://www.fabletics.com/products/the-one-short",
+      "name": "Onyx One Short Lined 5\"",
+      "color": "onyx",
+      "color_family": "charcoal",
+      "image": "/images/closet/fabletics-one-short-lined-5-onyx.jpg"
+    },
+    {
+      "brand": "Fabletics",
+      "name": "Shadow Grey One Jogger",
+      "category": "bottom",
+      "subcategory": "joggers",
+      "color": "shadow grey",
+      "color_family": "gray",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 2,
+      "image": "/images/closet/fabletics-one-jogger-shadow-grey.jpg",
+      "url": "https://www.fabletics.com/products/the-one-jogger"
     }
   ]
 }
