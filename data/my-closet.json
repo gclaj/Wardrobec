@@ -1184,6 +1184,126 @@
       "wears_before_wash": 5,
       "image": "/images/closet/charles-tyrwhitt-merino-quarter-zip-oatmeal.jpg",
       "url": "https://www.charlestyrwhitt.com/us/pure-merino-quarter-zip-sweater-oatmeal"
+    },
+    {
+      "category": "outerwear",
+      "pattern": "solid",
+      "seasons": [],
+      "rain_ok": true,
+      "wind_ok": true,
+      "url": "",
+      "brand": "Joseph Abboud",
+      "name": "Black Modern Fit Car Coat",
+      "subcategory": "car coat",
+      "color": "black",
+      "color_family": "black",
+      "material": "tech twill",
+      "formality_min": 2,
+      "formality_max": 5,
+      "warmth": 3,
+      "occasions": [
+        "business_casual",
+        "formal"
+      ],
+      "wears_before_wash": 20,
+      "image": "/images/closet/joseph-abboud-car-coat-black.jpg",
+      "notes": "Tailored raincoat; sits over the Leader blazer."
+    },
+    {
+      "category": "outerwear",
+      "pattern": "solid",
+      "seasons": [],
+      "rain_ok": false,
+      "wind_ok": true,
+      "url": "",
+      "brand": "St. John's Bay",
+      "name": "Charcoal Wool Peacoat",
+      "subcategory": "peacoat",
+      "color": "charcoal",
+      "color_family": "charcoal",
+      "material": "wool",
+      "formality_min": 1,
+      "formality_max": 4,
+      "warmth": 4,
+      "occasions": [
+        "casual",
+        "business_casual",
+        "formal"
+      ],
+      "wears_before_wash": 20,
+      "image": "/images/closet/st-johns-bay-peacoat-charcoal.jpg",
+      "notes": "Quilted lining; the warmest smart option."
+    },
+    {
+      "category": "outerwear",
+      "pattern": "solid",
+      "seasons": [],
+      "rain_ok": true,
+      "wind_ok": true,
+      "url": "",
+      "brand": "",
+      "name": "Tan Hooded Rain Shell",
+      "subcategory": "rain jacket",
+      "color": "tan",
+      "color_family": "tan",
+      "material": "nylon",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 2,
+      "occasions": [
+        "casual",
+        "gym"
+      ],
+      "wears_before_wash": 20,
+      "image": "/images/closet/tan-hooded-rain-shell.jpg",
+      "notes": "Half-zip anorak; brand not visible, add it if you like."
+    },
+    {
+      "category": "outerwear",
+      "pattern": "solid",
+      "seasons": [],
+      "rain_ok": true,
+      "wind_ok": true,
+      "url": "",
+      "brand": "The North Face",
+      "name": "Blue Insulated Jacket",
+      "subcategory": "puffer",
+      "color": "blue",
+      "color_family": "blue",
+      "material": "synthetic insulation",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 4,
+      "occasions": [
+        "casual",
+        "gym"
+      ],
+      "wears_before_wash": 20,
+      "image": "/images/closet/north-face-insulated-jacket-blue.jpg",
+      "notes": "Water-resistant shell; the warmest casual option."
+    },
+    {
+      "category": "outerwear",
+      "pattern": "solid",
+      "seasons": [],
+      "rain_ok": true,
+      "wind_ok": true,
+      "url": "https://www.freecountry.com/products/mens-lanier-super-softshell-jacket",
+      "brand": "Free Country",
+      "name": "Black Lanier Super Softshell Jacket",
+      "subcategory": "softshell",
+      "color": "black",
+      "color_family": "black",
+      "material": "softshell",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 3,
+      "occasions": [
+        "casual",
+        "gym"
+      ],
+      "wears_before_wash": 15,
+      "image": "/images/closet/free-country-lanier-softshell-black.jpg"
     }
   ]
 }
