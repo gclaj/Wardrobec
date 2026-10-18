@@ -657,6 +657,50 @@
       "color": "navy",
       "color_family": "navy",
       "image": "/images/closet/bylt-everyday-pant-classic-navy.jpg"
+    },
+    {
+      "brand": "Old Navy",
+      "category": "bottom",
+      "subcategory": "shorts",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 2,
+      "url": "https://oldnavy.gap.com/browse/product.do?pid=tech-hybrid-chino-shorts-8-inch",
+      "name": "Black Tech Hybrid Chino Shorts 8\"",
+      "color": "black",
+      "color_family": "black",
+      "image": "/images/closet/old-navy-tech-hybrid-chino-short-black.jpg"
+    },
+    {
+      "brand": "Old Navy",
+      "category": "bottom",
+      "subcategory": "shorts",
+      "pattern": "solid",
+      "material": "performance",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 2,
+      "url": "https://oldnavy.gap.com/browse/product.do?pid=tech-hybrid-chino-shorts-8-inch",
+      "name": "Khaki Tech Hybrid Chino Shorts 8\"",
+      "color": "khaki",
+      "color_family": "tan",
+      "image": "/images/closet/old-navy-tech-hybrid-chino-short-khaki.jpg"
     }
   ]
 }
