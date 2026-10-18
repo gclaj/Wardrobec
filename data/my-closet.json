@@ -1114,6 +1114,52 @@
       "wears_before_wash": 4,
       "image": "/images/closet/lululemon-smooth-spacer-quarter-zip-steel-blue.jpg",
       "url": "https://shop.lululemon.com/p/mens-hoodies-and-sweatshirts/Smooth-Spacer-Quarter-Zip"
+    },
+    {
+      "brand": "BYLT",
+      "category": "top",
+      "subcategory": "polo",
+      "pattern": "solid",
+      "material": "ribbed knit",
+      "formality_min": 1,
+      "formality_max": 3,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://byltbasics.com/products/ribbed-short-sleeve-open-v-polo",
+      "name": "Light Grey Ribbed Open V Polo",
+      "color": "light grey",
+      "color_family": "gray",
+      "image": "/images/closet/bylt-ribbed-open-v-polo-light-grey.jpg"
+    },
+    {
+      "brand": "BYLT",
+      "category": "top",
+      "subcategory": "polo",
+      "pattern": "solid",
+      "material": "ribbed knit",
+      "formality_min": 1,
+      "formality_max": 3,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://byltbasics.com/products/ribbed-short-sleeve-open-v-polo",
+      "name": "Navy Ribbed Open V Polo",
+      "color": "navy",
+      "color_family": "navy",
+      "image": "/images/closet/bylt-ribbed-open-v-polo-navy.jpg"
     }
   ]
 }
