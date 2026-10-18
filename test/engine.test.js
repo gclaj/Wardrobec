@@ -183,3 +183,12 @@ test('Deep Autumn and Deep Winter presets disagree where the reports disagree, a
   }
   assert.equal(paletteRating(mk('khaki chinos', 'tan'), PRESETS.shared_ground), 0);
 });
+
+test('no layer gets added in hot weather just because it is unworn or on-palette', () => {
+  const { PRESETS } = require('../server/profile');
+  const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean', wear_count: 0 }));
+  for (const occ of ['gym', 'casual']) {
+    const o = buildOutfit(items, occ, { weather: { feelsLike: 88 }, deterministic: true, profile: PRESETS.shared_ground });
+    assert.ok(!o.slots.layer, `${occ}: ${o.items.map(i => i.name).join(', ')}`);
+  }
+});

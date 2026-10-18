@@ -257,7 +257,9 @@ function scoreCombo(c, ctx, items) {
   // Warmth balance
   const warmth = outfitWarmth(c);
   const diff = warmth - wx.target;
-  s += diff < 0 ? -diff * 2.0 : diff * 1.3;
+  s += diff < 0 ? -diff * 2.0 : diff * 1.6;
+  if (wx.target <= 1.4 && c.layer && !(occ.key === 'formal' || occ.key === 'business_casual') ) { s += 1.5; notes.push('too hot for a layer'); }
+  if (wx.target <= 1.4 && c.layer && (occ.key === 'formal' || occ.key === 'business_casual') && !JACKET_SUBS.has(c.layer.subcategory)) { s += 1.5; notes.push('too hot for a layer'); }
   if (wx.target >= 3.3 && !c.outerwear && !c.layer) { s += 2.5; notes.push('no layer for the cold'); }
   if (wx.target >= 4.2 && !c.outerwear) { s += 2.0; notes.push('a coat is needed'); }
   if (wx.target <= 1.5 && c.outerwear && Number(c.outerwear.warmth) >= 3) { s += 2.0; notes.push('too heavy for the heat'); }
