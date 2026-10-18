@@ -224,6 +224,72 @@
       "brand": "Ten Thousand",
       "image": "/images/closet/ten-thousand-tactical-5-pocket-pant-gray.jpg",
       "url": "https://www.tenthousand.cc/products/tactical-5-pocket-pant"
+    },
+    {
+      "brand": "lululemon",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://shop.lululemon.com/p/pace-breaker-short-linerless-7-update/jd2tq0pqw6",
+      "name": "Silver Drop Pace Breaker Linerless Short 7\"",
+      "color": "silver drop",
+      "color_family": "gray",
+      "image": "/images/closet/lululemon-pace-breaker-7-silver-drop.jpg"
+    },
+    {
+      "brand": "lululemon",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://shop.lululemon.com/p/pace-breaker-short-linerless-7-update/jd2tq0pqw6",
+      "name": "Onyx Grey Pace Breaker Linerless Short 7\"",
+      "color": "onyx grey",
+      "color_family": "charcoal",
+      "image": "/images/closet/lululemon-pace-breaker-7-onyx-grey.jpg"
+    },
+    {
+      "brand": "lululemon",
+      "category": "bottom",
+      "subcategory": "athletic shorts",
+      "pattern": "solid",
+      "material": "",
+      "formality_min": 0,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://shop.lululemon.com/p/pace-breaker-short-linerless-7-update/jd2tq0pqw6",
+      "name": "Warm Ash Grey Pace Breaker Linerless Short 7\"",
+      "color": "warm ash grey",
+      "color_family": "tan",
+      "image": "/images/closet/lululemon-pace-breaker-7-warm-ash-grey.jpg"
     }
   ]
 }
