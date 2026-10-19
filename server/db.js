@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS events (
   title TEXT NOT NULL,
   occasion TEXT NOT NULL,            -- gym | casual | business_casual | formal
   lean TEXT DEFAULT 'standard',      -- relaxed | standard | elevated: nudge within the band
+  look TEXT DEFAULT '',              -- one of the style guide's eight looks, or ''
   notes TEXT DEFAULT '',
   created_at TEXT DEFAULT (datetime('now'))
 );
@@ -104,6 +105,7 @@ function migrate(db) {
   }
   const ecols = new Set(db.prepare('PRAGMA table_info(events)').all().map(c => c.name));
   if (!ecols.has('lean')) db.exec("ALTER TABLE events ADD COLUMN lean TEXT DEFAULT 'standard'");
+  if (!ecols.has('look')) db.exec("ALTER TABLE events ADD COLUMN look TEXT DEFAULT ''");
 }
 
 function parseItem(row) {

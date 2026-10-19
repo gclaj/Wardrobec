@@ -160,11 +160,11 @@ test('a flattering colour is never a reason to add a layer in the heat', () => {
 test('formal reaches one step down with a penalty, but suit trousers always win when present', () => {
   const { capsuleItems } = require('../server/seed');
   const capsule = capsuleItems().map((d, i) => ({ ...d, id: i + 1, status: 'clean' }));
-  const o = buildOutfit(capsule, 'formal', { weather: { feelsLike: 60 }, deterministic: true });
+  const o = buildOutfit(capsule, 'formal', { weather: { feelsLike: 60 }, deterministic: true, look: null });
   assert.ok(o.complete, 'capsule can dress formal via chinos');
   assert.equal(o.slots.bottom.subcategory, 'chinos');
   assert.notEqual(o.fit, 'excellent');
-  const full = buildOutfit(closet(), 'formal', { weather: { feelsLike: 60 }, deterministic: true });
+  const full = buildOutfit(closet(), 'formal', { weather: { feelsLike: 60 }, deterministic: true, look: null });
   assert.ok(full.slots.bottom.formality_min >= 4, full.slots.bottom.name);
   const empty = buildOutfit(capsule.filter(i => i.category !== 'shoes'), 'formal', { weather: { feelsLike: 60 } });
   assert.equal(empty.fit, 'incomplete');
@@ -195,9 +195,41 @@ test('no layer gets added in hot weather just because it is unworn or on-palette
 
 test('lean nudges within the band: elevated casual avoids sneakers, relaxed prefers them', () => {
   const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean', wear_count: 0 }));
-  const up = buildOutfit(items, 'casual', { weather: { feelsLike: 62 }, deterministic: true, lean: 'elevated' });
-  const down = buildOutfit(items, 'casual', { weather: { feelsLike: 62 }, deterministic: true, lean: 'relaxed' });
+  const up = buildOutfit(items, 'casual', { weather: { feelsLike: 62 }, deterministic: true, lean: 'elevated', look: null });
+  const down = buildOutfit(items, 'casual', { weather: { feelsLike: 62 }, deterministic: true, lean: 'relaxed', look: null });
   assert.ok(!/sneaker/i.test(up.slots.shoes.subcategory), up.slots.shoes.name);
   assert.ok(/sneaker/i.test(down.slots.shoes.subcategory), down.slots.shoes.name);
   assert.match(up.rationale[0], /elevated/);
+});
+
+test('style guide looks arrange the owner closet into the guide formulas', () => {
+  const { PRESETS } = require('../server/profile');
+  const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean', wear_count: 0 }));
+  const o = (occ, look, t = 62) => buildOutfit(items, occ, { weather: { feelsLike: t }, deterministic: true, profile: PRESETS.style_guide, look });
+  const pw = o('formal', 'polished_work');
+  assert.equal(pw.slots.layer.subcategory, 'blazer'); assert.match(pw.slots.top.subcategory, /button-down/); assert.equal(pw.slots.shoes.subcategory, 'loafers');
+  assert.equal(pw.look.key, 'polished_work'); assert.match(pw.rationale[0], /Blazer \+ dress shirt/);
+  const we = o('casual', 'weekend', 85);
+  assert.match(we.slots.bottom.subcategory, /shorts/); assert.match(we.slots.shoes.subcategory, /sneakers|training/);
+  const tr = o('casual', 'travel', 65);
+  assert.equal(tr.slots.bottom.subcategory, 'joggers');
+  const dn = o('casual', 'date_night', 58);
+  assert.match(dn.slots.shoes.subcategory, /boots|loafers/); assert.equal(dn.slots.bottom.subcategory, 'jeans');
+  const cf = o('business_casual', 'casual_friday', 70);
+  assert.ok(!cf.slots.layer, 'casual friday drops the layer');
+  // default look selection
+  assert.equal(buildOutfit(items, 'formal', { weather: { feelsLike: 60 }, deterministic: true }).look.key, 'polished_work');
+  assert.equal(buildOutfit(items, 'casual', { weather: { feelsLike: 88 }, deterministic: true }).look.key, 'weekend');
+  assert.equal(buildOutfit(items, 'casual', { weather: { feelsLike: 60 }, deterministic: true }).look.key, 'school_event');
+  assert.equal(buildOutfit(items, 'gym', { weather: { feelsLike: 60 }, deterministic: true }).look, null);
+  assert.equal(buildOutfit(items, 'casual', { weather: { feelsLike: 60 }, deterministic: true, look: null }).look, null, 'explicit null disables the look');
+});
+
+test('style rules: two accent colours cost more than one', () => {
+  const { styleRules } = require('../server/styleguide');
+  const mk = (category, color_family, subcategory = category) => ({ category, color_family, subcategory });
+  const one = { top: mk('top', 'burgundy'), bottom: mk('bottom', 'navy'), shoes: mk('shoes', 'brown') };
+  const two = { top: mk('top', 'burgundy'), bottom: mk('bottom', 'green'), shoes: mk('shoes', 'brown') };
+  assert.equal(styleRules(one, []), 0);
+  assert.ok(styleRules(two, []) >= 1);
 });

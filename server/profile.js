@@ -44,6 +44,21 @@ PRESETS.deep_autumn = {
     'lavender': -2.5, 'lilac': -2.5, 'fuchsia': -2.5, 'magenta': -2.5, 'hot pink': -2.5, 'bright white': -0.5,
   },
 };
+PRESETS.style_guide = {
+  key: 'style_guide', label: 'Personal Style Guide', season: 'Style guide palette', undertone: 'warm-neutral (provisional)', contrast: 'high',
+  notes: 'From the owner\'s personal style guide. Core neutrals: navy, olive, charcoal, stone, khaki, chocolate. Accents: rust, burgundy, deep teal, oatmeal, ivory, sage. Avoid icy pastels, neon brights, pure white head to toe, cool greys, very light blue, purple and pink.',
+  families: {
+    navy: 2, olive: 2, charcoal: 2, tan: 1.5, brown: 1.5, white: 1, black: 0.5, gray: -0.5,
+    burgundy: 2, green: 1.5, blue: 1.5, teal: 1.5, red: 1, orange: 1, yellow: 0.5, purple: -2.5, pink: -2.5, multi: -1, other: 0,
+  },
+  shades: {
+    'stone': 1.5, 'khaki': 1.5, 'cream': 1.5, 'ivory': 1.5, 'oatmeal': 1.5, 'chocolate': 1.5, 'espresso': 1.5,
+    'forest': 2, 'pine': 2, 'hunter': 2, 'rust': 2, 'terracotta': 2, 'burgundy': 2, 'wine': 2, 'oxblood': 2, 'deep blue': 2, 'deep teal': 2, 'sage': 1.5, 'mustard': 1.5, 'vintage red': 1.5, 'brick': 1.5,
+    'icy': -2.5, 'ice blue': -2.5, 'pastel': -2.5, 'neon': -2.5, 'very light blue': -2, 'powder blue': -2, 'baby blue': -2,
+    'cool grey': -2, 'cool gray': -2, 'silver': -1.5, 'light grey': -1, 'light gray': -1, 'heather grey': -0.5, 'heather gray': -0.5,
+    'lavender': -2.5, 'lilac': -2.5, 'fuchsia': -2.5, 'magenta': -2.5, 'hot pink': -2.5,
+  },
+};
 PRESETS.shared_ground = {
   key: 'shared_ground', label: 'Shared ground (Winter ∩ Autumn)', season: 'Shared ground', undertone: 'unresolved', contrast: 'high',
   notes: 'Only the colours both of your reports agree on are rewarded: navy, charcoal, olive, forest, burgundy, deep blue, espresso brown. Contested colours (white, khaki, camel, rust, mustard, icy blue, cool grey, plum) score neutral until you settle the undertone question.',

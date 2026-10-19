@@ -45,7 +45,7 @@
   const state = { settings: { units: 'F' }, meta: null, date: todayISO(), plan: null, attempts: {}, locks: {}, items: [], filters: {}, week: null };
 
   // ---------- router ----------
-  const views = { today: renderToday, closet: renderCloset, events: renderEvents, history: renderHistory, settings: renderSettings };
+  const views = { today: renderToday, looks: renderLooks, closet: renderCloset, events: renderEvents, history: renderHistory, settings: renderSettings };
   async function route() {
     const hash = (location.hash || '#today').slice(1).split('?')[0];
     const view = views[hash] ? hash : 'today';
@@ -119,13 +119,13 @@
   function outfitCard(o, key, opts = {}) {
     const ev = opts.event;
     const head = ev
-      ? `<div><h3>${esc(ev.title)}</h3><div class="small muted">${ev.time ? esc(ev.time) + ' · ' : ''}${esc(title(ev.occasion))}${ev.lean && ev.lean !== 'standard' ? ' · ' + esc(ev.lean) : ''}${opts.weatherAt ? ` · ${tempFmt(opts.weatherAt.feelsLike)} ${esc(opts.weatherAt.summary || '')}` : ''}</div></div>`
-      : `<h3>${esc(o.label || title(o.occasion))}</h3>`;
+      ? `<div><h3>${esc(ev.title)}</h3><div class="small muted">${ev.time ? esc(ev.time) + ' · ' : ''}${o.look ? esc(o.look.name) + ' · ' + esc(o.look.summary) : esc(title(ev.occasion)) + (ev.lean && ev.lean !== 'standard' ? ' · ' + esc(ev.lean) : '')}${opts.weatherAt ? ` · ${tempFmt(opts.weatherAt.feelsLike)} ${esc(opts.weatherAt.summary || '')}` : ''}</div></div>`
+      : `<div><h3>${esc(o.label || title(o.occasion))}</h3>${o.look ? `<div class="small muted">${esc(o.look.name)} · ${esc(o.look.summary)}</div>` : ''}</div>`;
     const slots = SLOT_ORDER.filter(s => o.slots && o.slots[s]).map(s => slotRow(s, o.slots[s], o.alternatives[s]));
     const emptyOptional = ['outerwear', 'layer'].filter(s => !(o.slots && o.slots[s]) && o.alternatives[s] && o.alternatives[s].length)
       .map(s => `<div class="slot slot-wrap" data-slot="${s}"><div class="swatch" style="background:var(--surface-2);color:var(--muted);text-shadow:none">+</div><div class="grow"><span class="muted small">No ${s}</span></div><button class="small ghost" data-alts="${s}">Add</button></div>`);
     return `
-      <div class="card outfit ${ev ? 'event-card' : ''}" data-outfit="${key}" data-occasion="${esc(o.occasion)}" ${ev ? `data-event="${ev.id}"` : ''}>
+      <div class="card outfit ${ev ? 'event-card' : ''}" data-outfit="${key}" data-occasion="${esc(o.occasion)}" ${ev ? `data-event="${ev.id}"` : ''} ${o.look ? `data-look="${esc(o.look.key)}"` : ''}>
         <div class="card-head">${head}<span class="chip ${fitClass(o.fit)}" title="score ${o.score}">${esc(o.fit)}</span></div>
         ${o.missing && o.missing.length ? `<p class="small" style="color:var(--bad)">Missing: ${o.missing.join(', ')}. Add pieces in the Closet.</p>` : ''}
         ${slots.join('')}${emptyOptional.join('')}
@@ -144,7 +144,7 @@
   }
 
   function wireOutfitCard(card) {
-    const key = card.dataset.outfit, occasion = card.dataset.occasion, eventId = card.dataset.event ? Number(card.dataset.event) : null;
+    const key = card.dataset.outfit, occasion = card.dataset.occasion, eventId = card.dataset.event ? Number(card.dataset.event) : null, lookKey = card.dataset.look || null;
     const getOutfit = () => eventId ? state.plan.events.find(e => e.event.id === eventId).outfit : state.plan.standard[key];
     const setOutfit = (o) => { if (eventId) state.plan.events.find(e => e.event.id === eventId).outfit = o; else state.plan.standard[key] = o; };
     const rerender = (o) => {
@@ -156,7 +156,7 @@
       const o = getOutfit();
       const ep = eventId ? state.plan.events.find(e => e.event.id === eventId) : null;
       const attempt = lock ? (state.attempts[key] || 0) : (state.attempts[key] = (state.attempts[key] || 0) + 1);
-      const body = { occasion, date: state.date, attempt, lock: lock || {}, salt: eventId ? 'event' + eventId : '', lean: ep ? ep.event.lean : 'standard' };
+      const body = { occasion, date: state.date, attempt, lock: lock || {}, salt: eventId ? 'event' + eventId : '', lean: ep ? ep.event.lean : undefined, look: ep ? (ep.event.look || null) : (lookKey || undefined) };
       if (ep && ep.event.time) body.time = ep.event.time;
       if (ep) body.exclude = state.plan.events.filter(x => x.event.id !== eventId).flatMap(x => x.outfit.items.map(i => i.id));
       if (!lock) state.locks[key] = {};
@@ -211,6 +211,34 @@
     $('#load-sample', app).addEventListener('click', async () => { await api('POST', '/api/seed'); toast('Sample closet loaded'); route(); });
     $('#load-mine', app).addEventListener('click', async () => { try { const r = await api('POST', '/api/seed', { set: 'mine' }); toast(`Loaded ${r.inserted} pieces`); route(); } catch (err) { toast(err.message, true); } });
     $('#load-capsule', app).addEventListener('click', async () => { await api('POST', '/api/seed', { set: 'capsule' }); toast('Capsule loaded'); route(); });
+  }
+
+  // ---------- LOOKS ----------
+  async function renderLooks(app) {
+    app.innerHTML = '<p class="muted">Arranging your closet into the eight looks…</p>';
+    const q = new URLSearchParams({ date: state.date });
+    for (const [k, v] of Object.entries(state.attempts)) q.set('attempt_' + k, v);
+    const [data, sg] = await Promise.all([api('GET', '/api/looks?' + q), state.styleguide || api('GET', '/api/styleguide')]);
+    state.styleguide = sg;
+    state.plan = { ...(state.plan || {}), weather: data.weather, standard: {}, events: [] };
+    for (const l of data.looks) state.plan.standard[l.look.key] = l.outfit;
+    app.innerHTML = `
+      <div class="row between" style="margin-bottom:6px"><div><h1>Your eight looks</h1><div class="muted">${fmtDate(state.date)} · ${data.weather ? tempFmt(data.weather.feelsLike) + ' ' + esc(data.weather.summary || '') : 'no weather'} · ${esc(sg.philosophy)}</div></div>
+        <div class="row"><input type="date" id="date-pick" value="${state.date}" style="width:auto"></div></div>
+      <p class="small muted" style="margin-bottom:14px">${esc(sg.direction)}</p>
+      <div class="grid cols-2">${data.looks.map(l => outfitCard({ ...l.outfit, label: l.look.name }, l.look.key)).join('')}</div>`;
+    $('#date-pick').addEventListener('change', e => { state.date = e.target.value; state.attempts = {}; renderLooks(app); });
+    app.querySelectorAll('[data-outfit]').forEach(card => wireOutfitCard(card));
+  }
+
+  function styleGuideCard(sg) {
+    return `<div class="card" style="grid-column:1 / -1"><h3>Your style guide: the stylist's base programming</h3>
+      <p class="small"><b>${esc(sg.philosophy)}</b></p><p class="small muted">${esc(sg.direction)}</p>
+      <div class="grid cols-3" style="gap:10px;margin:10px 0">${sg.principles.map(p => `<div class="card compact"><b class="small">${esc(p.title)}</b><div class="small muted">${esc(p.text)}</div></div>`).join('')}</div>
+      <div class="row" style="gap:18px;flex-wrap:wrap"><div><label>Core neutrals</label><div class="chips">${sg.palette.neutrals.map(c => `<span class="chip good">${esc(c)}</span>`).join('')}</div></div><div><label>Accents</label><div class="chips">${sg.palette.accents.map(c => `<span class="chip accent">${esc(c)}</span>`).join('')}</div></div><div><label>Avoid</label><div class="chips">${sg.palette.avoid.map(c => `<span class="chip bad">${esc(c)}</span>`).join('')}</div></div></div>
+      <h4 style="margin-top:14px">The eight looks</h4>
+      <table><thead><tr><th>Look</th><th>Formula</th><th>Band</th><th>Why it works</th></tr></thead><tbody>${sg.looks.map(l => `<tr><td><b>${esc(l.name)}</b></td><td>${esc(l.summary)}</td><td>${esc(title(l.occasion))}${l.lean !== 'standard' ? ', ' + esc(l.lean) : ''}</td><td class="muted">${esc(l.why)}</td></tr>`).join('')}</tbody></table>
+      <p class="small muted" style="margin-top:8px">Every daily option is built to the closest look; events can name one outright. The <a href="#looks">Looks</a> page arranges the closet into all eight for any date.</p></div>`;
   }
 
   // ---------- CLOSET ----------
@@ -464,12 +492,14 @@
           <div class="field"><label>Date</label><input type="date" name="date" required value="${state.date}"></div>
           <div class="field"><label>Time</label><input type="time" name="time"></div>
           <div class="field wide"><label>Title</label><input name="title" placeholder="Client dinner, 5k run, team off-site…"></div>
+          <div class="field wide"><label>Look from your style guide (sets dress code and lean)</label><select name="look" id="ev-look"><option value="">None, use dress code below</option>${(meta.looks || []).map(l => `<option value="${l.key}">${esc(l.name)}</option>`).join('')}</select></div>
           <div class="field"><label>Dress code</label><select name="occasion">${Object.values(meta.occasions).map(o => `<option value="${o.key}" ${o.key === 'business_casual' ? 'selected' : ''}>${o.label}</option>`).join('')}</select></div>
           <div class="field"><label>Lean</label><select name="lean"><option value="relaxed">Relaxed (tee, sneakers)</option><option value="standard" selected>Standard</option><option value="elevated">Elevated (henley, boots)</option></select></div>
           <div class="field wide"><label>Notes</label><input name="notes"></div>
         </div><div class="row" style="justify-content:flex-end"><button class="primary" type="submit">Add</button></div></form></div>
-        <div class="card"><h3>Upcoming</h3>${events.length ? Object.keys(byDate).sort().map(d => `<h4 style="margin-top:10px">${fmtDate(d, { weekday: 'short', month: 'short', day: 'numeric' })}</h4>${byDate[d].map(e => `<div class="row between" style="padding:6px 0;border-bottom:1px dashed var(--border)"><div><b>${esc(e.title)}</b> <span class="chip accent">${esc(meta.occasions[e.occasion]?.label || e.occasion)}</span>${e.lean && e.lean !== 'standard' ? `<span class="chip">${esc(e.lean)}</span>` : ''}<div class="small muted">${e.time ? esc(e.time) : 'all day'}${e.notes ? ' · ' + esc(e.notes) : ''}</div></div><div class="row" style="gap:6px"><a class="btn small" href="#today" data-plan="${e.date}">Plan</a><button class="small ghost danger" data-del="${e.id}">Remove</button></div></div>`).join('')}`).join('') : '<p class="muted">Nothing scheduled. Add gym sessions, work days and dinners here, or just use the four standard options each day.</p>'}</div>
+        <div class="card"><h3>Upcoming</h3>${events.length ? Object.keys(byDate).sort().map(d => `<h4 style="margin-top:10px">${fmtDate(d, { weekday: 'short', month: 'short', day: 'numeric' })}</h4>${byDate[d].map(e => `<div class="row between" style="padding:6px 0;border-bottom:1px dashed var(--border)"><div><b>${esc(e.title)}</b> <span class="chip accent">${esc((e.look && (meta.looks || []).find(l => l.key === e.look)?.name) || meta.occasions[e.occasion]?.label || e.occasion)}</span>${!e.look && e.lean && e.lean !== 'standard' ? `<span class="chip">${esc(e.lean)}</span>` : ''}<div class="small muted">${e.time ? esc(e.time) : 'all day'}${e.notes ? ' · ' + esc(e.notes) : ''}</div></div><div class="row" style="gap:6px"><a class="btn small" href="#today" data-plan="${e.date}">Plan</a><button class="small ghost danger" data-del="${e.id}">Remove</button></div></div>`).join('')}`).join('') : '<p class="muted">Nothing scheduled. Add gym sessions, work days and dinners here, or just use the four standard options each day.</p>'}</div>
       </div>`;
+    $('#ev-look').addEventListener('change', (e) => { const l = (meta.looks || []).find(x => x.key === e.target.value); if (l) { $('#ev-form').occasion.value = l.occasion; $('#ev-form').lean.value = l.lean; } });
     $('#ev-form').addEventListener('submit', async (e) => { e.preventDefault(); const body = Object.fromEntries(new FormData(e.target).entries()); try { await api('POST', '/api/events', body); toast('Event added'); renderEvents(app); } catch (err) { toast(err.message, true); } });
     app.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => { await api('DELETE', `/api/events/${b.dataset.del}`); renderEvents(app); }));
     app.querySelectorAll('[data-plan]').forEach(a => a.addEventListener('click', () => { state.date = a.dataset.plan; state.attempts = {}; state.locks = {}; }));
@@ -492,6 +522,7 @@
   async function renderSettings(app) {
     const s = state.settings = await api('GET', '/api/settings');
     const overrides = await api('GET', '/api/weather/overrides');
+    state.styleguide = state.styleguide || await api('GET', '/api/styleguide');
     app.innerHTML = `<h1>Settings</h1>
       <div class="grid cols-2">
         <div class="card"><h3>Location</h3><p class="muted small">Weather comes from Open-Meteo, free and keyless. Search a city or enter coordinates.</p>
@@ -509,6 +540,7 @@
           ${overrides.length ? `<div class="stack" style="margin-bottom:10px">${overrides.map(o => `<div class="row between small"><span>${esc(o.date)}: ${tempFmt(o.tempHigh)} / ${tempFmt(o.tempLow)}, rain ${o.precipProb}%</span><button class="small ghost" data-del-ov="${o.date}">Remove</button></div>`).join('')}</div>` : ''}
           <button id="add-ov">Enter weather for a date</button>
         </div>
+        ${styleGuideCard(state.styleguide)}
         <div class="card" id="profile-card" style="grid-column:1 / -1"><h3>Style profile</h3><p class="muted small">Your personal colour analysis. The engine rewards pieces in flattering colours, most strongly for anything near your face (tops, layers, ties), and penalises colours that wash you out or overpower you. Edit any rating; the Deep Winter preset comes from your colour report.</p>
           <div class="row" style="margin-bottom:10px"><select id="prof-preset" style="width:auto"></select><select id="prof-contrast" style="width:auto"><option value="any">Contrast: not set</option><option value="high">Contrast: high (dark base + crisp white)</option><option value="medium">Contrast: medium</option><option value="low">Contrast: low</option></select><button class="small ghost" id="prof-reset">Reset to preset</button></div>
           <div id="prof-body"></div>

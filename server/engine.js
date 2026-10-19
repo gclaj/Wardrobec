@@ -8,6 +8,7 @@
 
 const { NEUTRALS } = require('./classify');
 const { paletteRating, normalizeProfile, JEWEL, DARK, LIGHT } = require('./profile');
+const guide = require('./styleguide');
 
 // How much a piece's colour matters, by how close it sits to the face.
 const PALETTE_WEIGHT = { top: 0.9, dress: 0.9, layer: 0.8, outerwear: 0.6, accessory: 0.5, bottom: 0.3, shoes: 0.2 };
@@ -166,6 +167,7 @@ function scoreItem(item, slot, ctx) {
     if (item.status === 'dirty') s += 4;
   }
   s += itemWeatherPenalty(item, slot, ctx.wx);
+  if (ctx.occasion.look) s += guide.formulaPenalty(item, slot, ctx.occasion.look);
   if (slot === 'shoes' && ctx.occasion.lean === 'elevated' && SNEAKER_SUBS.test(item.subcategory || '')) s += 0.8;
   if (slot === 'shoes' && ctx.occasion.lean === 'relaxed' && DRESSY_SHOE_SUBS.test(item.subcategory || '') && !item.rain_ok) s += 0.5;
   if (item.favorite) s -= 0.7;
@@ -284,13 +286,15 @@ function scoreCombo(c, ctx, items) {
   if (occ.key === 'formal') {
     if (jacket) s -= 1.0; else { s += 1.5; notes.push('no jacket for a formal setting'); }
   } else if (occ.key === 'business_casual') {
-    if (jacket) s -= 0.5;
+    if (jacket && !(occ.look && occ.look.noLayer)) s -= 0.5;
   } else if (occ.key === 'casual' && jacket && center(jacket) >= 4) {
     s += 1.0; // suit jacket at a cookout
   }
   if (c.dress && occ.key === 'gym') s += 10;
   // Personal colour profile: contrast and the "look formula" (dark base + crisp white + jewel accent)
   if (ctx.profile) s += profileComboPenalty(c, ctx.profile, notes, ctx.pr, occ.key);
+  // Style-guide rules (one accent colour, simple layering)
+  if (occ.look || (ctx.profile && ctx.profile.key === 'style_guide')) s += guide.styleRules(c, notes);
   // Suits
   s += setPenalty(c, items, notes);
   // Color
@@ -357,6 +361,7 @@ function pickAccessories(items, chosen, ctx, lockedIds) {
   if (occ.key === 'formal' && chosen.layer && JACKET_SUBS.has(chosen.layer.subcategory)) take(bySub('pocket square'), 'finishing touch');
   if (occ.key === 'business_casual') take(bySub('bag').filter(b => center(b) >= 2), 'work bag');
   if (occ.key === 'gym') take(bySub('bag').filter(b => /gym/i.test(b.name)), 'gym bag');
+  if (occ.look && occ.look.formula.accessory && occ.look.formula.accessory.includes('bag') && !picks.some(p => p.subcategory === 'bag')) take(bySub('bag').filter(b => center(b) <= 2), 'sling or day bag');
   // Locked accessories the user insisted on
   if (lockedIds) for (const id of lockedIds) { const a = acc.find(x => x.id === id); if (a && !chosenIds.has(id)) picks.push({ ...a, _why: 'kept' }); }
   return picks.slice(0, 5);
@@ -365,7 +370,12 @@ function pickAccessories(items, chosen, ctx, lockedIds) {
 function rationale(ctx, best, chosen) {
   const wx = ctx.wx, occ = ctx.occasion, lines = [];
   const t = wx.temp != null ? `${Math.round(wx.temp)}°F` : 'unknown temperature';
-  lines.push(`${occ.label}${occ.lean && occ.lean !== 'standard' ? ' (' + LEANS[occ.lean].label.toLowerCase() + ')' : ''}: dress code band ${occ.band[0]}–${occ.band[1]} of 5.`);
+  if (occ.look) {
+    lines.push(`${occ.look.name}: ${occ.look.summary}.`);
+    lines.push(occ.look.why);
+  } else {
+    lines.push(`${occ.label}${occ.lean && occ.lean !== 'standard' ? ' (' + LEANS[occ.lean].label.toLowerCase() + ')' : ''}: dress code band ${occ.band[0]}–${occ.band[1]} of 5.`);
+  }
   const layerBits = [];
   if (chosen.outerwear) layerBits.push(chosen.outerwear.name);
   if (chosen.layer) layerBits.push(chosen.layer.name);
@@ -395,8 +405,11 @@ function buildOutfit(items, occasionKey, opts = {}) {
   if (!base) throw new Error('unknown occasion ' + occasionKey);
   // A lean nudges the ideal within the band: "date night" is casual but wants a henley and
   // boots, "errands" is casual but wants a tee and sneakers.
-  const lean = LEANS[opts.lean] ? opts.lean : 'standard';
-  const occ = { ...base, ideal: base.ideal + LEANS[lean].shift, lean };
+  const wxPre = weatherContext(opts.weather, occasionKey);
+  const lookKey = opts.look === undefined ? guide.defaultLook(occasionKey, wxPre.target) : opts.look;
+  const look = lookKey && guide.LOOKS[lookKey] && guide.LOOKS[lookKey].occasion === occasionKey ? guide.LOOKS[lookKey] : null;
+  const lean = LEANS[opts.lean] ? opts.lean : (look ? look.lean : 'standard');
+  const occ = { ...base, ideal: base.ideal + LEANS[lean].shift, lean, look };
   const wx = weatherContext(opts.weather, occasionKey);
   const seed = hashString(`${opts.date || ''}|${occasionKey}|${opts.attempt || 0}|${opts.seedSalt || ''}`);
   const ctx = {
@@ -463,6 +476,8 @@ function buildOutfit(items, occasionKey, opts = {}) {
   return {
     occasion: occasionKey,
     label: occ.label,
+    look: occ.look ? { key: occ.look.key, name: occ.look.name, summary: occ.look.summary } : null,
+    lean,
     complete: missing.length === 0,
     missing,
     slots,

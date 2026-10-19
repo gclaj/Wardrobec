@@ -122,7 +122,8 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   assert.equal(r.data.find(i => /camel/.test(i.name)).palette_label, 'avoid');
   r = await call('GET', '/api/plan?date=' + today);
   assert.equal(r.data.profile.label, 'Deep Winter');
-  await call('PUT', '/api/settings', { style_profile: null });
+  r = await call('PUT', '/api/settings', { style_profile: { key: 'style_guide' } });
+  assert.equal(r.data.style_profile.families.navy, 2, 'preset restored by key');
 
   // The owner's closet file loads with photos and is idempotent.
   r = await call('POST', '/api/seed', { set: 'mine' });
@@ -133,6 +134,21 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   assert.equal(r.data.length, 7);
   assert.ok(r.data.every(i => i.image.startsWith('/images/closet/')));
   r = await fetch(base + r.data[0].image); assert.equal(r.status, 200); assert.match(r.headers.get('content-type'), /image\/jpeg/);
+
+  // Style guide: default palette, looks endpoint, events by look.
+  r = await call('GET', '/api/settings');
+  assert.equal(r.data.style_profile.key, 'style_guide');
+  r = await call('GET', '/api/styleguide');
+  assert.equal(r.data.looks.length, 8);
+  r = await call('GET', '/api/looks?date=' + today);
+  assert.equal(r.data.looks.length, 8);
+  assert.ok(r.data.looks.every(l => l.outfit.look && l.outfit.look.key === l.look.key));
+  r = await call('POST', '/api/events', { date: today, time: '18:30', look: 'date_night' });
+  assert.equal(r.data.occasion, 'casual'); assert.equal(r.data.lean, 'elevated'); assert.equal(r.data.title, 'Date Night');
+  r = await call('GET', '/api/plan?date=' + today);
+  const dn = r.data.events.find(e => e.event.look === 'date_night');
+  assert.ok(dn && dn.outfit.look.key === 'date_night');
+  await call('DELETE', '/api/events/' + dn.event.id);
 
   // The capsule seed loads as a second set.
   r = await call('POST', '/api/seed', { set: 'capsule' });

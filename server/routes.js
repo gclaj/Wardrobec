@@ -8,6 +8,7 @@ const { getSetting, setSetting, allSettings } = require('./db');
 const { sampleItems, capsuleItems } = require('./seed');
 const { PRESETS, normalizeProfile, paletteRating, ratingLabel } = require('./profile');
 const links = require('./links');
+const guide = require('./styleguide');
 const fs = require('node:fs');
 const path = require('node:path');
 const CLOSET_FILE = process.env.MY_CLOSET || path.join(__dirname, '..', 'data', 'my-closet.json');
@@ -23,7 +24,8 @@ const isDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || '');
 
 function settingsOf(db) {
   const s = allSettings(db);
-  return { units: 'F', location_name: '', lat: null, lon: null, timezone: null, style_profile: null, ...s };
+  // The style guide's palette is the default until the owner chooses otherwise (an explicit null means none).
+  return { units: 'F', location_name: '', lat: null, lon: null, timezone: null, style_profile: PRESETS.style_guide, ...s };
 }
 
 async function weatherFor(db, date) {
@@ -51,7 +53,7 @@ async function plan(db, date, query = {}) {
     const at = wx && wx.hourly ? engine.hourlyAt(wx.hourly, ev.time) : null;
     const outfit = engine.buildOutfit(items, ev.occasion, {
       date, weather: at || wx, attempt: attempts['event' + ev.id] ?? 0, affinity: affinity[ev.occasion],
-      exclude: new Set(used), seedSalt: 'event' + ev.id, profile, lean: ev.lean,
+      exclude: new Set(used), seedSalt: 'event' + ev.id, profile, lean: ev.lean, look: ev.look || undefined,
     });
     for (const it of outfit.items) used.add(it.id);
     eventPlans.push({ event: ev, weatherAt: at, outfit });
@@ -114,7 +116,7 @@ const routes = [
     const outfit = engine.buildOutfit(store.listItems(db), body.occasion, {
       date, weather: w, attempt: Number(body.attempt || 0), affinity: store.affinityMap(db, body.occasion),
       exclude: new Set((body.exclude || []).map(Number)), lock: body.lock || {}, allowDirty: !!body.allowDirty,
-      seedSalt: body.salt || '', profile, lean: body.lean,
+      seedSalt: body.salt || '', profile, lean: body.lean, look: body.look === '' ? null : body.look,
     });
     return { ...outfit, weatherSource: source };
   }],
@@ -141,11 +143,13 @@ const routes = [
   ['GET', '/api/events', ({ db, query }) => store.listEvents(db, query)],
   ['POST', '/api/events', ({ db, body }) => {
     if (!isDate(body.date)) throw new HttpError(400, 'date must be YYYY-MM-DD');
-    if (!engine.OCCASIONS[body.occasion]) throw new HttpError(400, 'unknown occasion');
-    const title = String(body.title || '').trim() || engine.OCCASIONS[body.occasion].label;
-    const lean = engine.LEANS[body.lean] ? body.lean : 'standard';
-    const res = db.prepare('INSERT INTO events(date, time, title, occasion, lean, notes) VALUES (?, ?, ?, ?, ?, ?)')
-      .run(body.date, String(body.time || '').slice(0, 5), title, body.occasion, lean, String(body.notes || ''));
+    if (!engine.OCCASIONS[body.occasion] && !guide.LOOKS[body.look]) throw new HttpError(400, 'unknown occasion');
+    const title = String(body.title || '').trim() || (guide.LOOKS[body.look] ? guide.LOOKS[body.look].name : engine.OCCASIONS[body.occasion] ? engine.OCCASIONS[body.occasion].label : '');
+    const look = guide.LOOKS[body.look] ? body.look : '';
+    const occasion = look ? guide.LOOKS[look].occasion : body.occasion;
+    const lean = look ? guide.LOOKS[look].lean : (engine.LEANS[body.lean] ? body.lean : 'standard');
+    const res = db.prepare('INSERT INTO events(date, time, title, occasion, lean, look, notes) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .run(body.date, String(body.time || '').slice(0, 5), title, occasion, lean, look, String(body.notes || ''));
     return db.prepare('SELECT * FROM events WHERE id = ?').get(Number(res.lastInsertRowid));
   }],
   ['PUT', '/api/events/:id', ({ db, params, body }) => {
@@ -153,8 +157,8 @@ const routes = [
     if (!ev) throw new HttpError(404, 'not found');
     const next = { ...ev, ...body };
     if (!isDate(next.date) || !engine.OCCASIONS[next.occasion]) throw new HttpError(400, 'bad event');
-    db.prepare('UPDATE events SET date = ?, time = ?, title = ?, occasion = ?, lean = ?, notes = ? WHERE id = ?')
-      .run(next.date, String(next.time || '').slice(0, 5), String(next.title || '').trim(), next.occasion, engine.LEANS[next.lean] ? next.lean : 'standard', String(next.notes || ''), params.id);
+    db.prepare('UPDATE events SET date = ?, time = ?, title = ?, occasion = ?, lean = ?, look = ?, notes = ? WHERE id = ?')
+      .run(next.date, String(next.time || '').slice(0, 5), String(next.title || '').trim(), next.occasion, engine.LEANS[next.lean] ? next.lean : 'standard', guide.LOOKS[next.look] ? next.look : '', String(next.notes || ''), params.id);
     return db.prepare('SELECT * FROM events WHERE id = ?').get(params.id);
   }],
   ['DELETE', '/api/events/:id', ({ db, params }) => ({ deleted: db.prepare('DELETE FROM events WHERE id = ?').run(params.id).changes > 0 })],
@@ -193,6 +197,7 @@ const routes = [
       if (k === 'units') v = v === 'C' ? 'C' : 'F';
       if (k === 'style_profile') {
         if (!v || typeof v !== 'object' || !v.key || v.key === 'none') v = null;
+        else if (PRESETS[v.key] && !v.families && !v.shades) v = PRESETS[v.key]; // a preset chosen by key alone
         else {
           const fam = {}; for (const [f, r] of Object.entries(v.families || {})) fam[f] = Math.max(-3, Math.min(3, Number(r) || 0));
           const sh = {}; for (const [f, r] of Object.entries(v.shades || {})) if (f.trim()) sh[f.trim().toLowerCase()] = Math.max(-3, Math.min(3, Number(r) || 0));
@@ -237,7 +242,19 @@ const routes = [
     for (const t of ['item_affinity', 'wear_log', 'outfit_feedback', 'events', 'items']) db.prepare(`DELETE FROM ${t}`).run();
     return { ok: true };
   }],
-  ['GET', '/api/meta', () => ({ occasions: engine.OCCASIONS, leans: engine.LEANS, categories: store.CATEGORIES, statuses: store.STATUSES, hasClosetFile: fs.existsSync(CLOSET_FILE) })],
+  ['GET', '/api/styleguide', () => ({ philosophy: guide.PHILOSOPHY, direction: guide.DIRECTION, principles: guide.PRINCIPLES, palette: guide.PALETTE, looks: Object.values(guide.LOOKS).map(l => ({ key: l.key, name: l.name, occasion: l.occasion, lean: l.lean, summary: l.summary, why: l.why })) })],
+  ['GET', '/api/looks', async ({ db, query }) => {
+    const date = isDate(query.date) ? query.date : todayISO();
+    const { weather: wx, source, profile } = await weatherFor(db, date);
+    const items = store.listItems(db);
+    const looks = Object.values(guide.LOOKS).map(l => ({
+      look: { key: l.key, name: l.name, summary: l.summary, why: l.why, occasion: l.occasion, lean: l.lean },
+      outfit: engine.buildOutfit(items, l.occasion, { date, weather: wx, look: l.key, attempt: Number(query['attempt_' + l.key] || query.attempt || 0), affinity: store.affinityMap(db, l.occasion), profile }),
+    }));
+    const { hourly, ...wxSummary } = wx || {};
+    return { date, weather: wx ? wxSummary : null, weatherSource: source, looks };
+  }],
+  ['GET', '/api/meta', () => ({ occasions: engine.OCCASIONS, leans: engine.LEANS, looks: Object.values(guide.LOOKS).map(l => ({ key: l.key, name: l.name, occasion: l.occasion, lean: l.lean })), categories: store.CATEGORIES, statuses: store.STATUSES, hasClosetFile: fs.existsSync(CLOSET_FILE) })],
 ];
 
 function compile() {
