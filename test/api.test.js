@@ -126,9 +126,9 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
 
   // The owner's closet file loads with photos and is idempotent.
   r = await call('POST', '/api/seed', { set: 'mine' });
-  assert.equal(r.data.inserted, 58);
+  assert.equal(r.data.inserted, 63);
   r = await call('POST', '/api/seed', { set: 'mine' });
-  assert.equal(r.data.inserted, 0); assert.equal(r.data.skipped, 58);
+  assert.equal(r.data.inserted, 0); assert.equal(r.data.skipped, 63);
   r = await call('GET', '/api/items?q=ten thousand');
   assert.equal(r.data.length, 7);
   assert.ok(r.data.every(i => i.image.startsWith('/images/closet/')));
