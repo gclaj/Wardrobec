@@ -45,7 +45,7 @@ PRESETS.deep_autumn = {
   },
 };
 PRESETS.style_guide = {
-  key: 'style_guide', label: 'Personal Style Guide', season: 'Style guide palette', undertone: 'warm-neutral (provisional)', contrast: 'high',
+  key: 'style_guide', label: 'Personal Style Guide', season: 'Style guide', undertone: 'warm-neutral (provisional)', contrast: 'high',
   notes: 'From the owner\'s personal style guide. Core neutrals: navy, olive, charcoal, stone, khaki, chocolate. Accents: rust, burgundy, deep teal, oatmeal, ivory, sage. Avoid icy pastels, neon brights, pure white head to toe, cool greys, very light blue, purple and pink.',
   families: {
     navy: 2, olive: 2, charcoal: 2, tan: 1.5, brown: 1.5, white: 1, black: 0.5, gray: -0.5,
