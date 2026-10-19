@@ -1304,6 +1304,29 @@
       ],
       "wears_before_wash": 15,
       "image": "/images/closet/free-country-lanier-softshell-black.jpg"
+    },
+    {
+      "brand": "NOBULL",
+      "name": "Army Green Outwork Trainer",
+      "category": "shoes",
+      "subcategory": "training shoes",
+      "color": "army green",
+      "color_family": "olive",
+      "pattern": "solid",
+      "material": "knit",
+      "formality_min": 0,
+      "formality_max": 0,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "gym"
+      ],
+      "seasons": [],
+      "wears_before_wash": 999,
+      "image": "/images/closet/nobull-outwork-army-green.jpg",
+      "url": "https://www.nobullproject.com/products/outwork",
+      "notes": "Flat, stable sole for lifting."
     }
   ]
 }
