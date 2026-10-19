@@ -19,6 +19,9 @@ const OCCASIONS = {
   formal:          { key: 'formal',          label: 'Formal',          band: [4, 5], ideal: 4.5, tolerance: 1 },
 };
 const OCCASION_KEYS = Object.keys(OCCASIONS);
+const LEANS = { relaxed: { shift: -0.5, label: 'Relaxed' }, standard: { shift: 0, label: 'Standard' }, elevated: { shift: 0.5, label: 'Elevated' } };
+const SNEAKER_SUBS = /sneaker|trainer|training shoe|running/i;
+const DRESSY_SHOE_SUBS = /loafer|chukka|chelsea|dress shoe|derby|oxford|boot/i;
 
 const JACKET_SUBS = new Set(['blazer', 'suit jacket', 'tuxedo jacket', 'sport coat']);
 const CLASHES = [
@@ -163,6 +166,8 @@ function scoreItem(item, slot, ctx) {
     if (item.status === 'dirty') s += 4;
   }
   s += itemWeatherPenalty(item, slot, ctx.wx);
+  if (slot === 'shoes' && ctx.occasion.lean === 'elevated' && SNEAKER_SUBS.test(item.subcategory || '')) s += 0.8;
+  if (slot === 'shoes' && ctx.occasion.lean === 'relaxed' && DRESSY_SHOE_SUBS.test(item.subcategory || '') && !item.rain_ok) s += 0.5;
   if (item.favorite) s -= 0.7;
   if (ctx.profile) s -= ctx.pr(item) * (PALETTE_WEIGHT[slot] || 0.3);
   const aff = ctx.affinity ? (ctx.affinity.get(item.id) || 0) : 0;
@@ -360,7 +365,7 @@ function pickAccessories(items, chosen, ctx, lockedIds) {
 function rationale(ctx, best, chosen) {
   const wx = ctx.wx, occ = ctx.occasion, lines = [];
   const t = wx.temp != null ? `${Math.round(wx.temp)}°F` : 'unknown temperature';
-  lines.push(`${occ.label}: dress code band ${occ.band[0]}–${occ.band[1]} of 5.`);
+  lines.push(`${occ.label}${occ.lean && occ.lean !== 'standard' ? ' (' + LEANS[occ.lean].label.toLowerCase() + ')' : ''}: dress code band ${occ.band[0]}–${occ.band[1]} of 5.`);
   const layerBits = [];
   if (chosen.outerwear) layerBits.push(chosen.outerwear.name);
   if (chosen.layer) layerBits.push(chosen.layer.name);
@@ -386,8 +391,12 @@ function rationale(ctx, best, chosen) {
  * opts: { date, weather, attempt, exclude:Set<id>, lock:{slot:id}, affinity:Map, allowDirty, ignoreStatus, seedSalt }
  */
 function buildOutfit(items, occasionKey, opts = {}) {
-  const occ = OCCASIONS[occasionKey];
-  if (!occ) throw new Error('unknown occasion ' + occasionKey);
+  const base = OCCASIONS[occasionKey];
+  if (!base) throw new Error('unknown occasion ' + occasionKey);
+  // A lean nudges the ideal within the band: "date night" is casual but wants a henley and
+  // boots, "errands" is casual but wants a tee and sneakers.
+  const lean = LEANS[opts.lean] ? opts.lean : 'standard';
+  const occ = { ...base, ideal: base.ideal + LEANS[lean].shift, lean };
   const wx = weatherContext(opts.weather, occasionKey);
   const seed = hashString(`${opts.date || ''}|${occasionKey}|${opts.attempt || 0}|${opts.seedSalt || ''}`);
   const ctx = {
@@ -541,6 +550,6 @@ function coverageReport(items, profile) {
 }
 
 module.exports = {
-  OCCASIONS, OCCASION_KEYS, targetWarmth, weatherContext, scoreItem, scoreCombo, buildOutfit, planDay,
+  OCCASIONS, OCCASION_KEYS, LEANS, targetWarmth, weatherContext, scoreItem, scoreCombo, buildOutfit, planDay,
   coverageReport, formalityPenalty, freshnessPenalty, outfitWarmth, hashString, mulberry32, hourlyAt, paletteRating,
 };

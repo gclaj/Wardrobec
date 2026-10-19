@@ -192,3 +192,12 @@ test('no layer gets added in hot weather just because it is unworn or on-palette
     assert.ok(!o.slots.layer, `${occ}: ${o.items.map(i => i.name).join(', ')}`);
   }
 });
+
+test('lean nudges within the band: elevated casual avoids sneakers, relaxed prefers them', () => {
+  const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean', wear_count: 0 }));
+  const up = buildOutfit(items, 'casual', { weather: { feelsLike: 62 }, deterministic: true, lean: 'elevated' });
+  const down = buildOutfit(items, 'casual', { weather: { feelsLike: 62 }, deterministic: true, lean: 'relaxed' });
+  assert.ok(!/sneaker/i.test(up.slots.shoes.subcategory), up.slots.shoes.name);
+  assert.ok(/sneaker/i.test(down.slots.shoes.subcategory), down.slots.shoes.name);
+  assert.match(up.rationale[0], /elevated/);
+});

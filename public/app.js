@@ -119,7 +119,7 @@
   function outfitCard(o, key, opts = {}) {
     const ev = opts.event;
     const head = ev
-      ? `<div><h3>${esc(ev.title)}</h3><div class="small muted">${ev.time ? esc(ev.time) + ' · ' : ''}${esc(title(ev.occasion))}${opts.weatherAt ? ` · ${tempFmt(opts.weatherAt.feelsLike)} ${esc(opts.weatherAt.summary || '')}` : ''}</div></div>`
+      ? `<div><h3>${esc(ev.title)}</h3><div class="small muted">${ev.time ? esc(ev.time) + ' · ' : ''}${esc(title(ev.occasion))}${ev.lean && ev.lean !== 'standard' ? ' · ' + esc(ev.lean) : ''}${opts.weatherAt ? ` · ${tempFmt(opts.weatherAt.feelsLike)} ${esc(opts.weatherAt.summary || '')}` : ''}</div></div>`
       : `<h3>${esc(o.label || title(o.occasion))}</h3>`;
     const slots = SLOT_ORDER.filter(s => o.slots && o.slots[s]).map(s => slotRow(s, o.slots[s], o.alternatives[s]));
     const emptyOptional = ['outerwear', 'layer'].filter(s => !(o.slots && o.slots[s]) && o.alternatives[s] && o.alternatives[s].length)
@@ -156,7 +156,7 @@
       const o = getOutfit();
       const ep = eventId ? state.plan.events.find(e => e.event.id === eventId) : null;
       const attempt = lock ? (state.attempts[key] || 0) : (state.attempts[key] = (state.attempts[key] || 0) + 1);
-      const body = { occasion, date: state.date, attempt, lock: lock || {}, salt: eventId ? 'event' + eventId : '' };
+      const body = { occasion, date: state.date, attempt, lock: lock || {}, salt: eventId ? 'event' + eventId : '', lean: ep ? ep.event.lean : 'standard' };
       if (ep && ep.event.time) body.time = ep.event.time;
       if (ep) body.exclude = state.plan.events.filter(x => x.event.id !== eventId).flatMap(x => x.outfit.items.map(i => i.id));
       if (!lock) state.locks[key] = {};
@@ -465,9 +465,10 @@
           <div class="field"><label>Time</label><input type="time" name="time"></div>
           <div class="field wide"><label>Title</label><input name="title" placeholder="Client dinner, 5k run, team off-site…"></div>
           <div class="field"><label>Dress code</label><select name="occasion">${Object.values(meta.occasions).map(o => `<option value="${o.key}" ${o.key === 'business_casual' ? 'selected' : ''}>${o.label}</option>`).join('')}</select></div>
-          <div class="field"><label>Notes</label><input name="notes"></div>
+          <div class="field"><label>Lean</label><select name="lean"><option value="relaxed">Relaxed (tee, sneakers)</option><option value="standard" selected>Standard</option><option value="elevated">Elevated (henley, boots)</option></select></div>
+          <div class="field wide"><label>Notes</label><input name="notes"></div>
         </div><div class="row" style="justify-content:flex-end"><button class="primary" type="submit">Add</button></div></form></div>
-        <div class="card"><h3>Upcoming</h3>${events.length ? Object.keys(byDate).sort().map(d => `<h4 style="margin-top:10px">${fmtDate(d, { weekday: 'short', month: 'short', day: 'numeric' })}</h4>${byDate[d].map(e => `<div class="row between" style="padding:6px 0;border-bottom:1px dashed var(--border)"><div><b>${esc(e.title)}</b> <span class="chip accent">${esc(meta.occasions[e.occasion]?.label || e.occasion)}</span><div class="small muted">${e.time ? esc(e.time) : 'all day'}${e.notes ? ' · ' + esc(e.notes) : ''}</div></div><div class="row" style="gap:6px"><a class="btn small" href="#today" data-plan="${e.date}">Plan</a><button class="small ghost danger" data-del="${e.id}">Remove</button></div></div>`).join('')}`).join('') : '<p class="muted">Nothing scheduled. Add gym sessions, work days and dinners here, or just use the four standard options each day.</p>'}</div>
+        <div class="card"><h3>Upcoming</h3>${events.length ? Object.keys(byDate).sort().map(d => `<h4 style="margin-top:10px">${fmtDate(d, { weekday: 'short', month: 'short', day: 'numeric' })}</h4>${byDate[d].map(e => `<div class="row between" style="padding:6px 0;border-bottom:1px dashed var(--border)"><div><b>${esc(e.title)}</b> <span class="chip accent">${esc(meta.occasions[e.occasion]?.label || e.occasion)}</span>${e.lean && e.lean !== 'standard' ? `<span class="chip">${esc(e.lean)}</span>` : ''}<div class="small muted">${e.time ? esc(e.time) : 'all day'}${e.notes ? ' · ' + esc(e.notes) : ''}</div></div><div class="row" style="gap:6px"><a class="btn small" href="#today" data-plan="${e.date}">Plan</a><button class="small ghost danger" data-del="${e.id}">Remove</button></div></div>`).join('')}`).join('') : '<p class="muted">Nothing scheduled. Add gym sessions, work days and dinners here, or just use the four standard options each day.</p>'}</div>
       </div>`;
     $('#ev-form').addEventListener('submit', async (e) => { e.preventDefault(); const body = Object.fromEntries(new FormData(e.target).entries()); try { await api('POST', '/api/events', body); toast('Event added'); renderEvents(app); } catch (err) { toast(err.message, true); } });
     app.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => { await api('DELETE', `/api/events/${b.dataset.del}`); renderEvents(app); }));

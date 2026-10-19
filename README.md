@@ -43,6 +43,8 @@ First run: open **Settings** and search your city so the forecast can load. Then
 
 Three presets ship: **Deep Winter** and **Deep Autumn**, each built from one of the owner's colour reports, and **Shared ground**, which rewards only the colours both reports agree on (navy, charcoal, olive, forest, burgundy, deep blue, espresso) and leaves contested colours neutral.
 
+Events can also carry a **lean**: relaxed pulls toward tees and sneakers, elevated toward henleys and boots, within the same dress-code band. Date night and weekend errands are both casual; the lean is what separates them.
+
 **Calendar events** get their own outfit using the hourly forecast at the event time, and outfits for events on the same day never share pieces, because you will actually wear all of them.
 
 **Wear this** logs the outfit, bumps wear counts, and marks pieces dirty once they hit their wash threshold. Dirty items drop out of suggestions until **Laundry done**.

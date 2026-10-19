@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS events (
   time TEXT DEFAULT '',              -- HH:MM (24h) or ''
   title TEXT NOT NULL,
   occasion TEXT NOT NULL,            -- gym | casual | business_casual | formal
+  lean TEXT DEFAULT 'standard',      -- relaxed | standard | elevated: nudge within the band
   notes TEXT DEFAULT '',
   created_at TEXT DEFAULT (datetime('now'))
 );
@@ -101,6 +102,8 @@ function migrate(db) {
   for (const [name, ddl] of [['brand', "TEXT DEFAULT ''"], ['url', "TEXT DEFAULT ''"]]) {
     if (!cols.has(name)) db.exec(`ALTER TABLE items ADD COLUMN ${name} ${ddl}`);
   }
+  const ecols = new Set(db.prepare('PRAGMA table_info(events)').all().map(c => c.name));
+  if (!ecols.has('lean')) db.exec("ALTER TABLE events ADD COLUMN lean TEXT DEFAULT 'standard'");
 }
 
 function parseItem(row) {

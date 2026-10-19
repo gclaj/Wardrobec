@@ -51,7 +51,7 @@ async function plan(db, date, query = {}) {
     const at = wx && wx.hourly ? engine.hourlyAt(wx.hourly, ev.time) : null;
     const outfit = engine.buildOutfit(items, ev.occasion, {
       date, weather: at || wx, attempt: attempts['event' + ev.id] ?? 0, affinity: affinity[ev.occasion],
-      exclude: new Set(used), seedSalt: 'event' + ev.id, profile,
+      exclude: new Set(used), seedSalt: 'event' + ev.id, profile, lean: ev.lean,
     });
     for (const it of outfit.items) used.add(it.id);
     eventPlans.push({ event: ev, weatherAt: at, outfit });
@@ -114,7 +114,7 @@ const routes = [
     const outfit = engine.buildOutfit(store.listItems(db), body.occasion, {
       date, weather: w, attempt: Number(body.attempt || 0), affinity: store.affinityMap(db, body.occasion),
       exclude: new Set((body.exclude || []).map(Number)), lock: body.lock || {}, allowDirty: !!body.allowDirty,
-      seedSalt: body.salt || '', profile,
+      seedSalt: body.salt || '', profile, lean: body.lean,
     });
     return { ...outfit, weatherSource: source };
   }],
@@ -143,8 +143,9 @@ const routes = [
     if (!isDate(body.date)) throw new HttpError(400, 'date must be YYYY-MM-DD');
     if (!engine.OCCASIONS[body.occasion]) throw new HttpError(400, 'unknown occasion');
     const title = String(body.title || '').trim() || engine.OCCASIONS[body.occasion].label;
-    const res = db.prepare('INSERT INTO events(date, time, title, occasion, notes) VALUES (?, ?, ?, ?, ?)')
-      .run(body.date, String(body.time || '').slice(0, 5), title, body.occasion, String(body.notes || ''));
+    const lean = engine.LEANS[body.lean] ? body.lean : 'standard';
+    const res = db.prepare('INSERT INTO events(date, time, title, occasion, lean, notes) VALUES (?, ?, ?, ?, ?, ?)')
+      .run(body.date, String(body.time || '').slice(0, 5), title, body.occasion, lean, String(body.notes || ''));
     return db.prepare('SELECT * FROM events WHERE id = ?').get(Number(res.lastInsertRowid));
   }],
   ['PUT', '/api/events/:id', ({ db, params, body }) => {
@@ -152,8 +153,8 @@ const routes = [
     if (!ev) throw new HttpError(404, 'not found');
     const next = { ...ev, ...body };
     if (!isDate(next.date) || !engine.OCCASIONS[next.occasion]) throw new HttpError(400, 'bad event');
-    db.prepare('UPDATE events SET date = ?, time = ?, title = ?, occasion = ?, notes = ? WHERE id = ?')
-      .run(next.date, String(next.time || '').slice(0, 5), String(next.title || '').trim(), next.occasion, String(next.notes || ''), params.id);
+    db.prepare('UPDATE events SET date = ?, time = ?, title = ?, occasion = ?, lean = ?, notes = ? WHERE id = ?')
+      .run(next.date, String(next.time || '').slice(0, 5), String(next.title || '').trim(), next.occasion, engine.LEANS[next.lean] ? next.lean : 'standard', String(next.notes || ''), params.id);
     return db.prepare('SELECT * FROM events WHERE id = ?').get(params.id);
   }],
   ['DELETE', '/api/events/:id', ({ db, params }) => ({ deleted: db.prepare('DELETE FROM events WHERE id = ?').run(params.id).changes > 0 })],
@@ -236,7 +237,7 @@ const routes = [
     for (const t of ['item_affinity', 'wear_log', 'outfit_feedback', 'events', 'items']) db.prepare(`DELETE FROM ${t}`).run();
     return { ok: true };
   }],
-  ['GET', '/api/meta', () => ({ occasions: engine.OCCASIONS, categories: store.CATEGORIES, statuses: store.STATUSES, hasClosetFile: fs.existsSync(CLOSET_FILE) })],
+  ['GET', '/api/meta', () => ({ occasions: engine.OCCASIONS, leans: engine.LEANS, categories: store.CATEGORIES, statuses: store.STATUSES, hasClosetFile: fs.existsSync(CLOSET_FILE) })],
 ];
 
 function compile() {

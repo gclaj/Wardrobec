@@ -62,12 +62,13 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   // Add two events the same day: outfits must not share pieces.
   const today = r.data.date;
   await call('POST', '/api/events', { date: today, time: '06:30', title: 'Lift', occasion: 'gym' });
-  await call('POST', '/api/events', { date: today, time: '19:00', title: 'Dinner', occasion: 'formal' });
+  await call('POST', '/api/events', { date: today, time: '19:00', title: 'Dinner', occasion: 'formal', lean: 'elevated' });
   r = await call('GET', '/api/plan?date=' + today);
   assert.equal(r.data.events.length, 2);
   const ids1 = new Set(r.data.events[0].outfit.items.map(i => i.id));
   for (const it of r.data.events[1].outfit.items) assert.ok(!ids1.has(it.id), 'no shared pieces across events');
   assert.ok(r.data.events[1].weatherAt && r.data.events[1].weatherAt.hour === 19, 'hourly weather used for the event');
+  assert.equal(r.data.events[1].event.lean, 'elevated');
 
   // Wear the casual outfit: tops become dirty, shoes do not.
   const casual = r.data.standard.casual;
