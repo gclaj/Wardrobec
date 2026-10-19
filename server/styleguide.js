@@ -78,7 +78,7 @@ const LOOKS = {
     key: 'dinner', name: 'Dinner / Drinks', occasion: 'casual', lean: 'elevated',
     summary: 'Jacket + t-shirt or henley + jeans + boots',
     why: 'One structured piece on top makes an easy evening look.',
-    formula: { outerwear: ['field jacket', 'overshirt', 'softshell', 'bomber', 'denim jacket', 'leather jacket', 'jacket'], layer: ['quarter-zip', 'sweater'], top: ['t-shirt', 'henley', 'long-sleeve tee'], bottom: ['jeans', 'five-pocket pants'], shoes: ['chukka boots', 'chelsea boots', 'boots', 'mid-top boots', 'loafers'] },
+    formula: { outerwear: ['field jacket', 'overshirt', 'softshell', 'bomber', 'denim jacket', 'leather jacket', 'chore coat', 'harrington'], layer: ['quarter-zip', 'sweater'], top: ['t-shirt', 'henley', 'long-sleeve tee'], bottom: ['jeans', 'five-pocket pants'], shoes: ['chukka boots', 'chelsea boots', 'boots', 'mid-top boots', 'loafers'] },
   },
 };
 const LOOK_KEYS = Object.keys(LOOKS);
