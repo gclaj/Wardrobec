@@ -1452,6 +1452,104 @@
       "name": "Black Leather Loafers",
       "color": "black",
       "color_family": "black"
+    },
+    {
+      "category": "accessory",
+      "pattern": "solid",
+      "seasons": [],
+      "rain_ok": false,
+      "wind_ok": false,
+      "wears_before_wash": 999,
+      "image": "",
+      "url": "",
+      "brand": "Apple",
+      "name": "Apple Watch",
+      "subcategory": "sports watch",
+      "color": "black",
+      "color_family": "black",
+      "material": "aluminium",
+      "formality_min": 0,
+      "formality_max": 2,
+      "warmth": 1,
+      "occasions": [
+        "gym",
+        "casual"
+      ],
+      "notes": "No photo yet. Training and everyday."
+    },
+    {
+      "category": "accessory",
+      "pattern": "solid",
+      "seasons": [],
+      "rain_ok": false,
+      "wind_ok": false,
+      "wears_before_wash": 999,
+      "image": "",
+      "url": "",
+      "brand": "Timex",
+      "name": "Timex Dive Watch",
+      "subcategory": "watch",
+      "color": "black",
+      "color_family": "black",
+      "material": "steel",
+      "formality_min": 1,
+      "formality_max": 3,
+      "warmth": 1,
+      "occasions": [
+        "casual",
+        "business_casual"
+      ],
+      "notes": "No photo yet. Casual through business casual."
+    },
+    {
+      "category": "accessory",
+      "pattern": "solid",
+      "seasons": [],
+      "rain_ok": false,
+      "wind_ok": false,
+      "wears_before_wash": 999,
+      "image": "",
+      "url": "",
+      "brand": "Vaer",
+      "name": "Vaer White Ceramic GMT on Silver Bezel",
+      "subcategory": "watch",
+      "color": "white and silver",
+      "color_family": "white",
+      "material": "steel and ceramic",
+      "formality_min": 2,
+      "formality_max": 5,
+      "warmth": 1,
+      "occasions": [
+        "business_casual",
+        "formal"
+      ],
+      "notes": "No photo yet. The dress watch."
+    },
+    {
+      "category": "accessory",
+      "pattern": "solid",
+      "seasons": [],
+      "rain_ok": false,
+      "wind_ok": false,
+      "wears_before_wash": 999,
+      "image": "",
+      "url": "",
+      "brand": "Roka",
+      "name": "Roka Barton Sunglasses",
+      "subcategory": "sunglasses",
+      "color": "black",
+      "color_family": "black",
+      "material": "",
+      "formality_min": 0,
+      "formality_max": 4,
+      "warmth": 1,
+      "occasions": [
+        "gym",
+        "casual",
+        "business_casual",
+        "formal"
+      ],
+      "notes": "No photo yet. Wayfarer shape."
     }
   ]
 }
