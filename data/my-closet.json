@@ -231,13 +231,13 @@
       "subcategory": "athletic shorts",
       "pattern": "solid",
       "material": "",
-      "formality_min": 0,
-      "formality_max": 1,
+      "formality_min": 1,
+      "formality_max": 2,
       "warmth": 1,
       "rain_ok": false,
       "wind_ok": false,
       "occasions": [
-        "gym"
+        "casual"
       ],
       "seasons": [],
       "wears_before_wash": 1,
@@ -245,7 +245,8 @@
       "name": "Silver Drop Pace Breaker Linerless Short 7\"",
       "color": "silver drop",
       "color_family": "gray",
-      "image": "/images/closet/lululemon-pace-breaker-7-silver-drop.jpg"
+      "image": "/images/closet/lululemon-pace-breaker-7-silver-drop.jpg",
+      "notes": "Owner label: casual only, not gym."
     },
     {
       "brand": "lululemon",
@@ -253,13 +254,13 @@
       "subcategory": "athletic shorts",
       "pattern": "solid",
       "material": "",
-      "formality_min": 0,
-      "formality_max": 1,
+      "formality_min": 1,
+      "formality_max": 2,
       "warmth": 1,
       "rain_ok": false,
       "wind_ok": false,
       "occasions": [
-        "gym"
+        "casual"
       ],
       "seasons": [],
       "wears_before_wash": 1,
@@ -267,7 +268,8 @@
       "name": "Onyx Grey Pace Breaker Linerless Short 7\"",
       "color": "onyx grey",
       "color_family": "charcoal",
-      "image": "/images/closet/lululemon-pace-breaker-7-onyx-grey.jpg"
+      "image": "/images/closet/lululemon-pace-breaker-7-onyx-grey.jpg",
+      "notes": "Owner label: casual only, not gym."
     },
     {
       "brand": "lululemon",
@@ -275,13 +277,13 @@
       "subcategory": "athletic shorts",
       "pattern": "solid",
       "material": "",
-      "formality_min": 0,
-      "formality_max": 1,
+      "formality_min": 1,
+      "formality_max": 2,
       "warmth": 1,
       "rain_ok": false,
       "wind_ok": false,
       "occasions": [
-        "gym"
+        "casual"
       ],
       "seasons": [],
       "wears_before_wash": 1,
@@ -289,7 +291,8 @@
       "name": "Warm Ash Grey Pace Breaker Linerless Short 7\"",
       "color": "warm ash grey",
       "color_family": "tan",
-      "image": "/images/closet/lululemon-pace-breaker-7-warm-ash-grey.jpg"
+      "image": "/images/closet/lululemon-pace-breaker-7-warm-ash-grey.jpg",
+      "notes": "Owner label: casual only, not gym."
     },
     {
       "name": "Navy Leader Blazer",
@@ -438,13 +441,12 @@
       "pattern": "solid",
       "material": "performance",
       "formality_min": 0,
-      "formality_max": 1,
+      "formality_max": 0,
       "warmth": 1,
       "rain_ok": false,
       "wind_ok": false,
       "occasions": [
-        "gym",
-        "casual"
+        "gym"
       ],
       "seasons": [],
       "wears_before_wash": 1,
@@ -452,7 +454,8 @@
       "name": "Adrenaline Training Tee",
       "color": "adrenaline (red)",
       "color_family": "red",
-      "image": "/images/closet/born-primitive-training-tee-adrenaline.jpg"
+      "image": "/images/closet/born-primitive-training-tee-adrenaline.jpg",
+      "notes": "Owner label: gym only."
     },
     {
       "brand": "Born Primitive",
@@ -461,13 +464,12 @@
       "pattern": "solid",
       "material": "performance",
       "formality_min": 0,
-      "formality_max": 1,
+      "formality_max": 0,
       "warmth": 1,
       "rain_ok": false,
       "wind_ok": false,
       "occasions": [
-        "gym",
-        "casual"
+        "gym"
       ],
       "seasons": [],
       "wears_before_wash": 1,
@@ -475,7 +477,8 @@
       "name": "Hunter Training Tee",
       "color": "hunter",
       "color_family": "green",
-      "image": "/images/closet/born-primitive-training-tee-hunter.jpg"
+      "image": "/images/closet/born-primitive-training-tee-hunter.jpg",
+      "notes": "Owner label: gym only."
     },
     {
       "brand": "Born Primitive",
@@ -575,18 +578,19 @@
       "color_family": "olive",
       "pattern": "solid",
       "material": "performance",
-      "formality_min": 0,
-      "formality_max": 1,
+      "formality_min": 1,
+      "formality_max": 2,
       "warmth": 1,
       "rain_ok": false,
       "wind_ok": false,
       "occasions": [
-        "gym"
+        "casual"
       ],
       "seasons": [],
       "wears_before_wash": 1,
       "image": "/images/closet/lululemon-license-to-train-7-army-green.jpg",
-      "url": "https://shop.lululemon.com/p/mens-shorts/License-to-Train-Linerless-Short-7"
+      "url": "https://shop.lululemon.com/p/mens-shorts/License-to-Train-Linerless-Short-7",
+      "notes": "Owner label: casual only, not gym."
     },
     {
       "brand": "BYLT",
@@ -755,13 +759,12 @@
       "pattern": "solid",
       "material": "performance",
       "formality_min": 0,
-      "formality_max": 1,
+      "formality_max": 0,
       "warmth": 1,
       "rain_ok": false,
       "wind_ok": false,
       "occasions": [
-        "gym",
-        "casual"
+        "gym"
       ],
       "seasons": [],
       "wears_before_wash": 1,
@@ -770,7 +773,7 @@
       "color": "hunter",
       "color_family": "green",
       "image": "/images/closet/born-primitive-training-tee-hunter.jpg",
-      "notes": "Duplicate of Hunter Training Tee; you own two."
+      "notes": "Duplicate of Hunter Training Tee; you own two. Owner label: gym only."
     },
     {
       "brand": "Born Primitive",
@@ -779,13 +782,12 @@
       "pattern": "solid",
       "material": "performance",
       "formality_min": 0,
-      "formality_max": 1,
+      "formality_max": 0,
       "warmth": 1,
       "rain_ok": false,
       "wind_ok": false,
       "occasions": [
-        "gym",
-        "casual"
+        "gym"
       ],
       "seasons": [],
       "wears_before_wash": 1,
@@ -794,7 +796,7 @@
       "color": "adrenaline (red)",
       "color_family": "red",
       "image": "/images/closet/born-primitive-training-tee-adrenaline.jpg",
-      "notes": "Duplicate of Adrenaline Training Tee; you own two."
+      "notes": "Duplicate of Adrenaline Training Tee; you own two. Owner label: gym only."
     },
     {
       "brand": "Old Navy",
@@ -1077,20 +1079,19 @@
       "color_family": "black",
       "pattern": "solid",
       "material": "canvas",
-      "formality_min": 0,
+      "formality_min": 1,
       "formality_max": 2,
       "warmth": 3,
       "rain_ok": true,
       "wind_ok": false,
       "occasions": [
-        "gym",
         "casual"
       ],
       "seasons": [],
       "wears_before_wash": 999,
       "image": "/images/closet/altama-maritime-assault-mid-black.jpg",
       "url": "https://www.tacticalgear.com/mens-altama-maritime-assault-mid-boots",
-      "notes": "Lugged sole, drains and dries fast; fine in rain."
+      "notes": "Lugged sole, drains and dries fast; fine in rain. Owner label: casual, not gym."
     },
     {
       "brand": "lululemon",
