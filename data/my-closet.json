@@ -1,5 +1,5 @@
 {
-  "note": "Owner closet. Load from Closet → More… → Load my closet file. Photos live in public/images/closet.",
+  "note": "Owner closet. Load from Closet → More… → Load my closet file. Photos live in public/images/closet. Occasion tags reviewed by the owner on 2026-10-24.",
   "items": [
     {
       "name": "Light Grey Forge Tank",
@@ -21,7 +21,8 @@
       "wears_before_wash": 1,
       "brand": "Alpha Country",
       "image": "/images/closet/alpha-forge-tank-light-grey.jpg",
-      "url": "https://thealphacountry.com/products/mens-forge-tank"
+      "url": "https://thealphacountry.com/products/mens-forge-tank",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "name": "Black Forge Tank",
@@ -43,7 +44,8 @@
       "wears_before_wash": 1,
       "brand": "Alpha Country",
       "image": "/images/closet/alpha-forge-tank-black.jpg",
-      "url": "https://thealphacountry.com/products/mens-forge-tank"
+      "url": "https://thealphacountry.com/products/mens-forge-tank",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "name": "Kodiak Woodsman Stretchy Flannel",
@@ -66,7 +68,7 @@
       "brand": "Born Primitive",
       "image": "/images/closet/born-primitive-woodsman-flannel-kodiak.jpg",
       "url": "https://bornprimitive.com/products/woodsman-stretchy-flannel",
-      "notes": "Wears open over a tee as a light layer too."
+      "notes": "Wears open over a tee as a light layer too. Owner label: confirmed as tagged."
     },
     {
       "name": "Black Tactical Short",
@@ -88,7 +90,8 @@
       "wears_before_wash": 1,
       "brand": "Ten Thousand",
       "image": "/images/closet/ten-thousand-tactical-short-black.jpg",
-      "url": "https://www.tenthousand.cc/products/tactical-short"
+      "url": "https://www.tenthousand.cc/products/tactical-short",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "name": "Khaki Tactical Utility Pant",
@@ -110,7 +113,8 @@
       "wears_before_wash": 3,
       "brand": "Ten Thousand",
       "image": "/images/closet/ten-thousand-tactical-utility-pant-khaki.jpg",
-      "url": "https://www.tenthousand.cc/products/tactical-utility-pant"
+      "url": "https://www.tenthousand.cc/products/tactical-utility-pant",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "name": "Black Tactical Utility Pant",
@@ -132,7 +136,8 @@
       "wears_before_wash": 3,
       "brand": "Ten Thousand",
       "image": "/images/closet/ten-thousand-tactical-utility-pant-black.jpg",
-      "url": "https://www.tenthousand.cc/products/tactical-utility-pant"
+      "url": "https://www.tenthousand.cc/products/tactical-utility-pant",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "name": "Gray Tactical Utility Pant",
@@ -154,7 +159,8 @@
       "wears_before_wash": 3,
       "brand": "Ten Thousand",
       "image": "/images/closet/ten-thousand-tactical-utility-pant-gray.jpg",
-      "url": "https://www.tenthousand.cc/products/tactical-utility-pant"
+      "url": "https://www.tenthousand.cc/products/tactical-utility-pant",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "name": "Black Tactical 5-Pocket Pant",
@@ -177,7 +183,8 @@
       "wears_before_wash": 3,
       "brand": "Ten Thousand",
       "image": "/images/closet/ten-thousand-tactical-5-pocket-pant-black.jpg",
-      "url": "https://www.tenthousand.cc/products/tactical-5-pocket-pant"
+      "url": "https://www.tenthousand.cc/products/tactical-5-pocket-pant",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "name": "OD Green Tactical 5-Pocket Pant",
@@ -200,7 +207,8 @@
       "wears_before_wash": 3,
       "brand": "Ten Thousand",
       "image": "/images/closet/ten-thousand-tactical-5-pocket-pant-od-green.jpg",
-      "url": "https://www.tenthousand.cc/products/tactical-5-pocket-pant"
+      "url": "https://www.tenthousand.cc/products/tactical-5-pocket-pant",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "name": "Gray Tactical 5-Pocket Pant",
@@ -223,7 +231,8 @@
       "wears_before_wash": 3,
       "brand": "Ten Thousand",
       "image": "/images/closet/ten-thousand-tactical-5-pocket-pant-gray.jpg",
-      "url": "https://www.tenthousand.cc/products/tactical-5-pocket-pant"
+      "url": "https://www.tenthousand.cc/products/tactical-5-pocket-pant",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "lululemon",
@@ -316,7 +325,7 @@
       "wears_before_wash": 8,
       "image": "/images/closet/twillory-leader-blazer-navy.jpg",
       "url": "https://twillory.com/products/leader",
-      "notes": "Pairs with the navy AIR pants as a suit."
+      "notes": "Pairs with the navy AIR pants as a suit. Owner label: confirmed as tagged."
     },
     {
       "name": "Navy AIR Pants",
@@ -340,7 +349,7 @@
       "wears_before_wash": 4,
       "image": "/images/closet/twillory-air-pants-navy.jpg",
       "url": "https://twillory.com/products/air-chinos-navy",
-      "notes": "Breathable; reads as tailored trousers."
+      "notes": "Breathable; reads as tailored trousers. Owner label: confirmed as tagged."
     },
     {
       "brand": "Haus",
@@ -363,7 +372,8 @@
       "name": "Navy Performance Airknit Fitted Quarter Zip",
       "color": "navy",
       "color_family": "navy",
-      "image": "/images/closet/haus-airknit-quarter-zip-navy.jpg"
+      "image": "/images/closet/haus-airknit-quarter-zip-navy.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Haus",
@@ -386,7 +396,8 @@
       "name": "Sage Performance Airknit Fitted Quarter Zip",
       "color": "sage",
       "color_family": "olive",
-      "image": "/images/closet/haus-airknit-quarter-zip-sage.jpg"
+      "image": "/images/closet/haus-airknit-quarter-zip-sage.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Haus",
@@ -409,7 +420,8 @@
       "name": "Cream Performance Airknit Fitted Quarter Zip",
       "color": "cream",
       "color_family": "white",
-      "image": "/images/closet/haus-airknit-quarter-zip-cream.jpg"
+      "image": "/images/closet/haus-airknit-quarter-zip-cream.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Haus",
@@ -432,7 +444,8 @@
       "name": "Charcoal Performance Airknit Fitted Quarter Zip",
       "color": "charcoal",
       "color_family": "charcoal",
-      "image": "/images/closet/haus-airknit-quarter-zip-charcoal.jpg"
+      "image": "/images/closet/haus-airknit-quarter-zip-charcoal.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Born Primitive",
@@ -501,7 +514,8 @@
       "seasons": [],
       "wears_before_wash": 1,
       "image": "/images/closet/born-primitive-network-short-sleeve-black.jpg",
-      "url": "https://bornprimitive.com/products/network-short-sleeve"
+      "url": "https://bornprimitive.com/products/network-short-sleeve",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Born Primitive",
@@ -523,7 +537,8 @@
       "name": "Black Versatile Short 7\"",
       "color": "black",
       "color_family": "black",
-      "image": "/images/closet/born-primitive-versatile-short-7-black.jpg"
+      "image": "/images/closet/born-primitive-versatile-short-7-black.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Born Primitive",
@@ -545,7 +560,8 @@
       "name": "Stone Versatile Short 7\"",
       "color": "stone",
       "color_family": "gray",
-      "image": "/images/closet/born-primitive-versatile-short-7-stone.jpg"
+      "image": "/images/closet/born-primitive-versatile-short-7-stone.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Born Primitive",
@@ -567,7 +583,8 @@
       "seasons": [],
       "wears_before_wash": 4,
       "image": "/images/closet/born-primitive-flex-jean-dark-wash.jpg",
-      "url": "https://bornprimitive.com/products/flex-stretchy-athletic-fit-jean"
+      "url": "https://bornprimitive.com/products/flex-stretchy-athletic-fit-jean",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "lululemon",
@@ -613,7 +630,8 @@
       "seasons": [],
       "wears_before_wash": 4,
       "image": "/images/closet/bylt-executive-pant-charcoal.jpg",
-      "url": "https://byltbasics.com/products/executive-pant-2-0"
+      "url": "https://byltbasics.com/products/executive-pant-2-0",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "BYLT",
@@ -637,7 +655,7 @@
       "color": "grey-blue",
       "color_family": "gray",
       "image": "/images/closet/bylt-everyday-pant-slim-grey.jpg",
-      "notes": "Colour name not visible in the screenshot; confirm."
+      "notes": "Colour name not visible in the screenshot; confirm. Owner label: confirmed as tagged."
     },
     {
       "brand": "BYLT",
@@ -660,7 +678,8 @@
       "name": "Navy Everyday Pant 2.0 (Classic Fit)",
       "color": "navy",
       "color_family": "navy",
-      "image": "/images/closet/bylt-everyday-pant-classic-navy.jpg"
+      "image": "/images/closet/bylt-everyday-pant-classic-navy.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Old Navy",
@@ -682,7 +701,8 @@
       "name": "Black Tech Hybrid Chino Shorts 8\"",
       "color": "black",
       "color_family": "black",
-      "image": "/images/closet/old-navy-tech-hybrid-chino-short-black.jpg"
+      "image": "/images/closet/old-navy-tech-hybrid-chino-short-black.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Old Navy",
@@ -704,7 +724,8 @@
       "name": "Khaki Tech Hybrid Chino Shorts 8\"",
       "color": "khaki",
       "color_family": "tan",
-      "image": "/images/closet/old-navy-tech-hybrid-chino-short-khaki.jpg"
+      "image": "/images/closet/old-navy-tech-hybrid-chino-short-khaki.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Born Primitive",
@@ -727,7 +748,7 @@
       "color": "black",
       "color_family": "black",
       "image": "/images/closet/born-primitive-versatile-short-7-black.jpg",
-      "notes": "Duplicate of Black Versatile Short 7\"; you own two."
+      "notes": "Duplicate of Black Versatile Short 7\"; you own two. Owner label: confirmed as tagged."
     },
     {
       "brand": "Born Primitive",
@@ -750,7 +771,7 @@
       "color": "stone",
       "color_family": "gray",
       "image": "/images/closet/born-primitive-versatile-short-7-stone.jpg",
-      "notes": "Duplicate of Stone Versatile Short 7\"; you own two."
+      "notes": "Duplicate of Stone Versatile Short 7\"; you own two. Owner label: confirmed as tagged."
     },
     {
       "brand": "Born Primitive",
@@ -818,7 +839,8 @@
       "name": "Night Life Heavyweight Cropped T-Shirt",
       "color": "night life (dusty blue)",
       "color_family": "blue",
-      "image": "/images/closet/old-navy-heavyweight-tee-night-life.jpg"
+      "image": "/images/closet/old-navy-heavyweight-tee-night-life.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Old Navy",
@@ -840,7 +862,8 @@
       "name": "Lakeshore Heavyweight Cropped T-Shirt",
       "color": "lakeshore (sage)",
       "color_family": "green",
-      "image": "/images/closet/old-navy-heavyweight-tee-lakeshore.jpg"
+      "image": "/images/closet/old-navy-heavyweight-tee-lakeshore.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Old Navy",
@@ -863,7 +886,7 @@
       "color": "cream",
       "color_family": "white",
       "image": "/images/closet/old-navy-heavyweight-tee-cream.jpg",
-      "notes": "Colour name not visible in the screenshot; confirm."
+      "notes": "Colour name not visible in the screenshot; confirm. Owner label: confirmed as tagged."
     },
     {
       "brand": "NOBULL",
@@ -886,7 +909,8 @@
       "seasons": [],
       "wears_before_wash": 999,
       "image": "/images/closet/nobull-allday-365-ivory.jpg",
-      "url": "https://www.nobullproject.com/products/allday-365"
+      "url": "https://www.nobullproject.com/products/allday-365",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Fabletics",
@@ -909,7 +933,8 @@
       "name": "Deep Navy Don Trouser (Slim Fit)",
       "color": "deep navy",
       "color_family": "navy",
-      "image": "/images/closet/fabletics-don-trouser-slim-deep-navy.jpg"
+      "image": "/images/closet/fabletics-don-trouser-slim-deep-navy.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Fabletics",
@@ -932,7 +957,8 @@
       "name": "Onyx Don Trouser (Classic Fit)",
       "color": "onyx",
       "color_family": "charcoal",
-      "image": "/images/closet/fabletics-don-trouser-classic-onyx.jpg"
+      "image": "/images/closet/fabletics-don-trouser-classic-onyx.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Fabletics",
@@ -955,7 +981,8 @@
       "name": "Black Don Trouser (Classic Fit)",
       "color": "black",
       "color_family": "black",
-      "image": "/images/closet/fabletics-don-trouser-classic-black.jpg"
+      "image": "/images/closet/fabletics-don-trouser-classic-black.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Fabletics",
@@ -977,7 +1004,8 @@
       "name": "Black One Short Lined 5\"",
       "color": "black",
       "color_family": "black",
-      "image": "/images/closet/fabletics-one-short-lined-5-black.jpg"
+      "image": "/images/closet/fabletics-one-short-lined-5-black.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Fabletics",
@@ -999,7 +1027,8 @@
       "name": "Black One Short 7\"",
       "color": "black",
       "color_family": "black",
-      "image": "/images/closet/fabletics-one-short-7-black.jpg"
+      "image": "/images/closet/fabletics-one-short-7-black.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Fabletics",
@@ -1021,7 +1050,8 @@
       "name": "Onyx One Short Lined 5\"",
       "color": "onyx",
       "color_family": "charcoal",
-      "image": "/images/closet/fabletics-one-short-lined-5-onyx.jpg"
+      "image": "/images/closet/fabletics-one-short-lined-5-onyx.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Fabletics",
@@ -1044,7 +1074,8 @@
       "seasons": [],
       "wears_before_wash": 2,
       "image": "/images/closet/fabletics-one-jogger-shadow-grey.jpg",
-      "url": "https://www.fabletics.com/products/the-one-jogger"
+      "url": "https://www.fabletics.com/products/the-one-jogger",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Fabletics",
@@ -1068,7 +1099,7 @@
       "wears_before_wash": 2,
       "image": "",
       "url": "https://www.fabletics.com/products/the-one-jogger",
-      "notes": "No photo yet; add one from the Edit form."
+      "notes": "No photo yet; add one from the Edit form. Owner label: confirmed as tagged."
     },
     {
       "brand": "Altama",
@@ -1114,7 +1145,8 @@
       "seasons": [],
       "wears_before_wash": 4,
       "image": "/images/closet/lululemon-smooth-spacer-quarter-zip-steel-blue.jpg",
-      "url": "https://shop.lululemon.com/p/mens-hoodies-and-sweatshirts/Smooth-Spacer-Quarter-Zip"
+      "url": "https://shop.lululemon.com/p/mens-hoodies-and-sweatshirts/Smooth-Spacer-Quarter-Zip",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "BYLT",
@@ -1137,7 +1169,8 @@
       "name": "Light Grey Ribbed Open V Polo",
       "color": "light grey",
       "color_family": "gray",
-      "image": "/images/closet/bylt-ribbed-open-v-polo-light-grey.jpg"
+      "image": "/images/closet/bylt-ribbed-open-v-polo-light-grey.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "BYLT",
@@ -1160,7 +1193,8 @@
       "name": "Navy Ribbed Open V Polo",
       "color": "navy",
       "color_family": "navy",
-      "image": "/images/closet/bylt-ribbed-open-v-polo-navy.jpg"
+      "image": "/images/closet/bylt-ribbed-open-v-polo-navy.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Charles Tyrwhitt",
@@ -1184,7 +1218,8 @@
       "seasons": [],
       "wears_before_wash": 5,
       "image": "/images/closet/charles-tyrwhitt-merino-quarter-zip-oatmeal.jpg",
-      "url": "https://www.charlestyrwhitt.com/us/pure-merino-quarter-zip-sweater-oatmeal"
+      "url": "https://www.charlestyrwhitt.com/us/pure-merino-quarter-zip-sweater-oatmeal",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "category": "outerwear",
@@ -1208,7 +1243,7 @@
       ],
       "wears_before_wash": 20,
       "image": "/images/closet/joseph-abboud-car-coat-black.jpg",
-      "notes": "Tailored raincoat; sits over the Leader blazer."
+      "notes": "Tailored raincoat; sits over the Leader blazer. Owner label: confirmed as tagged."
     },
     {
       "category": "outerwear",
@@ -1233,7 +1268,7 @@
       ],
       "wears_before_wash": 20,
       "image": "/images/closet/st-johns-bay-peacoat-charcoal.jpg",
-      "notes": "Quilted lining; the warmest smart option."
+      "notes": "Quilted lining; the warmest smart option. Owner label: confirmed as tagged."
     },
     {
       "category": "outerwear",
@@ -1257,7 +1292,7 @@
       ],
       "wears_before_wash": 20,
       "image": "/images/closet/tan-hooded-rain-shell.jpg",
-      "notes": "Half-zip anorak; brand not visible, add it if you like."
+      "notes": "Half-zip anorak; brand not visible, add it if you like. Owner label: confirmed as tagged."
     },
     {
       "category": "outerwear",
@@ -1281,7 +1316,7 @@
       ],
       "wears_before_wash": 20,
       "image": "/images/closet/north-face-insulated-jacket-blue.jpg",
-      "notes": "Water-resistant shell; the warmest casual option."
+      "notes": "Water-resistant shell; the warmest casual option. Owner label: confirmed as tagged."
     },
     {
       "category": "outerwear",
@@ -1304,7 +1339,8 @@
         "gym"
       ],
       "wears_before_wash": 15,
-      "image": "/images/closet/free-country-lanier-softshell-black.jpg"
+      "image": "/images/closet/free-country-lanier-softshell-black.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "NOBULL",
@@ -1327,7 +1363,7 @@
       "wears_before_wash": 999,
       "image": "/images/closet/nobull-outwork-army-green.jpg",
       "url": "https://www.nobullproject.com/products/outwork",
-      "notes": "Flat, stable sole for lifting."
+      "notes": "Flat, stable sole for lifting. Owner label: confirmed as tagged."
     },
     {
       "brand": "Twillory",
@@ -1349,7 +1385,7 @@
       "wears_before_wash": 1,
       "url": "https://twillory.com/products/leader",
       "image": "",
-      "notes": "No photo yet.",
+      "notes": "No photo yet. Owner label: confirmed as tagged.",
       "name": "White Leader Oxford Button-Down",
       "color": "white",
       "color_family": "white"
@@ -1374,7 +1410,7 @@
       "wears_before_wash": 1,
       "url": "https://twillory.com/products/leader",
       "image": "",
-      "notes": "Duplicate; you own two. No photo yet.",
+      "notes": "Duplicate; you own two. No photo yet. Owner label: confirmed as tagged.",
       "name": "White Leader Oxford Button-Down (second one)",
       "color": "white",
       "color_family": "white"
@@ -1399,7 +1435,7 @@
       "wears_before_wash": 1,
       "url": "https://twillory.com/products/leader",
       "image": "",
-      "notes": "No photo yet.",
+      "notes": "No photo yet. Owner label: confirmed as tagged.",
       "name": "Blue Leader Oxford Button-Down",
       "color": "blue",
       "color_family": "blue"
@@ -1426,7 +1462,7 @@
         "gym",
         "casual"
       ],
-      "notes": "No photo yet. Training and everyday."
+      "notes": "No photo yet. Training and everyday. Owner label: confirmed as tagged."
     },
     {
       "category": "accessory",
@@ -1450,7 +1486,7 @@
         "casual",
         "business_casual"
       ],
-      "notes": "No photo yet. Casual through business casual."
+      "notes": "No photo yet. Casual through business casual. Owner label: confirmed as tagged."
     },
     {
       "category": "accessory",
@@ -1474,7 +1510,7 @@
         "business_casual",
         "formal"
       ],
-      "notes": "No photo yet. The dress watch."
+      "notes": "No photo yet. The dress watch. Owner label: confirmed as tagged."
     },
     {
       "category": "accessory",
@@ -1500,7 +1536,7 @@
         "business_casual",
         "formal"
       ],
-      "notes": "No photo yet. Wayfarer shape."
+      "notes": "No photo yet. Wayfarer shape. Owner label: confirmed as tagged."
     },
     {
       "brand": "BYLT",
@@ -1522,7 +1558,8 @@
       "name": "Olive Drop-Cut Long Sleeve LUX",
       "color": "olive",
       "color_family": "olive",
-      "image": "/images/closet/bylt-drop-cut-long-sleeve-lux-olive.jpg"
+      "image": "/images/closet/bylt-drop-cut-long-sleeve-lux-olive.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "BYLT",
@@ -1544,7 +1581,8 @@
       "name": "Black Drop-Cut Long Sleeve LUX",
       "color": "black",
       "color_family": "black",
-      "image": "/images/closet/bylt-drop-cut-long-sleeve-lux-black.jpg"
+      "image": "/images/closet/bylt-drop-cut-long-sleeve-lux-black.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "BYLT",
@@ -1566,7 +1604,8 @@
       "name": "Grey Drop-Cut Long Sleeve LUX",
       "color": "grey",
       "color_family": "gray",
-      "image": "/images/closet/bylt-drop-cut-long-sleeve-lux-grey.jpg"
+      "image": "/images/closet/bylt-drop-cut-long-sleeve-lux-grey.jpg",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Cole Haan",
@@ -1590,7 +1629,7 @@
       "wears_before_wash": 999,
       "image": "/images/closet/cole-haan-cap-toe-oxford-british-tan.jpg",
       "url": "https://www.colehaan.com",
-      "notes": "Model name not visible in the screenshot; add it if you like."
+      "notes": "Model name not visible in the screenshot; add it if you like. Owner label: confirmed as tagged."
     },
     {
       "brand": "Dockers",
@@ -1614,7 +1653,7 @@
       "wears_before_wash": 999,
       "image": "/images/closet/dockers-fairway-plain-toe-oxford-black.jpg",
       "url": "https://www.menswearhouse.com",
-      "notes": ""
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "Wrangler",
@@ -1636,7 +1675,8 @@
       "seasons": [],
       "wears_before_wash": 4,
       "image": "/images/closet/wrangler-quarter-zip-fleece-heather-gray.jpg",
-      "url": ""
+      "url": "",
+      "notes": "Owner label: confirmed as tagged."
     },
     {
       "brand": "L.L.Bean",
@@ -1659,7 +1699,7 @@
       "wears_before_wash": 6,
       "image": "/images/closet/llbean-fleece-lined-flannel-burgundy-plaid.jpg",
       "url": "https://www.llbean.com/llb/shop/PF298189",
-      "notes": "Worn open as a shirt-jacket over a tee or henley."
+      "notes": "Worn open as a shirt-jacket over a tee or henley. Owner label: confirmed as tagged."
     },
     {
       "brand": "Towncraft",
@@ -1682,7 +1722,7 @@
       "wears_before_wash": 2,
       "image": "/images/closet/towncraft-plaid-flannel-grey.jpg",
       "url": "",
-      "notes": "Wears open over a tee as a light layer too."
+      "notes": "Wears open over a tee as a light layer too. Owner label: confirmed as tagged."
     },
     {
       "brand": "Columbia",
@@ -1707,7 +1747,7 @@
       "wears_before_wash": 2,
       "image": "/images/closet/columbia-tamiami-ii-cool-grey.jpg",
       "url": "https://www.academy.com",
-      "notes": "Sun shirt for outdoors and heat; sleeves roll and tab."
+      "notes": "Sun shirt for outdoors and heat; sleeves roll and tab. Owner label: confirmed as tagged."
     },
     {
       "brand": "Old Navy",
@@ -1729,7 +1769,7 @@
       "wears_before_wash": 1,
       "image": "",
       "url": "https://oldnavy.gap.com/browse/product.do?pid=short-sleeve-camp-shirt",
-      "notes": "Camp collar, worn open or buttoned. No photo yet; assumed solid, set the pattern if it is printed.",
+      "notes": "Camp collar, worn open or buttoned. No photo yet; assumed solid, set the pattern if it is printed. Owner label: confirmed as tagged.",
       "name": "Forest Green Short-Sleeve Camp Shirt",
       "color": "forest green",
       "color_family": "green"
@@ -1754,7 +1794,7 @@
       "wears_before_wash": 1,
       "image": "",
       "url": "https://oldnavy.gap.com/browse/product.do?pid=short-sleeve-camp-shirt",
-      "notes": "Camp collar, worn open or buttoned. No photo yet; assumed solid, set the pattern if it is printed.",
+      "notes": "Camp collar, worn open or buttoned. No photo yet; assumed solid, set the pattern if it is printed. Owner label: confirmed as tagged.",
       "name": "Light Blue Short-Sleeve Camp Shirt",
       "color": "light blue",
       "color_family": "blue"
@@ -1779,7 +1819,7 @@
       "wears_before_wash": 1,
       "image": "",
       "url": "https://oldnavy.gap.com/browse/product.do?pid=short-sleeve-camp-shirt",
-      "notes": "Camp collar, worn open or buttoned. No photo yet; assumed solid, set the pattern if it is printed.",
+      "notes": "Camp collar, worn open or buttoned. No photo yet; assumed solid, set the pattern if it is printed. Owner label: confirmed as tagged.",
       "name": "Tan Short-Sleeve Camp Shirt",
       "color": "tan",
       "color_family": "tan"
