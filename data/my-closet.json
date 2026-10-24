@@ -1404,56 +1404,6 @@
       "color_family": "blue"
     },
     {
-      "category": "shoes",
-      "subcategory": "loafers",
-      "pattern": "solid",
-      "material": "leather",
-      "formality_min": 2,
-      "formality_max": 4,
-      "warmth": 2,
-      "rain_ok": false,
-      "wind_ok": false,
-      "occasions": [
-        "casual",
-        "business_casual",
-        "formal"
-      ],
-      "seasons": [],
-      "wears_before_wash": 999,
-      "image": "",
-      "notes": "No photo yet.",
-      "brand": "",
-      "url": "",
-      "name": "Brown Leather Loafers",
-      "color": "brown",
-      "color_family": "brown"
-    },
-    {
-      "category": "shoes",
-      "subcategory": "loafers",
-      "pattern": "solid",
-      "material": "leather",
-      "formality_min": 2,
-      "formality_max": 4,
-      "warmth": 2,
-      "rain_ok": false,
-      "wind_ok": false,
-      "occasions": [
-        "casual",
-        "business_casual",
-        "formal"
-      ],
-      "seasons": [],
-      "wears_before_wash": 999,
-      "image": "",
-      "notes": "No photo yet.",
-      "brand": "",
-      "url": "",
-      "name": "Black Leather Loafers",
-      "color": "black",
-      "color_family": "black"
-    },
-    {
       "category": "accessory",
       "pattern": "solid",
       "seasons": [],
@@ -1640,6 +1590,30 @@
       "image": "/images/closet/cole-haan-cap-toe-oxford-british-tan.jpg",
       "url": "https://www.colehaan.com",
       "notes": "Model name not visible in the screenshot; add it if you like."
+    },
+    {
+      "brand": "Cole Haan",
+      "name": "Black Cap-Toe Oxford",
+      "category": "shoes",
+      "subcategory": "dress shoes",
+      "color": "black",
+      "color_family": "black",
+      "pattern": "solid",
+      "material": "leather",
+      "formality_min": 3,
+      "formality_max": 5,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "business_casual",
+        "formal"
+      ],
+      "seasons": [],
+      "wears_before_wash": 999,
+      "image": "",
+      "url": "https://www.colehaan.com",
+      "notes": "Same Cole Haan cap-toe in black. No photo yet."
     }
   ]
 }
