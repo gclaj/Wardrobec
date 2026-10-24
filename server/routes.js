@@ -9,6 +9,7 @@ const { sampleItems, capsuleItems } = require('./seed');
 const { PRESETS, normalizeProfile, paletteRating, ratingLabel } = require('./profile');
 const links = require('./links');
 const guide = require('./styleguide');
+const packing = require('./packing');
 const fs = require('node:fs');
 const path = require('node:path');
 const CLOSET_FILE = process.env.MY_CLOSET || path.join(__dirname, '..', 'data', 'my-closet.json');
@@ -41,11 +42,12 @@ async function plan(db, date, query = {}) {
   const events = store.listEvents(db, { date });
   const affinity = {};
   for (const k of engine.OCCASION_KEYS) affinity[k] = store.affinityMap(db, k);
+  const feedback = store.feedbackContext(db);
   const attempts = {};
   for (const [k, v] of Object.entries(query)) if (k.startsWith('attempt_')) attempts[k.slice(8)] = Number(v) || 0;
   const standard = {};
   for (const key of engine.OCCASION_KEYS) {
-    standard[key] = engine.buildOutfit(items, key, { date, weather: wx, attempt: attempts[key] ?? Number(query.attempt || 0), affinity: affinity[key], profile });
+    standard[key] = engine.buildOutfit(items, key, { date, weather: wx, attempt: attempts[key] ?? Number(query.attempt || 0), affinity: affinity[key], profile, feedback });
   }
   const used = new Set();
   const eventPlans = [];
@@ -53,7 +55,7 @@ async function plan(db, date, query = {}) {
     const at = wx && wx.hourly ? engine.hourlyAt(wx.hourly, ev.time) : null;
     const outfit = engine.buildOutfit(items, ev.occasion, {
       date, weather: at || wx, attempt: attempts['event' + ev.id] ?? 0, affinity: affinity[ev.occasion],
-      exclude: new Set(used), seedSalt: 'event' + ev.id, profile, lean: ev.lean, look: ev.look || undefined,
+      exclude: new Set(used), seedSalt: 'event' + ev.id, profile, lean: ev.lean, look: ev.look || undefined, feedback,
     });
     for (const it of outfit.items) used.add(it.id);
     eventPlans.push({ event: ev, weatherAt: at, outfit });
@@ -116,7 +118,7 @@ const routes = [
     const outfit = engine.buildOutfit(store.listItems(db), body.occasion, {
       date, weather: w, attempt: Number(body.attempt || 0), affinity: store.affinityMap(db, body.occasion),
       exclude: new Set((body.exclude || []).map(Number)), lock: body.lock || {}, allowDirty: !!body.allowDirty,
-      seedSalt: body.salt || '', profile, lean: body.lean, look: body.look === '' ? null : body.look,
+      seedSalt: body.salt || '', profile, lean: body.lean, look: body.look === '' ? null : body.look, feedback: store.feedbackContext(db),
     });
     return { ...outfit, weatherSource: source };
   }],
@@ -132,9 +134,32 @@ const routes = [
     const ids = (body.item_ids || []).map(Number).filter(Boolean);
     const vote = Number(body.vote) > 0 ? 1 : -1;
     if (!engine.OCCASIONS[body.occasion]) throw new HttpError(400, 'unknown occasion');
-    store.adjustAffinity(db, ids, body.occasion, vote * 0.5);
-    db.prepare('INSERT INTO outfit_feedback(date, occasion, item_ids, vote) VALUES (?, ?, ?, ?)').run(body.date || todayISO(), body.occasion, JSON.stringify(ids), vote);
-    return { ok: true };
+    if (!ids.length) throw new HttpError(400, 'no items');
+    if (vote > 0) {
+      const fab = store.saveFab(db, { name: body.name || '', occasion: body.occasion, look: body.look || '', itemIds: ids, accessoryIds: (body.accessory_ids || []).map(Number).filter(Boolean), weather: body.weather || {} });
+      return { ok: true, saved: true, fab };
+    }
+    store.banCombo(db, { date: body.date || todayISO(), occasion: body.occasion, itemIds: ids });
+    return { ok: true, banned: true };
+  }],
+  ['GET', '/api/fab', ({ db }) => store.listFab(db)],
+  ['PUT', '/api/fab/:id', ({ db, params, body }) => { db.prepare('UPDATE fab_outfits SET name = ? WHERE id = ?').run(String(body.name || ''), params.id); return store.getFab(db, Number(params.id)); }],
+  ['DELETE', '/api/fab/:id', ({ db, params }) => ({ deleted: store.deleteFab(db, Number(params.id)) })],
+  ['POST', '/api/fab/:id/wear', ({ db, params, body }) => {
+    const fab = store.getFab(db, Number(params.id));
+    if (!fab) throw new HttpError(404, 'not found');
+    const date = isDate(body.date) ? body.date : todayISO();
+    const id = store.recordWear(db, { date, occasion: fab.occasion, itemIds: [...fab.item_ids, ...fab.accessory_ids], weather: body.weather || {} });
+    db.prepare('UPDATE fab_outfits SET times_worn = times_worn + 1 WHERE id = ?').run(fab.id);
+    return { logged: id };
+  }],
+  ['POST', '/api/pack', ({ db, body }) => {
+    const requests = body.requests && typeof body.requests === 'object' ? body.requests : {};
+    const weather = { tempHigh: Number(body.tempHigh), tempLow: Number(body.tempLow ?? body.tempHigh), precipProb: Number(body.precipProb || 0), windMax: Number(body.windMax || 0), uv: Number(body.uv || 0) };
+    if (Number.isNaN(weather.tempHigh)) throw new HttpError(400, 'tempHigh required (°F)');
+    const items = store.listItems(db).filter(i => i.status !== 'retired');
+    const profile = settingsOf(db).style_profile;
+    return packing.planTrip(items, { requests, weather, laundry: !!body.laundry, profile, feedback: store.feedbackContext(db) });
   }],
   ['GET', '/api/history', ({ db, query }) => store.history(db, Number(query.limit || 50))],
   ['DELETE', '/api/history/:id', ({ db, params }) => ({ undone: store.undoWear(db, Number(params.id)) })],
@@ -249,7 +274,7 @@ const routes = [
     const items = store.listItems(db);
     const looks = Object.values(guide.LOOKS).map(l => ({
       look: { key: l.key, name: l.name, summary: l.summary, why: l.why, occasion: l.occasion, lean: l.lean },
-      outfit: engine.buildOutfit(items, l.occasion, { date, weather: wx, look: l.key, attempt: Number(query['attempt_' + l.key] || query.attempt || 0), affinity: store.affinityMap(db, l.occasion), profile }),
+      outfit: engine.buildOutfit(items, l.occasion, { date, weather: wx, look: l.key, attempt: Number(query['attempt_' + l.key] || query.attempt || 0), affinity: store.affinityMap(db, l.occasion), profile, feedback: store.feedbackContext(db) }),
     }));
     const { hourly, ...wxSummary } = wx || {};
     return { date, weather: wx ? wxSummary : null, weatherSource: source, looks };

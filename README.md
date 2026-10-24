@@ -49,6 +49,10 @@ Events can also carry a **lean**: relaxed pulls toward tees and sneakers, elevat
 
 **Calendar events** get their own outfit using the hourly forecast at the event time, and outfits for events on the same day never share pieces, because you will actually wear all of them.
 
+**Love it / Never again.** Love it saves the exact outfit to the **Fab** tab and gives that combination a strong bonus, so it returns whenever weather and laundry allow; Fab outfits can be named and worn directly. Never again bans the exact combination and makes the engine wary of the pairs inside it, so a near-copy does not come straight back. Loving a banned combo lifts the ban; banning a Fab outfit removes it.
+
+**Pack** builds a trip bag: give it days, expected high and low, rain chance, whether laundry is available, and how many of each look you need. The planner fills the most constrained outfits first and rewards reusing anything already packed; shirts serve one outfit, bottoms and layers several, shoes and outerwear all of them. It tries several orderings and keeps the smallest bag, then shows the bag grouped by category with how many outfits each piece serves.
+
 **Wear this** logs the outfit, bumps wear counts, and marks pieces dirty once they hit their wash threshold. Dirty items drop out of suggestions until **Laundry done**.
 
 **Coverage** (Closet page) runs the engine across every occasion × temperature band × dry/rain and shows where the closet cannot produce a solid outfit, so you know what to buy next.
@@ -78,7 +82,9 @@ test/          node:test suites
 | `GET /api/plan?date=` | Weather, four standard outfits, event outfits, what was worn |
 | `POST /api/outfits/generate` | One outfit with `lock` (pin slots), `exclude`, `attempt` |
 | `POST /api/outfits/wear` | Log an outfit and update laundry state |
-| `POST /api/outfits/feedback` | Like / dislike a combination |
+| `POST /api/outfits/feedback` | Love it (saves to Fab) or never again (bans the combo) |
+| `GET/PUT/DELETE /api/fab`, `POST /api/fab/:id/wear` | Saved outfits |
+| `POST /api/pack` | Trip packing plan |
 | `GET/POST/PUT/DELETE /api/items` | Inventory; `POST /api/items/classify`, `/from-links` and `/bulk` for bulk entry |
 | `GET/POST/DELETE /api/events` | Calendar entries with a dress code |
 | `GET /api/weather`, `PUT /api/weather/override` | Forecast and manual weather |

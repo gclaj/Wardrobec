@@ -91,9 +91,28 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   r = await call('GET', `/api/items/${top.id}`);
   assert.equal(r.data.status, 'clean'); assert.equal(r.data.wears_since_wash, 0);
 
-  // Feedback moves affinity; generate honours locks and excludes.
+  // Love it saves to Fab; never again bans the combo and removes it from Fab.
+  r = await call('POST', '/api/outfits/feedback', { occasion: 'casual', item_ids: casual.items.map(i => i.id), accessory_ids: casual.accessories.map(a => a.id), vote: 1, weather: { feelsLike: 55 } });
+  assert.equal(r.data.saved, true); assert.ok(r.data.fab.id);
+  r = await call('GET', '/api/fab'); assert.equal(r.data.length, 1); assert.equal(r.data[0].items.length, casual.items.length);
+  r = await call('PUT', '/api/fab/' + r.data[0].id, { name: 'Saturday standard' }); assert.equal(r.data.name, 'Saturday standard');
+  r = await call('POST', '/api/outfits/feedback', { occasion: 'casual', item_ids: casual.items.map(i => i.id), vote: -1 });
+  assert.equal(r.data.banned, true);
+  r = await call('GET', '/api/fab'); assert.equal(r.data.length, 0, 'never again removed it from Fab');
+  r = await call('GET', '/api/plan?date=' + today);
+  assert.notEqual(r.data.standard.casual.comboKey, casual.items.map(i => i.id).sort((a, b) => a - b).join(','), 'banned combo not proposed');
+  // Love it again lifts the ban.
   r = await call('POST', '/api/outfits/feedback', { occasion: 'casual', item_ids: casual.items.map(i => i.id), vote: 1 });
-  assert.equal(r.data.ok, true);
+  assert.equal(r.data.saved, true);
+  r = await call('GET', '/api/fab'); assert.equal(r.data.length, 1);
+  r = await call('POST', '/api/fab/' + r.data[0].id + '/wear', { date: today }); assert.ok(r.data.logged);
+  r = await call('DELETE', '/api/fab/' + (await call('GET', '/api/fab')).data[0].id); assert.equal(r.data.deleted, true);
+  await call('POST', '/api/laundry/done');
+
+  // Packing.
+  r = await call('POST', '/api/pack', { tempHigh: 72, tempLow: 55, precipProb: 10, requests: { business_casual: 2, weekend: 1, gym: 1 } });
+  assert.equal(r.status, 200); assert.equal(r.data.outfits.length, 4); assert.ok(r.data.stats.pieces > 0 && r.data.stats.pieces < 16);
+  r = await call('POST', '/api/pack', { requests: { gym: 1 } }); assert.equal(r.status, 400);
   r = await call('POST', '/api/outfits/generate', { occasion: 'casual', date: today, lock: { top: casual.slots.top.id }, exclude: [casual.slots.bottom.id] });
   assert.equal(r.data.slots.top.id, casual.slots.top.id);
   assert.ok(!r.data.items.some(i => i.id === casual.slots.bottom.id));

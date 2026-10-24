@@ -135,6 +135,52 @@ function undoWear(db, logId) {
   } catch (e) { db.exec('ROLLBACK'); throw e; }
 }
 
+/** Owner feedback as the engine consumes it: banned combos, loved combos, and pair nudges. */
+function feedbackContext(db) {
+  const { comboKeyFromIds, pairKeys } = require('./engine');
+  const banned = new Set(), fab = new Set(), pairs = new Map();
+  const bump = (ids, delta) => { for (const pk of pairKeys(ids)) pairs.set(pk, (pairs.get(pk) || 0) + delta); };
+  for (const r of db.prepare('SELECT item_ids FROM outfit_feedback WHERE vote < 0').all()) {
+    const ids = JSON.parse(r.item_ids); banned.add(comboKeyFromIds(ids)); bump(ids, 0.7);
+  }
+  for (const r of db.prepare('SELECT item_ids FROM fab_outfits').all()) {
+    const ids = JSON.parse(r.item_ids); fab.add(comboKeyFromIds(ids)); bump(ids, -0.4);
+  }
+  return { banned, fab, pairs };
+}
+
+function saveFab(db, { name, occasion, look, itemIds, accessoryIds = [], weather = {} }) {
+  const { comboKeyFromIds } = require('./engine');
+  const key = comboKeyFromIds(itemIds);
+  const existing = db.prepare('SELECT id, item_ids FROM fab_outfits').all().find(r => comboKeyFromIds(JSON.parse(r.item_ids)) === key);
+  if (existing) return getFab(db, existing.id);
+  const res = db.prepare('INSERT INTO fab_outfits(name, occasion, look, item_ids, accessory_ids, weather) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(name || '', occasion, look || '', JSON.stringify(itemIds), JSON.stringify(accessoryIds), JSON.stringify(weather));
+  // A loved combination cancels any earlier "never again" on the same pieces.
+  for (const r of db.prepare('SELECT id, item_ids FROM outfit_feedback WHERE vote < 0').all()) if (comboKeyFromIds(JSON.parse(r.item_ids)) === key) db.prepare('DELETE FROM outfit_feedback WHERE id = ?').run(r.id);
+  return getFab(db, Number(res.lastInsertRowid));
+}
+function getFab(db, id) {
+  const r = db.prepare('SELECT * FROM fab_outfits WHERE id = ?').get(id);
+  return r ? hydrateFab(db, r) : null;
+}
+function hydrateFab(db, r) {
+  const byId = new Map(listItems(db).map(i => [i.id, i]));
+  const ids = JSON.parse(r.item_ids), acc = JSON.parse(r.accessory_ids || '[]');
+  let weather = {}; try { weather = JSON.parse(r.weather || '{}'); } catch {}
+  const items = ids.map(id => byId.get(id)).filter(Boolean), accessories = acc.map(id => byId.get(id)).filter(Boolean);
+  return { ...r, item_ids: ids, accessory_ids: acc, items, accessories, weather, complete: items.length === ids.length, allClean: items.every(i => i.status === 'clean') };
+}
+function listFab(db) { return db.prepare('SELECT * FROM fab_outfits ORDER BY id DESC').all().map(r => hydrateFab(db, r)); }
+function deleteFab(db, id) { return db.prepare('DELETE FROM fab_outfits WHERE id = ?').run(id).changes > 0; }
+function banCombo(db, { date, occasion, itemIds }) {
+  const { comboKeyFromIds } = require('./engine');
+  const key = comboKeyFromIds(itemIds);
+  // Dislike removes it from Fab if it was there.
+  for (const r of db.prepare('SELECT id, item_ids FROM fab_outfits').all()) if (comboKeyFromIds(JSON.parse(r.item_ids)) === key) db.prepare('DELETE FROM fab_outfits WHERE id = ?').run(r.id);
+  db.prepare('INSERT INTO outfit_feedback(date, occasion, item_ids, vote) VALUES (?, ?, ?, -1)').run(date, occasion, JSON.stringify(itemIds));
+}
+
 function laundryDone(db) {
   return db.prepare(`UPDATE items SET status = 'clean', wears_since_wash = 0, updated_at = datetime('now') WHERE status IN ('dirty', 'laundry')`).run().changes;
 }
@@ -159,4 +205,5 @@ function history(db, limit = 50) {
 module.exports = {
   ITEM_FIELDS, CATEGORIES, STATUSES, sanitizeItem, listItems, getItem, insertItem, insertItems, updateItem, deleteItem,
   affinityMap, adjustAffinity, recordWear, undoWear, laundryDone, listEvents, history,
+  feedbackContext, saveFab, getFab, listFab, deleteFab, banCombo,
 };

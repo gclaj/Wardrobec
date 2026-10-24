@@ -45,7 +45,7 @@
   const state = { settings: { units: 'F' }, meta: null, date: todayISO(), plan: null, attempts: {}, locks: {}, items: [], filters: {}, week: null };
 
   // ---------- router ----------
-  const views = { today: renderToday, looks: renderLooks, closet: renderCloset, events: renderEvents, history: renderHistory, settings: renderSettings };
+  const views = { today: renderToday, looks: renderLooks, fab: renderFab, pack: renderPack, closet: renderCloset, events: renderEvents, history: renderHistory, settings: renderSettings };
   async function route() {
     const hash = (location.hash || '#today').slice(1).split('?')[0];
     const view = views[hash] ? hash : 'today';
@@ -126,7 +126,7 @@
       .map(s => `<div class="slot slot-wrap" data-slot="${s}"><div class="swatch" style="background:var(--surface-2);color:var(--muted);text-shadow:none">+</div><div class="grow"><span class="muted small">No ${s}</span></div><button class="small ghost" data-alts="${s}">Add</button></div>`);
     return `
       <div class="card outfit ${ev ? 'event-card' : ''}" data-outfit="${key}" data-occasion="${esc(o.occasion)}" ${ev ? `data-event="${ev.id}"` : ''} ${o.look ? `data-look="${esc(o.look.key)}"` : ''}>
-        <div class="card-head">${head}<span class="chip ${fitClass(o.fit)}" title="score ${o.score}">${esc(o.fit)}</span></div>
+        <div class="card-head">${head}<span>${o.fab ? '<span class="chip accent" title="One of your Fab outfits">fab</span> ' : ''}<span class="chip ${fitClass(o.fit)}" title="score ${o.score}">${esc(o.fit)}</span></span></div>
         ${o.missing && o.missing.length ? `<p class="small" style="color:var(--bad)">Missing: ${o.missing.join(', ')}. Add pieces in the Closet.</p>` : ''}
         ${slots.join('')}${emptyOptional.join('')}
         ${o.accessories && o.accessories.length ? `<div class="acc chips">${o.accessories.map(a => `<span class="chip" title="${esc(a.why || '')}">${esc(a.name)}</span>`).join('')}</div>` : ''}
@@ -134,8 +134,8 @@
         <div class="actions">
           <button class="primary small" data-act="wear" ${o.items.length ? '' : 'disabled'}>Wear this</button>
           <button class="small" data-act="regen">Regenerate</button>
-          <button class="small ghost" data-act="like" title="More like this">Like</button>
-          <button class="small ghost" data-act="dislike" title="Less like this">Dislike</button>
+          <button class="small ghost" data-act="like" title="Save this exact outfit to Fab">Love it</button>
+          <button class="small ghost" data-act="dislike" title="Never suggest this combination again">Never again</button>
         </div>
       </div>`;
   }
@@ -196,10 +196,81 @@
         state.attempts = {}; state.locks = {}; route();
       } catch (err) { toast(err.message, true); }
     });
-    for (const vote of ['like', 'dislike']) card.querySelector(`[data-act="${vote}"]`).addEventListener('click', async () => {
+    card.querySelector('[data-act="like"]').addEventListener('click', async () => {
       const o = getOutfit();
-      try { await api('POST', '/api/outfits/feedback', { date: state.date, occasion, item_ids: o.items.map(i => i.id), vote: vote === 'like' ? 1 : -1 }); toast(vote === 'like' ? 'Noted. You will see more of these pieces together.' : 'Noted. These pieces will rank lower for ' + title(occasion) + '.'); }
-      catch (err) { toast(err.message, true); }
+      try {
+        const r = await api('POST', '/api/outfits/feedback', { date: state.date, occasion, look: o.look ? o.look.key : '', item_ids: o.items.map(i => i.id), accessory_ids: o.accessories.map(a => a.id), vote: 1, weather: state.plan.weather || {} });
+        toast('Saved to Fab. The stylist will bring this one back.');
+        setOutfit({ ...o, fab: true }); rerender({ ...o, fab: true });
+      } catch (err) { toast(err.message, true); }
+    });
+    card.querySelector('[data-act="dislike"]').addEventListener('click', async () => {
+      const o = getOutfit();
+      try {
+        await api('POST', '/api/outfits/feedback', { date: state.date, occasion, item_ids: o.items.map(i => i.id), vote: -1 });
+        toast('Never again. Finding another combination…');
+        state.locks[key] = {};
+        await regenerate(null);
+      } catch (err) { toast(err.message, true); }
+    });
+  }
+
+  // ---------- FAB ----------
+  async function renderFab(app) {
+    app.innerHTML = '<p class="muted">Loading…</p>';
+    const fabs = await api('GET', '/api/fab');
+    app.innerHTML = `<h1>Fab outfits</h1><p class="muted">Combinations you loved. The stylist favours these whenever the weather and the laundry allow, and you can wear one directly from here.</p>
+      ${fabs.length ? `<div class="grid cols-3">${fabs.map(f => `<div class="card compact" data-fab="${f.id}">
+        <div class="card-head"><div><b>${esc(f.name || title(f.look || f.occasion))}</b><div class="small muted">${esc(title(f.occasion))}${f.weather && f.weather.feelsLike != null ? ' · saved at ' + tempFmt(f.weather.feelsLike) : ''}${f.times_worn ? ' · worn ' + f.times_worn + '×' : ''}</div></div>${f.allClean ? '<span class="chip good">ready</span>' : '<span class="chip warn">in the wash</span>'}</div>
+        ${f.items.map(i => `<div class="row" style="gap:8px;padding:3px 0">${swatch(i)}<span class="small">${esc(i.name)}</span></div>`).join('')}
+        ${f.accessories.length ? `<div class="chips" style="margin-top:6px">${f.accessories.map(a => `<span class="chip">${esc(a.name)}</span>`).join('')}</div>` : ''}
+        <div class="row" style="justify-content:space-between;margin-top:10px"><div class="row" style="gap:6px"><button class="primary small" data-act="wear" ${f.allClean ? '' : 'disabled'}>Wear this</button><button class="small ghost" data-act="rename">Name</button></div><button class="small ghost danger" data-act="remove">Remove</button></div>
+      </div>`).join('')}</div>` : '<div class="card empty"><h3>Nothing saved yet</h3><p>Press <b>Love it</b> on any outfit card and it lands here.</p></div>'}`;
+    app.querySelectorAll('[data-fab]').forEach(card => {
+      const id = card.dataset.fab;
+      card.querySelector('[data-act="wear"]').addEventListener('click', async () => { await api('POST', `/api/fab/${id}/wear`, { date: todayISO(), weather: {} }); toast('Logged for today'); renderFab(app); });
+      card.querySelector('[data-act="rename"]').addEventListener('click', async () => { const name = prompt('Name this outfit'); if (name != null) { await api('PUT', `/api/fab/${id}`, { name }); renderFab(app); } });
+      card.querySelector('[data-act="remove"]').addEventListener('click', async () => { if (confirm('Remove from Fab?')) { await api('DELETE', `/api/fab/${id}`); renderFab(app); } });
+    });
+  }
+
+  // ---------- PACK ----------
+  async function renderPack(app) {
+    const meta = state.meta || (state.meta = await api('GET', '/api/meta'));
+    const looks = meta.looks || [];
+    const saved = (() => { try { return JSON.parse(localStorage.getItem('pack-form') || 'null'); } catch { return null; } })() || {};
+    const req = saved.requests || {};
+    app.innerHTML = `<h1>Pack</h1><p class="muted">Tell it the trip and it fills the smallest bag that covers every outfit, reusing bottoms, layers and shoes across days.</p>
+      <div class="grid cols-2">
+        <div class="card"><form id="pack-form"><h3>The trip</h3><div class="form-grid">
+          <div class="field"><label>Days</label><input type="number" name="days" min="1" max="30" value="${saved.days || 3}"></div>
+          <div class="field"><label>Daytime high (${state.settings.units === 'C' ? '°C' : '°F'})</label><input type="number" name="hi" required value="${saved.hi ?? ''}"></div>
+          <div class="field"><label>Night low</label><input type="number" name="lo" value="${saved.lo ?? ''}"></div>
+          <div class="field"><label>Chance of rain (%)</label><input type="number" name="precip" min="0" max="100" value="${saved.precip ?? 20}"></div>
+          <div class="field wide"><label style="display:flex;gap:6px;align-items:center;color:var(--text);font-size:.9rem"><input type="checkbox" name="laundry" ${saved.laundry ? 'checked' : ''}>Laundry available mid-trip</label></div>
+          </div>
+          <h3 style="margin-top:12px">Outfits needed</h3><p class="small muted">How many of each look over the whole trip. Gym counts as one per session.</p>
+          <div class="form-grid">${looks.map(l => `<div class="field"><label>${esc(l.name)}</label><input type="number" min="0" max="14" data-req="${l.key}" value="${req[l.key] || 0}"></div>`).join('')}<div class="field"><label>Gym sessions</label><input type="number" min="0" max="14" data-req="gym" value="${req.gym || 0}"></div></div>
+          <div class="row" style="justify-content:flex-end;margin-top:8px"><button class="primary" type="submit">Pack my bag</button></div>
+        </form></div>
+        <div id="pack-result"><div class="card empty"><h3>Your bag will appear here</h3><p>Fill in the trip and press Pack my bag.</p></div></div>
+      </div>`;
+    $('#pack-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target; const toF = (v) => state.settings.units === 'C' ? Number(v) * 9 / 5 + 32 : Number(v);
+      const requests = {}; f.querySelectorAll('[data-req]').forEach(inp => { if (Number(inp.value) > 0) requests[inp.dataset.req] = Number(inp.value); });
+      const payload = { tempHigh: toF(f.hi.value), tempLow: f.lo.value === '' ? toF(f.hi.value) : toF(f.lo.value), precipProb: Number(f.precip.value), laundry: f.laundry.checked, requests };
+      try { localStorage.setItem('pack-form', JSON.stringify({ days: f.days.value, hi: f.hi.value, lo: f.lo.value, precip: f.precip.value, laundry: f.laundry.checked, requests })); } catch {}
+      $('#pack-result').innerHTML = '<p class="muted">Packing…</p>';
+      try {
+        const r = await api('POST', '/api/pack', payload);
+        const groups = {}; for (const b of r.bag) (groups[b.item.category] ||= []).push(b);
+        $('#pack-result').innerHTML = `
+          <div class="card" style="margin-bottom:12px"><div class="kpi"><div><b>${r.stats.pieces}</b><span>pieces of clothing</span></div><div><b>${r.stats.outfits}</b><span>outfits covered</span></div><div><b>${r.stats.ratio}</b><span>outfits per piece</span></div><div><b>${r.stats.accessories}</b><span>accessories</span></div></div>
+            ${r.stats.incomplete ? `<p class="small" style="color:var(--bad);margin-top:8px">${r.stats.incomplete} outfit${r.stats.incomplete > 1 ? 's' : ''} could not be completed from the closet.</p>` : ''}</div>
+          <div class="card" style="margin-bottom:12px"><h3>The bag</h3>${Object.entries(groups).map(([cat, list]) => `<h4 style="margin-top:10px">${esc(title(cat))} · ${list.length}</h4>${list.map(b => `<div class="row" style="gap:8px;padding:3px 0">${swatch(b.item)}<span class="small grow" style="flex:1">${esc(b.item.name)}</span><span class="chip">${b.usedIn} outfit${b.usedIn === 1 ? '' : 's'}</span></div>`).join('')}`).join('')}</div>
+          <div class="card"><h3>Outfit plan</h3>${r.outfits.map((x, i) => `<div style="padding:8px 0;border-bottom:1px dashed var(--border)"><b>${i + 1}. ${esc(x.slot.label)}</b> <span class="chip ${fitClass(x.outfit.fit)}">${esc(x.outfit.fit)}</span><div class="small muted">${x.outfit.items.map(it => esc(it.name)).join(' + ')}${x.outfit.accessories.length ? ' · ' + x.outfit.accessories.map(a => esc(a.name)).join(', ') : ''}</div></div>`).join('')}</div>`;
+      } catch (err) { $('#pack-result').innerHTML = `<div class="card"><p style="color:var(--bad)">${esc(err.message)}</p></div>`; }
     });
   }
 

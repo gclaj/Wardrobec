@@ -155,6 +155,7 @@ function itemWeatherPenalty(item, slot, wx) {
  */
 function scoreItem(item, slot, ctx) {
   if (ctx.exclude && ctx.exclude.has(item.id)) return null;
+  if (ctx.uses && ctx.uses.has(item.id) && ctx.uses.get(item.id) <= 0) return null; // used up on this trip
   if (!ctx.ignoreStatus) {
     if (item.status === 'retired' || item.status === 'laundry') return null;
     if (item.status === 'dirty' && !ctx.allowDirty) return null;
@@ -171,6 +172,7 @@ function scoreItem(item, slot, ctx) {
   if (slot === 'shoes' && ctx.occasion.lean === 'elevated' && SNEAKER_SUBS.test(item.subcategory || '')) s += 0.8;
   if (slot === 'shoes' && ctx.occasion.lean === 'relaxed' && DRESSY_SHOE_SUBS.test(item.subcategory || '') && !item.rain_ok) s += 0.5;
   if (item.favorite) s -= 0.7;
+  if (ctx.prefer && ctx.prefer.has(item.id)) s -= 1.5; // already in the bag: mix and match
   if (ctx.profile) s -= ctx.pr(item) * (PALETTE_WEIGHT[slot] || 0.3);
   const aff = ctx.affinity ? (ctx.affinity.get(item.id) || 0) : 0;
   s -= aff * 0.6;
@@ -185,6 +187,17 @@ function outfitWarmth(c) {
   if (c.layer) w += 0.4 + 0.4 * (Number(c.layer.warmth) - 1);
   if (c.outerwear) w += 0.3 + 0.7 * (Number(c.outerwear.warmth) - 1);
   return Math.min(w, 6);
+}
+
+/** Stable key for a combination of core pieces (accessories excluded). */
+function comboKey(c) {
+  return ['top', 'dress', 'layer', 'outerwear', 'bottom', 'shoes'].map(k => c[k] && c[k].id).filter(Boolean).sort((a, b) => a - b).join(',');
+}
+function comboKeyFromIds(ids) { return [...new Set(ids.map(Number))].sort((a, b) => a - b).join(','); }
+function pairKeys(ids) {
+  const s = [...new Set(ids.map(Number))].sort((a, b) => a - b); const out = [];
+  for (let i = 0; i < s.length; i++) for (let j = i + 1; j < s.length; j++) out.push(s[i] + '|' + s[j]);
+  return out;
 }
 
 function center(item) { return (Number(item.formality_min ?? 1) + Number(item.formality_max ?? 1)) / 2; }
@@ -293,6 +306,13 @@ function scoreCombo(c, ctx, items) {
   if (c.dress && occ.key === 'gym') s += 10;
   // Personal colour profile: contrast and the "look formula" (dark base + crisp white + jewel accent)
   if (ctx.profile) s += profileComboPenalty(c, ctx.profile, notes, ctx.pr, occ.key);
+  // What the owner has said about this exact combination and the pairs inside it
+  if (ctx.feedback) {
+    const key = comboKey(c);
+    if (ctx.feedback.banned.has(key)) { s += 100; notes.push('you said never again'); }
+    if (ctx.feedback.fab.has(key)) { s -= 3.0; }
+    if (ctx.feedback.pairs.size) for (const pk of pairKeys(key.split(',').filter(Boolean))) s += ctx.feedback.pairs.get(pk) || 0;
+  }
   // Style-guide rules (one accent colour, simple layering)
   if (occ.look || (ctx.profile && ctx.profile.key === 'style_guide')) s += guide.styleRules(c, notes);
   // Suits
@@ -417,6 +437,7 @@ function buildOutfit(items, occasionKey, opts = {}) {
     exclude: opts.exclude || new Set(), affinity: opts.affinity, allowDirty: !!opts.allowDirty,
     ignoreStatus: !!opts.ignoreStatus, rand: opts.deterministic ? null : mulberry32(seed),
     profile: normalizeProfile(opts.profile),
+    feedback: opts.feedback || null, prefer: opts.prefer || null, uses: opts.uses || null,
   };
   ctx.pr = ctx.profile ? ratingCache(ctx.profile) : () => 0;
   const lock = opts.lock || {};
@@ -477,6 +498,8 @@ function buildOutfit(items, occasionKey, opts = {}) {
     occasion: occasionKey,
     label: occ.label,
     look: occ.look ? { key: occ.look.key, name: occ.look.name, summary: occ.look.summary } : null,
+    comboKey: comboKey(chosen),
+    fab: !!(ctx.feedback && ctx.feedback.fab.has(comboKey(chosen))),
     lean,
     complete: missing.length === 0,
     missing,
@@ -565,6 +588,7 @@ function coverageReport(items, profile) {
 }
 
 module.exports = {
+  comboKey, comboKeyFromIds, pairKeys,
   OCCASIONS, OCCASION_KEYS, LEANS, targetWarmth, weatherContext, scoreItem, scoreCombo, buildOutfit, planDay,
   coverageReport, formalityPenalty, freshnessPenalty, outfitWarmth, hashString, mulberry32, hourlyAt, paletteRating,
 };

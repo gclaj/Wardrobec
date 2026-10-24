@@ -69,6 +69,17 @@ CREATE TABLE IF NOT EXISTS outfit_feedback (
   vote INTEGER NOT NULL,             -- 1 like, -1 dislike
   created_at TEXT DEFAULT (datetime('now'))
 );
+CREATE TABLE IF NOT EXISTS fab_outfits (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT DEFAULT '',
+  occasion TEXT NOT NULL,
+  look TEXT DEFAULT '',
+  item_ids TEXT NOT NULL,            -- JSON array of core pieces
+  accessory_ids TEXT DEFAULT '[]',
+  weather TEXT DEFAULT '{}',
+  times_worn INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT (datetime('now'))
+);
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT

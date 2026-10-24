@@ -246,3 +246,38 @@ test('capsule audit reports owned, stand-in and missing pieces from the closet',
   assert.equal(c.counts.owned + c.counts.substitute + c.counts.missing, 20);
   assert.equal(capsuleStatus([]).counts.missing, 20);
 });
+
+test('never again bans the exact combination; love it brings it back', () => {
+  const { PRESETS } = require('../server/profile');
+  const { comboKeyFromIds, pairKeys } = require('../server/engine');
+  const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean', wear_count: 0 }));
+  const opts = { weather: { feelsLike: 60 }, deterministic: true, profile: PRESETS.style_guide, look: 'business_casual' };
+  const first = buildOutfit(items, 'business_casual', opts);
+  const ids = first.items.map(i => i.id);
+  const banned = new Set([comboKeyFromIds(ids)]); const pairs = new Map(); for (const pk of pairKeys(ids)) pairs.set(pk, 0.7);
+  const second = buildOutfit(items, 'business_casual', { ...opts, feedback: { banned, fab: new Set(), pairs } });
+  assert.notEqual(second.comboKey, first.comboKey, 'banned combo is not proposed again');
+  const fab = new Set([comboKeyFromIds(ids)]);
+  const third = buildOutfit(items, 'business_casual', { ...opts, weather: { feelsLike: 66 }, feedback: { banned: new Set(), fab, pairs: new Map() } });
+  assert.equal(third.comboKey, first.comboKey, 'loved combo wins when conditions allow');
+  assert.equal(third.fab, true);
+});
+
+test('packing covers every requested outfit with a smaller bag than the outfits add up to', () => {
+  const { planTrip } = require('../server/packing');
+  const { PRESETS } = require('../server/profile');
+  const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean', wear_count: 0 }));
+  const plan = planTrip(items, { requests: { business_casual: 2, polished_work: 1, weekend: 2, dinner: 1, gym: 2 }, weather: { tempHigh: 68, tempLow: 50, precipProb: 20 }, profile: PRESETS.style_guide });
+  assert.equal(plan.outfits.length, 8);
+  assert.equal(plan.stats.incomplete, 0);
+  const naive = plan.outfits.reduce((n, x) => n + x.outfit.items.length, 0);
+  assert.ok(plan.stats.pieces < naive, `${plan.stats.pieces} pieces vs ${naive} if nothing were reused`);
+  assert.ok(plan.stats.ratio >= 0.35, 'pieces are reused: ' + plan.stats.ratio);
+  // tops wash every wear so no top is worn twice without laundry; bottoms and shoes repeat
+  const topUses = plan.bag.filter(b => b.item.category === 'top').map(b => b.usedIn);
+  assert.ok(topUses.every(u => u <= 1), 'no top reused without laundry');
+  assert.ok(plan.bag.some(b => ['bottom', 'shoes'].includes(b.item.category) && b.usedIn >= 2), 'bottoms or shoes are reused');
+  const withLaundry = planTrip(items, { requests: { business_casual: 2, polished_work: 1, weekend: 2, dinner: 1, gym: 2 }, weather: { tempHigh: 68, tempLow: 50, precipProb: 20 }, laundry: true, profile: PRESETS.style_guide });
+  assert.ok(withLaundry.stats.pieces <= plan.stats.pieces, 'laundry never makes the bag bigger');
+  assert.equal(planTrip(items, { requests: {}, weather: { tempHigh: 70 } }).outfits.length, 0);
+});
