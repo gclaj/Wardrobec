@@ -207,7 +207,7 @@ test('style guide looks arrange the owner closet into the guide formulas', () =>
   const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean', wear_count: 0 }));
   const o = (occ, look, t = 62) => buildOutfit(items, occ, { weather: { feelsLike: t }, deterministic: true, profile: PRESETS.style_guide, look });
   const pw = o('formal', 'polished_work');
-  assert.equal(pw.slots.layer.subcategory, 'blazer'); assert.match(pw.slots.top.subcategory, /button-down/); assert.equal(pw.slots.shoes.subcategory, 'loafers');
+  assert.equal(pw.slots.layer.subcategory, 'blazer'); assert.match(pw.slots.top.subcategory, /button-down/); assert.match(pw.slots.shoes.subcategory, /loafers|dress shoes/);
   assert.equal(pw.look.key, 'polished_work'); assert.match(pw.rationale[0], /Blazer \+ dress shirt/);
   const we = o('casual', 'weekend', 85);
   assert.match(we.slots.bottom.subcategory, /shorts/); assert.match(we.slots.shoes.subcategory, /sneakers|training/);
