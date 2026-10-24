@@ -20,6 +20,13 @@ Requires Node 22.13 or newer (for `node:sqlite`). Data lives in `data/wardrobe.d
 
 First run: open **Settings** and search your city so the forecast can load. Then open **Closet** and use **Quick add** to paste your clothes one per line ("navy wool blazer", "grey running shorts"). The classifier fills in category, colour, formality, warmth and rain-readiness; correct anything it guesses wrong.
 
+## Deploying (Railway and similar)
+
+The app has no build step and no dependencies. On a platform that sets `PORT`, the server binds to all interfaces automatically. `nixpacks.toml`, `.node-version` and `railway.json` pin Node 22 and the start command. Two settings matter:
+
+- **Persist the database.** The container filesystem is wiped on every deploy. Add a volume (for example mounted at `/data`) and set `WARDROBE_DB=/data/wardrobe.db`. Without it the closet, history and Fab outfits reset on each deploy; the closet file can be reloaded from the Closet menu, but history cannot.
+- **No API keys.** Weather comes from Open-Meteo, which needs none. The `npm warn config production` line in build logs is harmless.
+
 ## How it decides
 
 **Every item carries a small model of itself.**

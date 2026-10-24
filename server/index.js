@@ -73,9 +73,13 @@ if (require.main === module) {
   const dbFile = process.env.WARDROBE_DB || path.join(__dirname, '..', 'data', 'wardrobe.db');
   const db = openDb(dbFile);
   const port = Number(process.env.PORT || 3000);
-  const host = process.env.HOST || '127.0.0.1';
+  // Bind to all interfaces when a platform hands us a PORT (Railway, Render, Fly, Docker);
+  // stay on localhost for plain `npm start` on a laptop.
+  const host = process.env.HOST || (process.env.PORT ? '0.0.0.0' : '127.0.0.1');
+  const major = Number(process.versions.node.split('.')[0]);
+  if (major < 22) { console.error(`Wardrobec needs Node 22.13 or newer (found ${process.versions.node}).`); process.exit(1); }
   createServer(db).listen(port, host, () => {
-    console.log(`Wardrobec running at http://${host}:${port}  (db: ${dbFile})`);
+    console.log(`Wardrobec running on ${host}:${port}  (db: ${dbFile}, node ${process.versions.node})`);
   });
 }
 

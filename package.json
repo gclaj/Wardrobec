@@ -4,7 +4,7 @@
   "description": "A personal wardrobe assistant that knows every item you own and proposes gym, casual, business-casual and formal outfits each day, adjusted for the weather and your calendar.",
   "main": "server/index.js",
   "private": true,
-  "engines": { "node": ">=22.13" },
+  "engines": { "node": "22.x" },
   "scripts": {
     "start": "node --no-warnings=ExperimentalWarning server/index.js",
     "dev": "node --no-warnings=ExperimentalWarning --watch server/index.js",
