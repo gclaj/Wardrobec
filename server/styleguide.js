@@ -54,13 +54,13 @@ const LOOKS = {
     key: 'weekend', name: 'Weekend / Errands', occasion: 'casual', lean: 'relaxed',
     summary: 'T-shirt + shorts + sneakers + sling',
     why: 'Comfortable for time with your children, walking, and everyday errands.',
-    formula: { top: ['t-shirt', 'performance tee', 'polo'], bottom: ['shorts', 'athletic shorts', 'five-pocket pants'], shoes: ['sneakers', 'training shoes'], accessory: ['bag'] },
+    formula: { top: ['t-shirt', 'performance tee', 'polo', 'camp shirt'], bottom: ['shorts', 'athletic shorts', 'five-pocket pants'], shoes: ['sneakers', 'training shoes'], accessory: ['bag'] },
   },
   date_night: {
     key: 'date_night', name: 'Date Night', occasion: 'casual', lean: 'elevated',
     summary: 'Henley + jeans + boots',
     why: 'A fitted but not tight silhouette that looks intentionally dressed without being formal.',
-    formula: { top: ['henley', 'long-sleeve tee', 'turtleneck', 'polo', 'button-down shirt'], bottom: ['jeans', 'five-pocket pants'], shoes: ['chukka boots', 'chelsea boots', 'boots', 'mid-top boots', 'loafers'] },
+    formula: { top: ['henley', 'long-sleeve tee', 'turtleneck', 'polo', 'button-down shirt', 'camp shirt'], bottom: ['jeans', 'five-pocket pants'], shoes: ['chukka boots', 'chelsea boots', 'boots', 'mid-top boots', 'loafers'] },
   },
   school_event: {
     key: 'school_event', name: 'School Event / Elevated Casual', occasion: 'casual', lean: 'elevated',

@@ -1707,6 +1707,81 @@
       "image": "/images/closet/columbia-tamiami-ii-cool-grey.jpg",
       "url": "https://www.academy.com",
       "notes": "Sun shirt for outdoors and heat; sleeves roll and tab."
+    },
+    {
+      "brand": "Old Navy",
+      "category": "top",
+      "subcategory": "camp shirt",
+      "pattern": "solid",
+      "material": "cotton blend",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [
+        "summer"
+      ],
+      "wears_before_wash": 1,
+      "image": "",
+      "url": "https://oldnavy.gap.com/browse/product.do?pid=short-sleeve-camp-shirt",
+      "notes": "Camp collar, worn open or buttoned. No photo yet; assumed solid, set the pattern if it is printed.",
+      "name": "Forest Green Short-Sleeve Camp Shirt",
+      "color": "forest green",
+      "color_family": "green"
+    },
+    {
+      "brand": "Old Navy",
+      "category": "top",
+      "subcategory": "camp shirt",
+      "pattern": "solid",
+      "material": "cotton blend",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [
+        "summer"
+      ],
+      "wears_before_wash": 1,
+      "image": "",
+      "url": "https://oldnavy.gap.com/browse/product.do?pid=short-sleeve-camp-shirt",
+      "notes": "Camp collar, worn open or buttoned. No photo yet; assumed solid, set the pattern if it is printed.",
+      "name": "Light Blue Short-Sleeve Camp Shirt",
+      "color": "light blue",
+      "color_family": "blue"
+    },
+    {
+      "brand": "Old Navy",
+      "category": "top",
+      "subcategory": "camp shirt",
+      "pattern": "solid",
+      "material": "cotton blend",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [
+        "summer"
+      ],
+      "wears_before_wash": 1,
+      "image": "",
+      "url": "https://oldnavy.gap.com/browse/product.do?pid=short-sleeve-camp-shirt",
+      "notes": "Camp collar, worn open or buttoned. No photo yet; assumed solid, set the pattern if it is printed.",
+      "name": "Tan Short-Sleeve Camp Shirt",
+      "color": "tan",
+      "color_family": "tan"
     }
   ]
 }

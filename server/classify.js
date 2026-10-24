@@ -77,6 +77,7 @@ const RULES = [
   { kw: ['tuxedo shirt'], category: 'top', sub: 'tuxedo shirt', warmth: 2, formality: [5, 5], occ: ['formal'], wbw: 1 },
   { kw: ['dress shirt', 'french cuff'], category: 'top', sub: 'dress shirt', warmth: 2, formality: [3, 5], occ: ['business_casual', 'formal'], wbw: 1 },
   { kw: ['oxford', 'ocbd', 'button-down', 'button down', 'button-up', 'button up', 'shirt'], category: 'top', sub: 'button-down shirt', warmth: 2, formality: [2, 4], occ: ['casual', 'business_casual', 'formal'], wbw: 1 },
+  { kw: ['camp shirt', 'camp collar shirt', 'cuban collar shirt', 'resort shirt'], category: 'top', sub: 'camp shirt', warmth: 1, formality: [1, 2], occ: ['casual'], wbw: 1 },
   { kw: ['polo'], category: 'top', sub: 'polo', warmth: 2, formality: [1, 3], occ: ['casual', 'business_casual'], wbw: 1 },
   { kw: ['henley'], category: 'top', sub: 'henley', warmth: 2, formality: [1, 2], occ: ['casual'], wbw: 1 },
   { kw: ['blouse'], category: 'top', sub: 'blouse', warmth: 2, formality: [2, 4], occ: ['business_casual', 'formal'], wbw: 1 },
