@@ -1823,6 +1823,144 @@
       "name": "Tan Short-Sleeve Camp Shirt",
       "color": "tan",
       "color_family": "tan"
+    },
+    {
+      "brand": "",
+      "category": "top",
+      "subcategory": "t-shirt",
+      "pattern": "solid",
+      "material": "cotton",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "image": "",
+      "url": "",
+      "notes": "Plain crewneck tee. Owner label: casual. You own several; adjust the count in the Closet.",
+      "name": "Black Plain T-Shirt",
+      "color": "black",
+      "color_family": "black"
+    },
+    {
+      "brand": "",
+      "category": "top",
+      "subcategory": "t-shirt",
+      "pattern": "solid",
+      "material": "cotton",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "image": "",
+      "url": "",
+      "notes": "Plain crewneck tee. Owner label: casual. You own several; adjust the count in the Closet.",
+      "name": "Black Plain T-Shirt (second one)",
+      "color": "black",
+      "color_family": "black"
+    },
+    {
+      "brand": "",
+      "category": "top",
+      "subcategory": "t-shirt",
+      "pattern": "solid",
+      "material": "cotton",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "image": "",
+      "url": "",
+      "notes": "Plain crewneck tee. Owner label: casual. You own several; adjust the count in the Closet.",
+      "name": "Tan Plain T-Shirt",
+      "color": "tan",
+      "color_family": "tan"
+    },
+    {
+      "brand": "",
+      "category": "top",
+      "subcategory": "t-shirt",
+      "pattern": "solid",
+      "material": "cotton",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "image": "",
+      "url": "",
+      "notes": "Plain crewneck tee. Owner label: casual. You own several; adjust the count in the Closet.",
+      "name": "Tan Plain T-Shirt (second one)",
+      "color": "tan",
+      "color_family": "tan"
+    },
+    {
+      "brand": "",
+      "category": "top",
+      "subcategory": "t-shirt",
+      "pattern": "solid",
+      "material": "cotton",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "image": "",
+      "url": "",
+      "notes": "Plain crewneck tee. Owner label: casual. You own several; adjust the count in the Closet.",
+      "name": "White Plain T-Shirt",
+      "color": "white",
+      "color_family": "white"
+    },
+    {
+      "brand": "",
+      "category": "top",
+      "subcategory": "t-shirt",
+      "pattern": "solid",
+      "material": "cotton",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "image": "",
+      "url": "",
+      "notes": "Plain crewneck tee. Owner label: casual. You own several; adjust the count in the Closet.",
+      "name": "White Plain T-Shirt (second one)",
+      "color": "white",
+      "color_family": "white"
     }
   ]
 }
