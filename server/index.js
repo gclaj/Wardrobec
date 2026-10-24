@@ -4,7 +4,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const { openDb } = require('./db');
-const { routes, HttpError } = require('./routes');
+const { routes, HttpError, ensureClosetLoaded } = require('./routes');
 
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.webmanifest': 'application/manifest+json' };
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -72,6 +72,8 @@ function createServer(db) {
 if (require.main === module) {
   const dbFile = process.env.WARDROBE_DB || path.join(__dirname, '..', 'data', 'wardrobe.db');
   const db = openDb(dbFile);
+  const seeded = ensureClosetLoaded(db);
+  if (seeded.loaded) console.log(`Loaded ${seeded.loaded} pieces from the closet file (${seeded.reason}).`);
   const port = Number(process.env.PORT || 3000);
   // Bind to all interfaces when a platform hands us a PORT (Railway, Render, Fly, Docker);
   // stay on localhost for plain `npm start` on a laptop.

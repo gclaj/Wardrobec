@@ -19,6 +19,15 @@ function closetFileItems() {
   return Array.isArray(data) ? data : data.items;
 }
 
+/** On an empty database, load the owner's closet file so the app is never blank on first run. */
+function ensureClosetLoaded(db) {
+  const count = db.prepare('SELECT COUNT(*) AS n FROM items').get().n;
+  if (count > 0) return { loaded: 0, reason: 'closet already has items' };
+  const items = closetFileItems();
+  if (!items || !items.length) return { loaded: 0, reason: 'no closet file' };
+  return { loaded: store.insertItems(db, items), reason: 'empty database' };
+}
+
 class HttpError extends Error { constructor(status, message) { super(message); this.status = status; } }
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const isDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || '');
@@ -290,4 +299,4 @@ function compile() {
   });
 }
 
-module.exports = { routes: compile(), HttpError, plan, settingsOf };
+module.exports = { routes: compile(), HttpError, plan, settingsOf, ensureClosetLoaded };

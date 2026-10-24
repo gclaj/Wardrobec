@@ -204,3 +204,12 @@ test('static files and SPA fallback are served', async () => {
   res = await fetch(base + '/api/nope');
   assert.equal(res.status, 404);
 });
+
+test('an empty database is seeded from the closet file at startup', () => {
+  const { ensureClosetLoaded } = require('../server/routes');
+  const db = openDb(':memory:');
+  const first = ensureClosetLoaded(db);
+  assert.ok(first.loaded > 70, 'closet loaded: ' + first.loaded);
+  const second = ensureClosetLoaded(db);
+  assert.equal(second.loaded, 0, 'does not double-load');
+});
