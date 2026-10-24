@@ -1659,6 +1659,29 @@
       "image": "/images/closet/llbean-fleece-lined-flannel-burgundy-plaid.jpg",
       "url": "https://www.llbean.com/llb/shop/PF298189",
       "notes": "Worn open as a shirt-jacket over a tee or henley."
+    },
+    {
+      "brand": "Towncraft",
+      "name": "Grey Plaid Flannel Button-Down",
+      "category": "top",
+      "subcategory": "flannel shirt",
+      "color": "grey, black and white plaid",
+      "color_family": "gray",
+      "pattern": "checked",
+      "material": "flannel",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 3,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 2,
+      "image": "/images/closet/towncraft-plaid-flannel-grey.jpg",
+      "url": "",
+      "notes": "Wears open over a tee as a light layer too."
     }
   ]
 }
