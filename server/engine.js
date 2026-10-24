@@ -590,6 +590,20 @@ function hourlyAt(hourly, time) {
   return hourly.find(x => x.hour === h) || null;
 }
 
+/** Guess the occasion from pieces the owner has already chosen. */
+function inferOccasion(pieces) {
+  const ps = pieces.filter(Boolean);
+  if (!ps.length) return 'casual';
+  const gymTagged = p => (p.occasions || []).includes('gym');
+  const gymOnly = p => Number(p.formality_max) === 0 || ((p.occasions || []).length > 0 && (p.occasions || []).every(o => o === 'gym'));
+  if (ps.every(gymTagged) && ps.some(gymOnly)) return 'gym';
+  const centers = ps.map(p => (Number(p.formality_min) + Number(p.formality_max)) / 2);
+  const top = Math.max(...centers), avg = centers.reduce((a, b) => a + b, 0) / centers.length;
+  if (top >= 4 || avg >= 3.5) return 'formal';
+  if (top >= 3 || avg >= 2.5) return 'business_casual';
+  return 'casual';
+}
+
 /** Coverage report: can the closet produce a complete outfit for every occasion × temperature × rain? */
 function coverageReport(items, profile, pairRules) {
   const bands = [
@@ -617,7 +631,7 @@ function coverageReport(items, profile, pairRules) {
 }
 
 module.exports = {
-  comboKey, comboKeyFromIds, pairKeys, DEFAULT_PAIR_RULES, pairRulePenalty,
+  comboKey, comboKeyFromIds, pairKeys, DEFAULT_PAIR_RULES, pairRulePenalty, inferOccasion,
   OCCASIONS, OCCASION_KEYS, LEANS, targetWarmth, weatherContext, scoreItem, scoreCombo, buildOutfit, planDay,
   coverageReport, formalityPenalty, freshnessPenalty, outfitWarmth, hashString, mulberry32, hourlyAt, paletteRating,
 };

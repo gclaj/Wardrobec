@@ -42,10 +42,10 @@
   const fitClass = (fit) => ({ excellent: 'good', good: 'good', workable: 'warn', stretch: 'bad', incomplete: 'bad' }[fit] || '');
 
   // ---------- state ----------
-  const state = { settings: { units: 'F' }, meta: null, date: todayISO(), plan: null, attempts: {}, locks: {}, items: [], filters: {}, week: null };
+  const state = { settings: { units: 'F' }, meta: null, date: todayISO(), plan: null, attempts: {}, locks: {}, baseLocks: {}, items: [], filters: {}, week: null };
 
   // ---------- router ----------
-  const views = { today: renderToday, looks: renderLooks, fab: renderFab, pack: renderPack, closet: renderCloset, events: renderEvents, history: renderHistory, settings: renderSettings };
+  const views = { today: renderToday, looks: renderLooks, fab: renderFab, pack: renderPack, finish: renderFinish, closet: renderCloset, events: renderEvents, history: renderHistory, settings: renderSettings };
   async function route() {
     const hash = (location.hash || '#today').slice(1).split('?')[0];
     const view = views[hash] ? hash : 'today';
@@ -151,12 +151,15 @@
       const ep = eventId ? state.plan.events.find(e => e.event.id === eventId) : null;
       const tmp = document.createElement('div'); tmp.innerHTML = outfitCard(o, key, ep ? { event: ep.event, weatherAt: ep.weatherAt } : {});
       const fresh = tmp.firstElementChild; card.replaceWith(fresh); wireOutfitCard(fresh);
+      if (key === 'finish') { const b = fresh.querySelector('[data-act="regen"]'); if (b) b.textContent = 'Try another'; }
     };
     const regenerate = async (lock) => {
       const o = getOutfit();
       const ep = eventId ? state.plan.events.find(e => e.event.id === eventId) : null;
       const attempt = lock ? (state.attempts[key] || 0) : (state.attempts[key] = (state.attempts[key] || 0) + 1);
-      const body = { occasion, date: state.date, attempt, lock: lock || {}, salt: eventId ? 'event' + eventId : '', lean: ep ? ep.event.lean : undefined, look: ep ? (ep.event.look || null) : (lookKey || undefined) };
+      const base = state.baseLocks[key] || {};
+      const body = { occasion: state.finishOccasion && key === 'finish' ? state.finishOccasion : occasion, date: state.date, attempt, lock: { ...base, ...(lock || {}) }, salt: eventId ? 'event' + eventId : (key === 'finish' ? 'finish' : ''), lean: ep ? ep.event.lean : undefined, look: ep ? (ep.event.look || null) : (key === 'finish' ? (state.finishLook || null) : (lookKey || undefined)) };
+      if (key === 'finish' && base.accessories) body.lock.accessories = base.accessories;
       if (ep && ep.event.time) body.time = ep.event.time;
       if (ep) body.exclude = state.plan.events.filter(x => x.event.id !== eventId).flatMap(x => x.outfit.items.map(i => i.id));
       if (!lock) state.locks[key] = {};
@@ -231,6 +234,45 @@
       card.querySelector('[data-act="wear"]').addEventListener('click', async () => { await api('POST', `/api/fab/${id}/wear`, { date: todayISO(), weather: {} }); toast('Logged for today'); renderFab(app); });
       card.querySelector('[data-act="rename"]').addEventListener('click', async () => { const name = prompt('Name this outfit'); if (name != null) { await api('PUT', `/api/fab/${id}`, { name }); renderFab(app); } });
       card.querySelector('[data-act="remove"]').addEventListener('click', async () => { if (confirm('Remove from Fab?')) { await api('DELETE', `/api/fab/${id}`); renderFab(app); } });
+    });
+  }
+
+  // ---------- FINISH THE LOOK ----------
+  async function renderFinish(app) {
+    const meta = state.meta || (state.meta = await api('GET', '/api/meta'));
+    const items = (await api('GET', '/api/items')).filter(i => i.status !== 'retired');
+    const bySlot = {};
+    for (const i of items) (bySlot[i.category] ||= []).push(i);
+    const slotSel = (slot, label) => `<div class="field"><label>${label}</label><select data-slot="${slot}"><option value="">Let the stylist choose</option>${slot !== 'top' && slot !== 'bottom' && slot !== 'shoes' ? `<option value="none">None</option>` : ''}${(bySlot[slot] || []).map(i => `<option value="${i.id}">${esc(i.name)}${i.status !== 'clean' ? ' (in the wash)' : ''}</option>`).join('')}</select></div>`;
+    app.innerHTML = `<h1>Finish the look</h1><p class="muted">Pick what you're already wearing, or what you want to wear, and the stylist fills the empty slots around it for ${fmtDate(state.date, { weekday: 'long', month: 'short', day: 'numeric' })}'s weather. Your picks stay fixed through Swap and Try another.</p>
+      <div class="grid cols-2">
+        <div class="card"><form id="finish-form"><div class="form-grid">
+          ${slotSel('outerwear', 'Outerwear')}${slotSel('layer', 'Layer')}${slotSel('top', 'Top')}${slotSel('bottom', 'Bottom')}${slotSel('shoes', 'Shoes')}
+          <div class="field"><label>Accessory to keep</label><select data-slot="accessory"><option value="">Let the stylist choose</option>${(bySlot.accessory || []).map(i => `<option value="${i.id}">${esc(i.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>Occasion</label><select name="occasion"><option value="auto">Work it out from my picks</option>${Object.values(meta.occasions).map(o => `<option value="${o.key}">${o.label}</option>`).join('')}</select></div>
+          <div class="field"><label>Look (optional)</label><select name="look"><option value="">None</option>${(meta.looks || []).map(l => `<option value="${l.key}">${esc(l.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>Date</label><input type="date" name="date" value="${state.date}"></div>
+          <div class="field"><label style="display:flex;gap:6px;align-items:center;color:var(--text);font-size:.9rem;margin-top:22px"><input type="checkbox" name="allowDirty">Allow pieces that are in the wash</label></div>
+          </div><div class="row" style="justify-content:flex-end;margin-top:8px"><button class="primary" type="submit">Finish the look</button></div></form></div>
+        <div id="finish-result"><div class="card empty"><h3>Your finished outfit will appear here</h3><p>Choose at least one piece and press Finish the look.</p></div></div>
+      </div>`;
+    $('#finish-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target; const lock = {};
+      f.querySelectorAll('[data-slot]').forEach(sel => { const slot = sel.dataset.slot; if (sel.value === 'none') lock[slot] = null; else if (sel.value) { if (slot === 'accessory') lock.accessories = [Number(sel.value)]; else lock[slot] = Number(sel.value); } });
+      if (!Object.keys(lock).length) return toast('Pick at least one piece', true);
+      state.date = f.date.value || state.date;
+      state.baseLocks.finish = lock; state.finishOccasion = f.occasion.value; state.finishLook = f.look.value || null; state.attempts.finish = 0;
+      $('#finish-result').innerHTML = '<p class="muted">Finishing…</p>';
+      try {
+        const o = await api('POST', '/api/outfits/generate', { occasion: f.occasion.value, look: f.look.value || null, date: state.date, lock, allowDirty: f.allowDirty.checked, salt: 'finish' });
+        if (f.occasion.value === 'auto') state.finishOccasion = o.inferredOccasion;
+        const wx = await api('GET', '/api/weather?date=' + state.date).catch(() => ({ weather: null }));
+        state.plan = { ...(state.plan || {}), weather: wx.weather, standard: { ...((state.plan || {}).standard || {}), finish: o }, events: (state.plan || {}).events || [] };
+        $('#finish-result').innerHTML = outfitCard({ ...o, label: 'Finished: ' + title(o.inferredOccasion || o.occasion) }, 'finish');
+        const card = $('#finish-result [data-outfit]'); wireOutfitCard(card);
+        const regen = card.querySelector('[data-act="regen"]'); if (regen) regen.textContent = 'Try another';
+      } catch (err) { $('#finish-result').innerHTML = `<div class="card"><p style="color:var(--bad)">${esc(err.message)}</p></div>`; }
     });
   }
 

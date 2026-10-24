@@ -119,17 +119,23 @@ const routes = [
   }],
   ['POST', '/api/outfits/generate', async ({ db, body }) => {
     const date = isDate(body.date) ? body.date : todayISO();
+    const allItems = store.listItems(db);
+    const lock = body.lock || {};
+    if (body.occasion === 'auto' || !body.occasion) {
+      const chosen = Object.values(lock).filter(v => v != null).map(id => allItems.find(i => i.id === Number(id)));
+      body.occasion = guide.LOOKS[body.look] ? guide.LOOKS[body.look].occasion : engine.inferOccasion(chosen);
+    }
     if (!engine.OCCASIONS[body.occasion]) throw new HttpError(400, 'unknown occasion');
     const { weather: wx, source, profile, pairRules } = await weatherFor(db, date);
     let w = wx;
     if (wx && wx.hourly && body.time) w = engine.hourlyAt(wx.hourly, body.time) || wx;
     if (body.weather) w = { ...(w || {}), ...body.weather };
-    const outfit = engine.buildOutfit(store.listItems(db), body.occasion, {
+    const outfit = engine.buildOutfit(allItems, body.occasion, {
       date, weather: w, attempt: Number(body.attempt || 0), affinity: store.affinityMap(db, body.occasion),
-      exclude: new Set((body.exclude || []).map(Number)), lock: body.lock || {}, allowDirty: !!body.allowDirty,
+      exclude: new Set((body.exclude || []).map(Number)), lock, allowDirty: !!body.allowDirty,
       seedSalt: body.salt || '', profile, lean: body.lean, look: body.look === '' ? null : body.look, feedback: store.feedbackContext(db), pairRules,
     });
-    return { ...outfit, weatherSource: source };
+    return { ...outfit, weatherSource: source, inferredOccasion: body.occasion };
   }],
   ['POST', '/api/outfits/wear', ({ db, body }) => {
     const date = isDate(body.date) ? body.date : todayISO();

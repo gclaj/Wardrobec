@@ -117,6 +117,11 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   assert.equal(r.data.slots.top.id, casual.slots.top.id);
   assert.ok(!r.data.items.some(i => i.id === casual.slots.bottom.id));
 
+  // Finish the look: occasion 'auto' is inferred from the locked pieces.
+  const blazerItem = (await call('GET', '/api/items?category=layer')).data.find(i => i.subcategory === 'blazer');
+  r = await call('POST', '/api/outfits/generate', { occasion: 'auto', date: today, lock: { layer: blazerItem.id } });
+  assert.equal(r.status, 200); assert.equal(r.data.inferredOccasion, 'formal'); assert.equal(r.data.slots.layer.id, blazerItem.id);
+
   // Manual weather override wins over forecast.
   r = await call('PUT', '/api/weather/override', { date: today, tempHigh: 95, tempLow: 80, precipProb: 0 });
   assert.equal(r.status, 200);

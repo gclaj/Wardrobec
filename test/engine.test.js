@@ -303,3 +303,18 @@ test('owner colour rules: navy with olive is never proposed by default, and rule
   const dropped = buildOutfit(items, 'casual', { weather: { feelsLike: 60 }, deterministic: true, lock: { layer: navyQz.id, bottom: od.id } });
   assert.ok(!dropped.slots.layer || dropped.slots.layer.id !== navyQz.id);
 });
+
+test('finish the look: locked pieces stay, the rest is filled, occasion inferred from the picks', () => {
+  const { inferOccasion } = require('../server/engine');
+  const { PRESETS } = require('../server/profile');
+  const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean', wear_count: 0 }));
+  const blazer = items.find(i => i.name === 'Navy Leader Blazer'), jeans = items.find(i => /Flex Stretchy Athletic Fit Jean/.test(i.name)), tank = items.find(i => i.name === 'Black Forge Tank');
+  assert.equal(inferOccasion([blazer]), 'formal');
+  assert.equal(inferOccasion([jeans]), 'casual');
+  assert.equal(inferOccasion([tank]), 'gym');
+  assert.equal(inferOccasion([]), 'casual');
+  const o = buildOutfit(items, 'casual', { weather: { feelsLike: 58 }, deterministic: true, profile: PRESETS.style_guide, lock: { bottom: jeans.id, outerwear: null } });
+  assert.equal(o.slots.bottom.id, jeans.id);
+  assert.ok(!o.slots.outerwear, 'outerwear locked to none');
+  assert.ok(o.complete && o.slots.top && o.slots.shoes);
+});
