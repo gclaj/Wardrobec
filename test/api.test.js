@@ -121,6 +121,11 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   const blazerItem = (await call('GET', '/api/items?category=layer')).data.find(i => i.subcategory === 'blazer');
   r = await call('POST', '/api/outfits/generate', { occasion: 'auto', date: today, lock: { layer: blazerItem.id } });
   assert.equal(r.status, 200); assert.equal(r.data.inferredOccasion, 'formal'); assert.equal(r.data.slots.layer.id, blazerItem.id);
+  // A weather override on generate changes the outfit: cold and wet brings outerwear in.
+  r = await call('POST', '/api/outfits/generate', { occasion: 'casual', date: today, lock: {}, weather: { feelsLike: 30, precipProb: 90 } });
+  assert.ok(r.data.slots.outerwear, 'coat for 30F in the rain');
+  r = await call('POST', '/api/outfits/generate', { occasion: 'casual', date: today, lock: {}, weather: { feelsLike: 92, precipProb: 0 } });
+  assert.ok(!r.data.slots.outerwear && !r.data.slots.layer, 'nothing extra at 92F');
 
   // Manual weather override wins over forecast.
   r = await call('PUT', '/api/weather/override', { date: today, tempHigh: 95, tempLow: 80, precipProb: 0 });
