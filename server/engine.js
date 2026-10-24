@@ -602,7 +602,7 @@ function inferOccasion(pieces) {
   const centers = ps.map(p => (Number(p.formality_min) + Number(p.formality_max)) / 2);
   const avg = centers.reduce((a, b) => a + b, 0) / centers.length;
   const jacket = ps.some(p => JACKET_SUBS.has(p.subcategory));
-  if (jacket || Math.max(...mins) >= 4 || avg >= 3.5) return 'formal';
+  if (jacket || Math.max(...mins) >= 4) return 'formal';
   if (Math.max(...mins) >= 3 || avg >= 2.5) return 'business_casual';
   return 'casual';
 }
