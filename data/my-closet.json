@@ -1550,6 +1550,72 @@
         "formal"
       ],
       "notes": "No photo yet. Wayfarer shape."
+    },
+    {
+      "brand": "BYLT",
+      "category": "top",
+      "subcategory": "long-sleeve tee",
+      "pattern": "solid",
+      "material": "lux cotton blend",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://byltbasics.com/products/drop-cut-long-sleeve-lux",
+      "name": "Olive Drop-Cut Long Sleeve LUX",
+      "color": "olive",
+      "color_family": "olive",
+      "image": "/images/closet/bylt-drop-cut-long-sleeve-lux-olive.jpg"
+    },
+    {
+      "brand": "BYLT",
+      "category": "top",
+      "subcategory": "long-sleeve tee",
+      "pattern": "solid",
+      "material": "lux cotton blend",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://byltbasics.com/products/drop-cut-long-sleeve-lux",
+      "name": "Black Drop-Cut Long Sleeve LUX",
+      "color": "black",
+      "color_family": "black",
+      "image": "/images/closet/bylt-drop-cut-long-sleeve-lux-black.jpg"
+    },
+    {
+      "brand": "BYLT",
+      "category": "top",
+      "subcategory": "long-sleeve tee",
+      "pattern": "solid",
+      "material": "lux cotton blend",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 1,
+      "url": "https://byltbasics.com/products/drop-cut-long-sleeve-lux",
+      "name": "Grey Drop-Cut Long Sleeve LUX",
+      "color": "grey",
+      "color_family": "gray",
+      "image": "/images/closet/bylt-drop-cut-long-sleeve-lux-grey.jpg"
     }
   ]
 }
