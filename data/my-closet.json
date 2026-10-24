@@ -1648,7 +1648,7 @@
       "material": "fleece-lined flannel",
       "formality_min": 1,
       "formality_max": 2,
-      "warmth": 4,
+      "warmth": 3,
       "rain_ok": false,
       "wind_ok": false,
       "occasions": [
