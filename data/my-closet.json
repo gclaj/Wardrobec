@@ -1636,6 +1636,29 @@
       "wears_before_wash": 4,
       "image": "/images/closet/wrangler-quarter-zip-fleece-heather-gray.jpg",
       "url": ""
+    },
+    {
+      "brand": "L.L.Bean",
+      "name": "Burgundy Plaid Fleece-Lined Flannel Shirt",
+      "category": "outerwear",
+      "subcategory": "overshirt",
+      "color": "burgundy plaid",
+      "color_family": "burgundy",
+      "pattern": "checked",
+      "material": "fleece-lined flannel",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 4,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 6,
+      "image": "/images/closet/llbean-fleece-lined-flannel-burgundy-plaid.jpg",
+      "url": "https://www.llbean.com/llb/shop/PF298189",
+      "notes": "Worn open as a shirt-jacket over a tee or henley."
     }
   ]
 }
