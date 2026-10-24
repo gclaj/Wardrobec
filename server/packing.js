@@ -16,7 +16,7 @@ function dayWeather(w) {
 }
 
 /** requests: { lookKeyOrOccasion: count }. weather: { tempHigh, tempLow, precipProb }. */
-function planTrip(items, { requests = {}, weather = {}, laundry = false, profile, feedback } = {}) {
+function planTrip(items, { requests = {}, weather = {}, laundry = false, profile, feedback, pairRules } = {}) {
   const slots = [];
   for (const [key, count] of Object.entries(requests)) {
     const n = Math.max(0, Math.min(14, Number(count) || 0));
@@ -34,13 +34,13 @@ function planTrip(items, { requests = {}, weather = {}, laundry = false, profile
   ];
   let best = null;
   for (const order of orderings) {
-    const result = packOnce(items, order, { weather, laundry, profile, feedback });
+    const result = packOnce(items, order, { weather, laundry, profile, feedback, pairRules });
     if (!best || result.stats.pieces < best.stats.pieces || (result.stats.pieces === best.stats.pieces && result.stats.incomplete < best.stats.incomplete)) best = result;
   }
   return best;
 }
 
-function packOnce(items, slots, { weather, laundry, profile, feedback }) {
+function packOnce(items, slots, { weather, laundry, profile, feedback, pairRules }) {
   const uses = new Map();
   for (const it of items) {
     const w = Number(it.wears_before_wash || 1);
@@ -51,7 +51,7 @@ function packOnce(items, slots, { weather, laundry, profile, feedback }) {
   const outfits = [];
   for (const slot of slots) {
     const wx = (slot.look === 'dinner' || slot.look === 'date_night') ? eveningWeather(weather) : dayWeather(weather);
-    const o = buildOutfit(items, slot.occasion, { weather: wx, look: slot.look || undefined, prefer: packed, uses, profile, feedback, deterministic: true, ignoreStatus: true });
+    const o = buildOutfit(items, slot.occasion, { weather: wx, look: slot.look || undefined, prefer: packed, uses, profile, feedback, pairRules, deterministic: true, ignoreStatus: true });
     for (const it of [...o.items, ...o.accessories]) {
       packed.add(it.id);
       uses.set(it.id, (uses.get(it.id) ?? Infinity) - 1);

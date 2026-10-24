@@ -281,3 +281,25 @@ test('packing covers every requested outfit with a smaller bag than the outfits 
   assert.ok(withLaundry.stats.pieces <= plan.stats.pieces, 'laundry never makes the bag bigger');
   assert.equal(planTrip(items, { requests: {}, weather: { tempHigh: 70 } }).outfits.length, 0);
 });
+
+test('owner colour rules: navy with olive is never proposed by default, and rules are editable', () => {
+  const { PRESETS } = require('../server/profile');
+  const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean', wear_count: 0 }));
+  const navyTops = new Set(items.filter(i => ['top', 'layer', 'outerwear'].includes(i.category) && i.color_family === 'navy').map(i => i.id));
+  for (let attempt = 0; attempt < 6; attempt++) for (const occ of ['casual', 'business_casual']) {
+    const o = buildOutfit(items, occ, { weather: { feelsLike: 60 }, attempt, profile: PRESETS.style_guide });
+    const hasNavyUp = o.items.some(i => navyTops.has(i.id));
+    const greenDown = o.slots.bottom && ['olive', 'green'].includes(o.slots.bottom.color_family);
+    assert.ok(!(hasNavyUp && greenDown), `attempt ${attempt} ${occ}: ${o.items.map(i => i.name).join(', ')}`);
+  }
+  // Rules can be cleared; then the navy quarter-zip can sit over the OD green pant again when locked in.
+  const navyPolo = items.find(i => i.name === 'Navy Ribbed Open V Polo'), od = items.find(i => i.name.startsWith('OD Green Tactical 5'));
+  const allowed = buildOutfit(items, 'casual', { weather: { feelsLike: 60 }, deterministic: true, pairRules: [], lock: { top: navyPolo.id, bottom: od.id } });
+  assert.ok(!allowed.notes.some(n => /do not go together/.test(n)));
+  const blocked = buildOutfit(items, 'casual', { weather: { feelsLike: 60 }, deterministic: true, lock: { top: navyPolo.id, bottom: od.id } });
+  assert.ok(blocked.notes.some(n => /navy and (olive|green) do not go together/.test(n)));
+  // And when only the layer is locked, the engine drops the layer rather than break the rule.
+  const navyQz = items.find(i => i.name.startsWith('Navy Performance Airknit'));
+  const dropped = buildOutfit(items, 'casual', { weather: { feelsLike: 60 }, deterministic: true, lock: { layer: navyQz.id, bottom: od.id } });
+  assert.ok(!dropped.slots.layer || dropped.slots.layer.id !== navyQz.id);
+});

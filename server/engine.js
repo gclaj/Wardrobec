@@ -202,6 +202,33 @@ function pairKeys(ids) {
 
 function center(item) { return (Number(item.formality_min ?? 1) + Number(item.formality_max ?? 1)) / 2; }
 
+const DEFAULT_PAIR_RULES = [
+  { a: 'navy', b: 'olive', verdict: 'never' },
+  { a: 'navy', b: 'green', verdict: 'never' },
+];
+const GREENS = { olive: 'green-ish', green: 'green-ish' };
+
+/** Owner-defined colour pairings: 'never' removes the combination, 'avoid' discourages it. */
+function pairRulePenalty(c, rules, notes) {
+  if (!rules || !rules.length) return 0;
+  const near = ['top', 'dress', 'layer', 'outerwear'].map(k => c[k]).filter(Boolean);
+  const pieces = [...near, c.bottom, c.shoes].filter(Boolean);
+  let p = 0;
+  const seen = new Set();
+  for (let i = 0; i < pieces.length; i++) for (let j = i + 1; j < pieces.length; j++) {
+    const fa = pieces[i].color_family, fb = pieces[j].color_family;
+    for (const r of rules) {
+      const hit = (fa === r.a && fb === r.b) || (fa === r.b && fb === r.a);
+      if (!hit) continue;
+      const key = [r.a, r.b].sort().join('+');
+      if (seen.has(key)) continue; seen.add(key);
+      if (r.verdict === 'never') { p += 8; notes.push(`you have said ${r.a} and ${r.b} do not go together`); }
+      else { p += 1.5; notes.push(`${r.a} with ${r.b} is one you prefer to avoid`); }
+    }
+  }
+  return p;
+}
+
 function colorPenalty(c, notes) {
   const pieces = ['top', 'dress', 'layer', 'outerwear', 'bottom', 'shoes'].map(k => c[k]).filter(Boolean);
   const fams = pieces.map(p => p.color_family || 'other');
@@ -319,6 +346,7 @@ function scoreCombo(c, ctx, items) {
   s += setPenalty(c, items, notes);
   // Color
   s += colorPenalty(c, notes);
+  s += pairRulePenalty(c, ctx.pairRules, notes);
   if (ctx.rand) s += ctx.rand() * 0.5;
   return { score: s, notes, warmth };
 }
@@ -438,6 +466,7 @@ function buildOutfit(items, occasionKey, opts = {}) {
     ignoreStatus: !!opts.ignoreStatus, rand: opts.deterministic ? null : mulberry32(seed),
     profile: normalizeProfile(opts.profile),
     feedback: opts.feedback || null, prefer: opts.prefer || null, uses: opts.uses || null,
+    pairRules: opts.pairRules === undefined ? DEFAULT_PAIR_RULES : (opts.pairRules || []),
   };
   ctx.pr = ctx.profile ? ratingCache(ctx.profile) : () => 0;
   const lock = opts.lock || {};
@@ -562,7 +591,7 @@ function hourlyAt(hourly, time) {
 }
 
 /** Coverage report: can the closet produce a complete outfit for every occasion × temperature × rain? */
-function coverageReport(items, profile) {
+function coverageReport(items, profile, pairRules) {
   const bands = [
     { key: 'hot', label: 'Hot (85°F+)', temp: 90 }, { key: 'warm', label: 'Warm (70–85)', temp: 76 },
     { key: 'mild', label: 'Mild (55–70)', temp: 62 }, { key: 'cool', label: 'Cool (40–55)', temp: 47 },
@@ -572,7 +601,7 @@ function coverageReport(items, profile) {
   for (const occ of OCCASION_KEYS) {
     for (const band of bands) {
       for (const rain of [false, true]) {
-        const r = buildOutfit(items, occ, { weather: { feelsLike: band.temp, precipProb: rain ? 80 : 5 }, ignoreStatus: true, deterministic: true, fast: true, profile });
+        const r = buildOutfit(items, occ, { weather: { feelsLike: band.temp, precipProb: rain ? 80 : 5 }, ignoreStatus: true, deterministic: true, fast: true, profile, pairRules });
         let status = 'good';
         const problems = [];
         if (!r.complete) { status = 'gap'; problems.push('missing ' + r.missing.join(', ')); }
@@ -588,7 +617,7 @@ function coverageReport(items, profile) {
 }
 
 module.exports = {
-  comboKey, comboKeyFromIds, pairKeys,
+  comboKey, comboKeyFromIds, pairKeys, DEFAULT_PAIR_RULES, pairRulePenalty,
   OCCASIONS, OCCASION_KEYS, LEANS, targetWarmth, weatherContext, scoreItem, scoreCombo, buildOutfit, planDay,
   coverageReport, formalityPenalty, freshnessPenalty, outfitWarmth, hashString, mulberry32, hourlyAt, paletteRating,
 };

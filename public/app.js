@@ -614,6 +614,10 @@
           <button id="add-ov">Enter weather for a date</button>
         </div>
         ${styleGuideCard(state.styleguide)}
+        <div class="card" id="pairs-card"><h3>Colour pairs you don't wear together</h3><p class="muted small">Your taste beats the rulebook. <b>Never</b> removes any outfit that puts the two colours together; <b>avoid</b> only discourages it. Applies to tops, layers, outerwear, trousers and shoes.</p>
+          <div id="pair-list" class="stack" style="margin-bottom:10px"></div>
+          <div class="row"><select id="pair-a" style="width:auto"></select><span class="muted">with</span><select id="pair-b" style="width:auto"></select><select id="pair-verdict" style="width:auto"><option value="never">never</option><option value="avoid">avoid</option></select><button class="small" id="pair-add">Add rule</button></div>
+        </div>
         <div class="card" id="profile-card" style="grid-column:1 / -1"><h3>Style profile</h3><p class="muted small">Your personal colour analysis. The engine rewards pieces in flattering colours, most strongly for anything near your face (tops, layers, ties), and penalises colours that wash you out or overpower you. Edit any rating; the Deep Winter preset comes from your colour report.</p>
           <div class="row" style="margin-bottom:10px"><select id="prof-preset" style="width:auto"></select><select id="prof-contrast" style="width:auto"><option value="any">Contrast: not set</option><option value="high">Contrast: high (dark base + crisp white)</option><option value="medium">Contrast: medium</option><option value="low">Contrast: low</option></select><button class="small ghost" id="prof-reset">Reset to preset</button></div>
           <div id="prof-body"></div>
@@ -641,7 +645,27 @@
     });
     $('#add-ov').addEventListener('click', () => overrideModal(state.date, () => renderSettings(app)));
     await wireProfile(app, s);
+    wirePairRules(app, s);
     app.querySelectorAll('[data-del-ov]').forEach(b => b.addEventListener('click', async () => { await api('DELETE', `/api/weather/override/${b.dataset.delOv}`); renderSettings(app); }));
+  }
+
+  function wirePairRules(app, s) {
+    let rules = Array.isArray(s.pair_rules) ? s.pair_rules.map(r => ({ ...r })) : [];
+    const fams = Object.keys(COLOR_HEX).filter(f => f !== 'multi' && f !== 'other');
+    const opts = fams.map(f => `<option value="${f}">${f}</option>`).join('');
+    $('#pair-a').innerHTML = opts; $('#pair-b').innerHTML = opts; $('#pair-b').value = 'olive';
+    const save = async () => { try { state.settings = await api('PUT', '/api/settings', { pair_rules: rules }); toast('Colour rules saved'); } catch (err) { toast(err.message, true); } };
+    const draw = () => {
+      $('#pair-list').innerHTML = rules.length ? rules.map((r, i) => `<div class="row between small"><span><span class="swatch" style="background:${COLOR_HEX[r.a]};width:16px;height:16px;border-radius:4px;display:inline-block;vertical-align:middle"></span> ${esc(r.a)} <span class="muted">with</span> <span class="swatch" style="background:${COLOR_HEX[r.b]};width:16px;height:16px;border-radius:4px;display:inline-block;vertical-align:middle"></span> ${esc(r.b)} <span class="chip ${r.verdict === 'never' ? 'bad' : 'warn'}">${esc(r.verdict)}</span></span><button class="small ghost" data-del-pair="${i}">Remove</button></div>`).join('') : '<p class="muted small">No rules yet. Every colour pairing is allowed except the engine\'s built-in clashes.</p>';
+      $('#pair-list').querySelectorAll('[data-del-pair]').forEach(b => b.addEventListener('click', async () => { rules.splice(Number(b.dataset.delPair), 1); draw(); await save(); }));
+    };
+    $('#pair-add').addEventListener('click', async () => {
+      const a = $('#pair-a').value, b = $('#pair-b').value, verdict = $('#pair-verdict').value;
+      if (a === b) return toast('Pick two different colours', true);
+      rules = rules.filter(r => !((r.a === a && r.b === b) || (r.a === b && r.b === a)));
+      rules.push({ a, b, verdict }); draw(); await save();
+    });
+    draw();
   }
 
   async function wireProfile(app, s) {

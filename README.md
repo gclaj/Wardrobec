@@ -56,6 +56,8 @@ Events can also carry a **lean**: relaxed pulls toward tees and sneakers, elevat
 
 **Calendar events** get their own outfit using the hourly forecast at the event time, and outfits for events on the same day never share pieces, because you will actually wear all of them.
 
+**Colour pairs you don't wear together** (Settings) are owner rules that beat the rulebook: *never* removes any outfit putting the two colour families together, *avoid* discourages it. Navy with olive or green ships as *never* at the owner's direction. Rules apply to tops, layers, outerwear, trousers and shoes in every pick, look, pack and coverage check.
+
 **Love it / Never again.** Love it saves the exact outfit to the **Fab** tab and gives that combination a strong bonus, so it returns whenever weather and laundry allow; Fab outfits can be named and worn directly. Never again bans the exact combination and makes the engine wary of the pairs inside it, so a near-copy does not come straight back. Loving a banned combo lifts the ban; banning a Fab outfit removes it.
 
 **Pack** builds a trip bag: give it days, expected high and low, rain chance, whether laundry is available, and how many of each look you need. The planner fills the most constrained outfits first and rewards reusing anything already packed; shirts serve one outfit, bottoms and layers several, shoes and outerwear all of them. It tries several orderings and keeps the smallest bag, then shows the bag grouped by category with how many outfits each piece serves.

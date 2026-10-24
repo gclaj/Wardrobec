@@ -154,6 +154,12 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   assert.ok(r.data.every(i => i.image.startsWith('/images/closet/')));
   r = await fetch(base + r.data[0].image); assert.equal(r.status, 200); assert.match(r.headers.get('content-type'), /image\/jpeg/);
 
+  // Colour pair rules round-trip through settings.
+  r = await call('GET', '/api/settings'); assert.ok(r.data.pair_rules.some(x => x.a === 'navy' && x.b === 'olive'));
+  r = await call('PUT', '/api/settings', { pair_rules: [{ a: 'black', b: 'brown', verdict: 'avoid' }, { a: 'red', b: 'red' }] });
+  assert.equal(r.data.pair_rules.length, 1); assert.equal(r.data.pair_rules[0].verdict, 'avoid');
+  r = await call('PUT', '/api/settings', { pair_rules: [{ a: 'navy', b: 'olive', verdict: 'never' }, { a: 'navy', b: 'green', verdict: 'never' }] });
+
   // Style guide: default palette, looks endpoint, events by look.
   r = await call('GET', '/api/settings');
   assert.equal(r.data.style_profile.key, 'style_guide');
