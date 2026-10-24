@@ -1592,8 +1592,8 @@
       "notes": "Model name not visible in the screenshot; add it if you like."
     },
     {
-      "brand": "Cole Haan",
-      "name": "Black Cap-Toe Oxford",
+      "brand": "Dockers",
+      "name": "Black Fairway Plain Toe Oxford",
       "category": "shoes",
       "subcategory": "dress shoes",
       "color": "black",
@@ -1611,9 +1611,9 @@
       ],
       "seasons": [],
       "wears_before_wash": 999,
-      "image": "",
-      "url": "https://www.colehaan.com",
-      "notes": "Same Cole Haan cap-toe in black. No photo yet."
+      "image": "/images/closet/dockers-fairway-plain-toe-oxford-black.jpg",
+      "url": "https://www.menswearhouse.com",
+      "notes": ""
     },
     {
       "brand": "Wrangler",
