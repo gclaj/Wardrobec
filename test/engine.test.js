@@ -311,6 +311,9 @@ test('finish the look: locked pieces stay, the rest is filled, occasion inferred
   const blazer = items.find(i => i.name === 'Navy Leader Blazer'), jeans = items.find(i => /Flex Stretchy Athletic Fit Jean/.test(i.name)), tank = items.find(i => i.name === 'Black Forge Tank');
   assert.equal(inferOccasion([blazer]), 'formal');
   assert.equal(inferOccasion([jeans]), 'casual');
+  const oxford = items.find(i => i.name === 'British Tan Cap-Toe Oxford'), od = items.find(i => i.name.startsWith('OD Green Tactical 5'));
+  assert.equal(inferOccasion([oxford, od]), 'business_casual');
+  assert.equal(inferOccasion([oxford]), 'business_casual');
   assert.equal(inferOccasion([tank]), 'gym');
   assert.equal(inferOccasion([]), 'casual');
   const o = buildOutfit(items, 'casual', { weather: { feelsLike: 58 }, deterministic: true, profile: PRESETS.style_guide, lock: { bottom: jeans.id, outerwear: null } });

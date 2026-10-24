@@ -597,10 +597,13 @@ function inferOccasion(pieces) {
   const gymTagged = p => (p.occasions || []).includes('gym');
   const gymOnly = p => Number(p.formality_max) === 0 || ((p.occasions || []).length > 0 && (p.occasions || []).every(o => o === 'gym'));
   if (ps.every(gymTagged) && ps.some(gymOnly)) return 'gym';
+  // A piece's floor says more than its ceiling: dress shoes reach 5 but are worn at 3 all week.
+  const mins = ps.map(p => Number(p.formality_min));
   const centers = ps.map(p => (Number(p.formality_min) + Number(p.formality_max)) / 2);
-  const top = Math.max(...centers), avg = centers.reduce((a, b) => a + b, 0) / centers.length;
-  if (top >= 4 || avg >= 3.5) return 'formal';
-  if (top >= 3 || avg >= 2.5) return 'business_casual';
+  const avg = centers.reduce((a, b) => a + b, 0) / centers.length;
+  const jacket = ps.some(p => JACKET_SUBS.has(p.subcategory));
+  if (jacket || Math.max(...mins) >= 4 || avg >= 3.5) return 'formal';
+  if (Math.max(...mins) >= 3 || avg >= 2.5) return 'business_casual';
   return 'casual';
 }
 
