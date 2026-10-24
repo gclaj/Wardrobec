@@ -1616,6 +1616,30 @@
       "color": "grey",
       "color_family": "gray",
       "image": "/images/closet/bylt-drop-cut-long-sleeve-lux-grey.jpg"
+    },
+    {
+      "brand": "Cole Haan",
+      "name": "British Tan Cap-Toe Oxford",
+      "category": "shoes",
+      "subcategory": "dress shoes",
+      "color": "british tan",
+      "color_family": "brown",
+      "pattern": "solid",
+      "material": "leather",
+      "formality_min": 3,
+      "formality_max": 5,
+      "warmth": 2,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "business_casual",
+        "formal"
+      ],
+      "seasons": [],
+      "wears_before_wash": 999,
+      "image": "/images/closet/cole-haan-cap-toe-oxford-british-tan.jpg",
+      "url": "https://www.colehaan.com",
+      "notes": "Model name not visible in the screenshot; add it if you like."
     }
   ]
 }
