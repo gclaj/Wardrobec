@@ -60,7 +60,7 @@ Events can also carry a **lean**: relaxed pulls toward tees and sneakers, elevat
 
 **Love it / Never again.** Love it saves the exact outfit to the **Fab** tab and gives that combination a strong bonus, so it returns whenever weather and laundry allow; Fab outfits can be named and worn directly. Never again bans the exact combination and makes the engine wary of the pairs inside it, so a near-copy does not come straight back. Loving a banned combo lifts the ban; banning a Fab outfit removes it.
 
-**Finish the look** takes the pieces you have already chosen, slot by slot, and fills the rest; the occasion is inferred from your picks unless you name one or a look. Your picks stay locked through Swap and Try another.
+**Finish the look** takes the pieces you have already chosen, slot by slot, and fills the rest; the occasion is inferred from your picks unless you name one or a look, and you can type a temperature, rain chance and conditions to dress for instead of the forecast. Your picks and weather stay locked through Swap and Try another.
 
 **Pack** builds a trip bag: give it days, expected high and low, rain chance, whether laundry is available, and how many of each look you need. The planner fills the most constrained outfits first and rewards reusing anything already packed; shirts serve one outfit, bottoms and layers several, shoes and outerwear all of them. It tries several orderings and keeps the smallest bag, then shows the bag grouped by category with how many outfits each piece serves.
 

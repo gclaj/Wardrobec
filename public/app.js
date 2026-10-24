@@ -160,6 +160,7 @@
       const base = state.baseLocks[key] || {};
       const body = { occasion: state.finishOccasion && key === 'finish' ? state.finishOccasion : occasion, date: state.date, attempt, lock: { ...base, ...(lock || {}) }, salt: eventId ? 'event' + eventId : (key === 'finish' ? 'finish' : ''), lean: ep ? ep.event.lean : undefined, look: ep ? (ep.event.look || null) : (key === 'finish' ? (state.finishLook || null) : (lookKey || undefined)) };
       if (key === 'finish' && base.accessories) body.lock.accessories = base.accessories;
+      if (key === 'finish' && state.finishWeather) body.weather = state.finishWeather;
       if (ep && ep.event.time) body.time = ep.event.time;
       if (ep) body.exclude = state.plan.events.filter(x => x.event.id !== eventId).flatMap(x => x.outfit.items.map(i => i.id));
       if (!lock) state.locks[key] = {};
@@ -252,6 +253,9 @@
           <div class="field"><label>Occasion</label><select name="occasion"><option value="auto">Work it out from my picks</option>${Object.values(meta.occasions).map(o => `<option value="${o.key}">${o.label}</option>`).join('')}</select></div>
           <div class="field"><label>Look (optional)</label><select name="look"><option value="">None</option>${(meta.looks || []).map(l => `<option value="${l.key}">${esc(l.name)}</option>`).join('')}</select></div>
           <div class="field"><label>Date</label><input type="date" name="date" value="${state.date}"></div>
+          <div class="field"><label>Temperature (${state.settings.units === 'C' ? '°C' : '°F'}), blank = forecast</label><input type="number" name="temp" placeholder="feels like"></div>
+          <div class="field"><label>Chance of rain (%), blank = forecast</label><input type="number" name="precip" min="0" max="100" placeholder="0–100"></div>
+          <div class="field"><label>Conditions</label><select name="cond"><option value="">From forecast</option><option value="1">Clear</option><option value="3">Overcast</option><option value="61">Rain</option><option value="73">Snow</option><option value="wind">Windy</option></select></div>
           <div class="field"><label style="display:flex;gap:6px;align-items:center;color:var(--text);font-size:.9rem;margin-top:22px"><input type="checkbox" name="allowDirty">Allow pieces that are in the wash</label></div>
           </div><div class="row" style="justify-content:flex-end;margin-top:8px"><button class="primary" type="submit">Finish the look</button></div></form></div>
         <div id="finish-result"><div class="card empty"><h3>Your finished outfit will appear here</h3><p>Choose at least one piece and press Finish the look.</p></div></div>
@@ -262,14 +266,21 @@
       f.querySelectorAll('[data-slot]').forEach(sel => { const slot = sel.dataset.slot; if (sel.value === 'none') lock[slot] = null; else if (sel.value) { if (slot === 'accessory') lock.accessories = [Number(sel.value)]; else lock[slot] = Number(sel.value); } });
       if (!Object.keys(lock).length) return toast('Pick at least one piece', true);
       state.date = f.date.value || state.date;
+      const toF = (v) => state.settings.units === 'C' ? Number(v) * 9 / 5 + 32 : Number(v);
+      const weather = {};
+      if (f.temp.value !== '') weather.feelsLike = toF(f.temp.value);
+      if (f.precip.value !== '') weather.precipProb = Number(f.precip.value);
+      if (f.cond.value === 'wind') weather.windMax = 25; else if (f.cond.value) { weather.code = Number(f.cond.value); if (f.cond.value === '61') weather.precipProb = Math.max(weather.precipProb ?? 0, 70); if (f.cond.value === '73') weather.isSnow = true; }
+      state.finishWeather = Object.keys(weather).length ? weather : null;
       state.baseLocks.finish = lock; state.finishOccasion = f.occasion.value; state.finishLook = f.look.value || null; state.attempts.finish = 0;
       $('#finish-result').innerHTML = '<p class="muted">Finishing…</p>';
       try {
-        const o = await api('POST', '/api/outfits/generate', { occasion: f.occasion.value, look: f.look.value || null, date: state.date, lock, allowDirty: f.allowDirty.checked, salt: 'finish' });
+        const o = await api('POST', '/api/outfits/generate', { occasion: f.occasion.value, look: f.look.value || null, date: state.date, lock, allowDirty: f.allowDirty.checked, salt: 'finish', weather: state.finishWeather || undefined });
         if (f.occasion.value === 'auto') state.finishOccasion = o.inferredOccasion;
         const wx = await api('GET', '/api/weather?date=' + state.date).catch(() => ({ weather: null }));
         state.plan = { ...(state.plan || {}), weather: wx.weather, standard: { ...((state.plan || {}).standard || {}), finish: o }, events: (state.plan || {}).events || [] };
-        $('#finish-result').innerHTML = outfitCard({ ...o, label: 'Finished: ' + title(o.inferredOccasion || o.occasion) }, 'finish');
+        const wxNote = state.finishWeather ? `<p class="small muted" style="margin:0 0 8px">Dressed for your weather: ${state.finishWeather.feelsLike != null ? tempFmt(state.finishWeather.feelsLike) : 'forecast temperature'}${state.finishWeather.precipProb != null ? ', rain ' + state.finishWeather.precipProb + '%' : ''}${state.finishWeather.isSnow ? ', snow' : ''}${state.finishWeather.windMax ? ', windy' : ''}.</p>` : '';
+        $('#finish-result').innerHTML = wxNote + outfitCard({ ...o, label: 'Finished: ' + title(o.inferredOccasion || o.occasion) }, 'finish');
         const card = $('#finish-result [data-outfit]'); wireOutfitCard(card);
         const regen = card.querySelector('[data-act="regen"]'); if (regen) regen.textContent = 'Try another';
       } catch (err) { $('#finish-result').innerHTML = `<div class="card"><p style="color:var(--bad)">${esc(err.message)}</p></div>`; }
