@@ -1614,6 +1614,28 @@
       "image": "",
       "url": "https://www.colehaan.com",
       "notes": "Same Cole Haan cap-toe in black. No photo yet."
+    },
+    {
+      "brand": "Wrangler",
+      "name": "Light Heather Gray Quarter Zip Fleece Sweater",
+      "category": "layer",
+      "subcategory": "quarter-zip",
+      "color": "light heather gray",
+      "color_family": "gray",
+      "pattern": "solid",
+      "material": "sweater fleece",
+      "formality_min": 1,
+      "formality_max": 2,
+      "warmth": 4,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [],
+      "wears_before_wash": 4,
+      "image": "/images/closet/wrangler-quarter-zip-fleece-heather-gray.jpg",
+      "url": ""
     }
   ]
 }
