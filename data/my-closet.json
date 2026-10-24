@@ -1682,6 +1682,31 @@
       "image": "/images/closet/towncraft-plaid-flannel-grey.jpg",
       "url": "",
       "notes": "Wears open over a tee as a light layer too."
+    },
+    {
+      "brand": "Columbia",
+      "name": "Cool Grey Tamiami II Fishing Shirt",
+      "category": "top",
+      "subcategory": "button-down shirt",
+      "color": "cool grey",
+      "color_family": "gray",
+      "pattern": "solid",
+      "material": "vented nylon",
+      "formality_min": 1,
+      "formality_max": 1,
+      "warmth": 1,
+      "rain_ok": false,
+      "wind_ok": false,
+      "occasions": [
+        "casual"
+      ],
+      "seasons": [
+        "summer"
+      ],
+      "wears_before_wash": 2,
+      "image": "/images/closet/columbia-tamiami-ii-cool-grey.jpg",
+      "url": "https://www.academy.com",
+      "notes": "Sun shirt for outdoors and heat; sleeves roll and tab."
     }
   ]
 }
