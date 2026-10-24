@@ -242,7 +242,7 @@ const routes = [
     for (const t of ['item_affinity', 'wear_log', 'outfit_feedback', 'events', 'items']) db.prepare(`DELETE FROM ${t}`).run();
     return { ok: true };
   }],
-  ['GET', '/api/styleguide', () => ({ philosophy: guide.PHILOSOPHY, direction: guide.DIRECTION, principles: guide.PRINCIPLES, palette: guide.PALETTE, looks: Object.values(guide.LOOKS).map(l => ({ key: l.key, name: l.name, occasion: l.occasion, lean: l.lean, summary: l.summary, why: l.why })) })],
+  ['GET', '/api/styleguide', ({ db }) => ({ philosophy: guide.PHILOSOPHY, direction: guide.DIRECTION, principles: guide.PRINCIPLES, palette: guide.PALETTE, looks: Object.values(guide.LOOKS).map(l => ({ key: l.key, name: l.name, occasion: l.occasion, lean: l.lean, summary: l.summary, why: l.why })), capsule: guide.capsuleStatus(store.listItems(db)) })],
   ['GET', '/api/looks', async ({ db, query }) => {
     const date = isDate(query.date) ? query.date : todayISO();
     const { weather: wx, source, profile } = await weatherFor(db, date);

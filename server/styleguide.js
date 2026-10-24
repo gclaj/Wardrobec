@@ -83,6 +83,55 @@ const LOOKS = {
 };
 const LOOK_KEYS = Object.keys(LOOKS);
 
+/**
+ * The guide's 20-piece capsule, each with what counts as owning it and what the stylist
+ * substitutes when it is missing. Status is computed live from the closet.
+ */
+const CAPSULE = [
+  { n: 1, name: 'Navy blazer', match: { category: 'layer', sub: ['blazer', 'suit jacket'], fam: ['navy'] } },
+  { n: 2, name: 'Light blue dress shirt', match: { category: 'top', sub: ['dress shirt', 'button-down shirt'], fam: ['blue'] } },
+  { n: 3, name: 'White button-down', match: { category: 'top', sub: ['button-down shirt', 'dress shirt'], fam: ['white'] } },
+  { n: 4, name: 'Gray button-down (flannel or oxford)', match: { category: 'top', sub: ['button-down shirt', 'flannel shirt'], fam: ['gray'] } },
+  { n: 5, name: 'Navy henley', match: { category: 'top', sub: ['henley'] }, near: { category: 'top', sub: ['long-sleeve tee', 'polo'] } },
+  { n: 6, name: 'Olive quarter-zip', match: { category: 'layer', sub: ['quarter-zip'], fam: ['olive', 'green'] } },
+  { n: 7, name: 'Oatmeal sweater', match: { category: 'layer', sub: ['sweater', 'quarter-zip', 'cardigan'], fam: ['tan', 'white'] } },
+  { n: 8, name: 'Vintage red T-shirt', match: { category: 'top', sub: ['t-shirt', 'performance tee'], fam: ['red', 'burgundy'] } },
+  { n: 9, name: 'White T-shirt', match: { category: 'top', sub: ['t-shirt', 'performance tee'], fam: ['white'] } },
+  { n: 10, name: 'Performance hoodie', match: { category: 'layer', sub: ['hoodie', 'sweatshirt'] }, near: { category: 'layer', sub: ['quarter-zip', 'fleece'] } },
+  { n: 11, name: 'Khaki chinos', match: { category: 'bottom', sub: ['chinos', 'utility pants', 'five-pocket pants', 'dress trousers'], fam: ['tan'] } },
+  { n: 12, name: 'Olive 5-pocket pants', match: { category: 'bottom', sub: ['five-pocket pants', 'utility pants', 'chinos'], fam: ['olive', 'green'] } },
+  { n: 13, name: 'Navy 5-pocket pants', match: { category: 'bottom', sub: ['five-pocket pants', 'chinos', 'dress trousers'], fam: ['navy'] } },
+  { n: 14, name: 'Dark jeans', match: { category: 'bottom', sub: ['jeans'] } },
+  { n: 15, name: '7" athletic shorts', match: { category: 'bottom', sub: ['athletic shorts'] } },
+  { n: 16, name: 'Jogger pants', match: { category: 'bottom', sub: ['joggers'] } },
+  { n: 17, name: 'White sneakers', match: { category: 'shoes', sub: ['sneakers'], fam: ['white'] } },
+  { n: 18, name: 'Brown loafers', match: { category: 'shoes', sub: ['loafers'], fam: ['brown', 'tan'] }, near: { category: 'shoes', sub: ['dress shoes'], fam: ['brown', 'tan'] } },
+  { n: 19, name: 'Brown suede chukka boots', match: { category: 'shoes', sub: ['chukka boots'] }, near: { category: 'shoes', sub: ['mid-top boots', 'boots', 'chelsea boots'] } },
+  { n: 20, name: 'Sling / day backpack', match: { category: 'accessory', sub: ['bag'] } },
+];
+
+function matches(item, rule) {
+  if (!rule || item.category !== rule.category || item.status === 'retired') return false;
+  const sub = String(item.subcategory || '').toLowerCase();
+  if (rule.sub && !rule.sub.some(x => sub === x || sub.includes(x))) return false;
+  if (rule.fam && !rule.fam.includes(item.color_family)) return false;
+  return true;
+}
+
+/** Each capsule piece with status owned | substitute | missing and the closet items that fill it. */
+function capsuleStatus(items) {
+  const rows = CAPSULE.map(p => {
+    const owned = items.filter(i => matches(i, p.match));
+    if (owned.length) return { ...p, status: 'owned', items: owned.map(i => i.name) };
+    const near = p.near ? items.filter(i => matches(i, p.near)) : [];
+    if (near.length) return { ...p, status: 'substitute', items: near.slice(0, 3).map(i => i.name) };
+    return { ...p, status: 'missing', items: [] };
+  });
+  const counts = { owned: 0, substitute: 0, missing: 0 };
+  for (const r of rows) counts[r.status]++;
+  return { rows, counts };
+}
+
 /** Which look the four standing options default to, given occasion and warmth target. */
 function defaultLook(occasionKey, target) {
   switch (occasionKey) {
@@ -124,4 +173,4 @@ function styleRules(c, notes) {
   return p;
 }
 
-module.exports = { PHILOSOPHY, DIRECTION, PRINCIPLES, PALETTE, LOOKS, LOOK_KEYS, NEUTRAL_FAMILIES, ACCENT_FAMILIES, defaultLook, formulaPenalty, styleRules };
+module.exports = { PHILOSOPHY, DIRECTION, PRINCIPLES, PALETTE, LOOKS, LOOK_KEYS, CAPSULE, capsuleStatus, NEUTRAL_FAMILIES, ACCENT_FAMILIES, defaultLook, formulaPenalty, styleRules };

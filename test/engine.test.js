@@ -233,3 +233,16 @@ test('style rules: two accent colours cost more than one', () => {
   assert.equal(styleRules(one, []), 0);
   assert.ok(styleRules(two, []) >= 1);
 });
+
+test('capsule audit reports owned, stand-in and missing pieces from the closet', () => {
+  const { capsuleStatus } = require('../server/styleguide');
+  const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean' }));
+  const c = capsuleStatus(items);
+  assert.equal(c.rows.length, 20);
+  const by = Object.fromEntries(c.rows.map(r => [r.n, r]));
+  assert.equal(by[1].status, 'owned'); assert.equal(by[3].status, 'owned'); assert.equal(by[14].status, 'owned'); assert.equal(by[17].status, 'owned');
+  assert.equal(by[5].status, 'substitute'); assert.equal(by[18].status, 'substitute'); assert.equal(by[19].status, 'substitute');
+  assert.equal(by[20].status, 'missing');
+  assert.equal(c.counts.owned + c.counts.substitute + c.counts.missing, 20);
+  assert.equal(capsuleStatus([]).counts.missing, 20);
+});

@@ -238,7 +238,9 @@
       <div class="row" style="gap:18px;flex-wrap:wrap"><div><label>Core neutrals</label><div class="chips">${sg.palette.neutrals.map(c => `<span class="chip good">${esc(c)}</span>`).join('')}</div></div><div><label>Accents</label><div class="chips">${sg.palette.accents.map(c => `<span class="chip accent">${esc(c)}</span>`).join('')}</div></div><div><label>Avoid</label><div class="chips">${sg.palette.avoid.map(c => `<span class="chip bad">${esc(c)}</span>`).join('')}</div></div></div>
       <h4 style="margin-top:14px">The eight looks</h4>
       <table><thead><tr><th>Look</th><th>Formula</th><th>Band</th><th>Why it works</th></tr></thead><tbody>${sg.looks.map(l => `<tr><td><b>${esc(l.name)}</b></td><td>${esc(l.summary)}</td><td>${esc(title(l.occasion))}${l.lean !== 'standard' ? ', ' + esc(l.lean) : ''}</td><td class="muted">${esc(l.why)}</td></tr>`).join('')}</tbody></table>
-      <p class="small muted" style="margin-top:8px">Every daily option is built to the closest look; events can name one outright. The <a href="#looks">Looks</a> page arranges the closet into all eight for any date.</p></div>`;
+      <p class="small muted" style="margin-top:8px">Every daily option is built to the closest look; events can name one outright. The <a href="#looks">Looks</a> page arranges the closet into all eight for any date.</p>
+      ${sg.capsule ? `<h4 style="margin-top:14px">The 20 pieces against your closet <span class="muted small" style="font-weight:400">· ${sg.capsule.counts.owned} owned, ${sg.capsule.counts.substitute} covered by a stand-in, ${sg.capsule.counts.missing} missing</span></h4>
+      <table><thead><tr><th>#</th><th>Guide piece</th><th>Status</th><th>In your closet</th></tr></thead><tbody>${sg.capsule.rows.map(r => `<tr><td class="muted">${r.n}</td><td><b>${esc(r.name)}</b></td><td><span class="chip ${r.status === 'owned' ? 'good' : r.status === 'substitute' ? 'warn' : 'bad'}">${r.status === 'substitute' ? 'stand-in' : r.status}</span></td><td class="small ${r.status === 'missing' ? 'muted' : ''}">${r.items.length ? esc(r.items.join(', ')) : 'nothing yet'}</td></tr>`).join('')}</tbody></table>` : ''}</div>`;
   }
 
   // ---------- CLOSET ----------
@@ -522,7 +524,7 @@
   async function renderSettings(app) {
     const s = state.settings = await api('GET', '/api/settings');
     const overrides = await api('GET', '/api/weather/overrides');
-    state.styleguide = state.styleguide || await api('GET', '/api/styleguide');
+    state.styleguide = await api('GET', '/api/styleguide');
     app.innerHTML = `<h1>Settings</h1>
       <div class="grid cols-2">
         <div class="card"><h3>Location</h3><p class="muted small">Weather comes from Open-Meteo, free and keyless. Search a city or enter coordinates.</p>
