@@ -80,8 +80,14 @@ if (require.main === module) {
   const host = process.env.HOST || (process.env.PORT ? '0.0.0.0' : '127.0.0.1');
   const major = Number(process.versions.node.split('.')[0]);
   if (major < 22) { console.error(`Wardrobec needs Node 22.13 or newer (found ${process.versions.node}).`); process.exit(1); }
-  createServer(db).listen(port, host, () => {
+  const server = createServer(db).listen(port, host, () => {
     console.log(`Wardrobec running on ${host}:${port}  (db: ${dbFile}, node ${process.versions.node})`);
+  });
+  // Platforms stop a container with SIGTERM on every redeploy; exit cleanly instead of letting npm report it as an error.
+  for (const sig of ['SIGTERM', 'SIGINT']) process.on(sig, () => {
+    console.log(`${sig} received, shutting down.`);
+    server.close(() => { try { db.close(); } catch {} process.exit(0); });
+    setTimeout(() => process.exit(0), 3000).unref();
   });
 }
 
