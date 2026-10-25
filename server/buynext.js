@@ -46,7 +46,7 @@ function recommend(items, profile, pairRules) {
   for (const row of guide.capsuleStatus(items).rows) {
     if (row.status === 'owned') continue;
     const type = row.match.sub[0];
-    add(type, row.status === 'missing' ? 2.5 : 1.0, row.status === 'missing' ? `Piece ${row.n} of your 20-piece capsule (${row.name}) is missing.` : `Piece ${row.n} of your capsule (${row.name}) is covered by a stand-in: ${row.items.slice(0, 2).join(', ')}.`, [], row.match.fam ? row.match.fam.map(f => f === 'tan' ? 'khaki' : f) : null);
+    add(type, row.status === 'missing' ? 2.5 : 1.0, row.status === 'missing' ? `Piece ${row.n} of your 20-piece capsule (${row.name}) is missing.` : `Piece ${row.n} of your capsule (${row.name}) is covered by a stand-in: ${row.items.slice(0, 2).join(', ')}.`, [], row.match.fam ? row.match.fam.map(f => f === 'tan' ? (row.match.category === 'bottom' ? 'khaki' : 'tan') : f) : null);
   }
   // 3. Accessories the guide names.
   for (const a of ACCESSORY_WANTS) if (!hasSub(items, a.sub).length) add(a.sub, a.score, a.why);
