@@ -197,6 +197,8 @@ test('full flow: settings, seed, plan, wear, laundry, events, feedback, export',
   r = await call('GET', '/api/items?q=twillory');
   assert.ok(r.data.some(i => i.name === 'Navy Air Chinos'), 'brand is searchable');
 
+  r = await call('GET', '/api/buynext'); assert.equal(r.status, 200); assert.ok(Array.isArray(r.data.recommendations) && r.data.coverage.total === 40);
+
   // Coverage and export.
   r = await call('GET', '/api/coverage');
   assert.equal(r.data.cells.length, 40);

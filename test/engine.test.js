@@ -321,3 +321,26 @@ test('finish the look: locked pieces stay, the rest is filled, occasion inferred
   assert.ok(!o.slots.outerwear, 'outerwear locked to none');
   assert.ok(o.complete && o.slots.top && o.slots.shoes);
 });
+
+test('buy next ranks real gaps and lists oversupply', () => {
+  const { recommend } = require('../server/buynext');
+  const { PRESETS } = require('../server/profile');
+  const items = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'my-closet.json'), 'utf8')).items.map((d, i) => ({ ...d, id: i + 1, status: 'clean' }));
+  const r = recommend(items, PRESETS.style_guide);
+  const types = r.recommendations.map(x => x.type);
+  for (const t of ['henley', 'chukka boots', 'belt', 'bag']) assert.ok(types.includes(t), 'recommends ' + t);
+  assert.ok(!types.includes('athletic shorts') && !types.includes('t-shirt'), 'never recommends what is oversupplied');
+  assert.ok(r.plenty.some(p => p.type === 'athletic shorts'));
+  assert.ok(r.recommendations.every((x, i, a) => i === 0 || a[i - 1].score >= x.score), 'sorted by score');
+  const empty = recommend([], PRESETS.style_guide);
+  assert.ok(empty.recommendations.length >= 10 && empty.recommendations[0].priority === 'high');
+  assert.equal(empty.plenty.length, 0);
+});
+
+test('coverage and buy-next survive an empty closet', () => {
+  const { recommend } = require('../server/buynext');
+  const cov = coverageReport([]);
+  assert.equal(cov.cells.filter(c => c.status === 'gap').length, 40);
+  const r = recommend([], null);
+  assert.ok(r.recommendations.length > 5);
+});

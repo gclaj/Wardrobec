@@ -10,6 +10,7 @@ const { PRESETS, normalizeProfile, paletteRating, ratingLabel } = require('./pro
 const links = require('./links');
 const guide = require('./styleguide');
 const packing = require('./packing');
+const buynext = require('./buynext');
 const fs = require('node:fs');
 const path = require('node:path');
 const CLOSET_FILE = process.env.MY_CLOSET || path.join(__dirname, '..', 'data', 'my-closet.json');
@@ -110,6 +111,7 @@ const routes = [
   }],
   ['POST', '/api/laundry/done', ({ db }) => ({ cleaned: store.laundryDone(db) })],
   ['GET', '/api/coverage', ({ db }) => { const st = settingsOf(db); return engine.coverageReport(store.listItems(db).filter(i => i.status !== 'retired'), st.style_profile, st.pair_rules); }],
+  ['GET', '/api/buynext', ({ db }) => { const st = settingsOf(db); return buynext.recommend(store.listItems(db), normalizeProfile(st.style_profile), st.pair_rules); }],
   ['GET', '/api/profiles', () => ({ presets: Object.values(PRESETS) })],
 
   // ----- planning -----

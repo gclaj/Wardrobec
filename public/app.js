@@ -45,7 +45,7 @@
   const state = { settings: { units: 'F' }, meta: null, date: todayISO(), plan: null, attempts: {}, locks: {}, baseLocks: {}, items: [], filters: {}, week: null };
 
   // ---------- router ----------
-  const views = { today: renderToday, looks: renderLooks, fab: renderFab, pack: renderPack, finish: renderFinish, closet: renderCloset, events: renderEvents, history: renderHistory, settings: renderSettings };
+  const views = { today: renderToday, looks: renderLooks, fab: renderFab, pack: renderPack, finish: renderFinish, buy: renderBuy, closet: renderCloset, events: renderEvents, history: renderHistory, settings: renderSettings };
   async function route() {
     const hash = (location.hash || '#today').slice(1).split('?')[0];
     const view = views[hash] ? hash : 'today';
@@ -285,6 +285,22 @@
         const regen = card.querySelector('[data-act="regen"]'); if (regen) regen.textContent = 'Try another';
       } catch (err) { $('#finish-result').innerHTML = `<div class="card"><p style="color:var(--bad)">${esc(err.message)}</p></div>`; }
     });
+  }
+
+  // ---------- BUY NEXT ----------
+  async function renderBuy(app) {
+    app.innerHTML = '<p class="muted">Working out what would help most…</p>';
+    const r = await api('GET', '/api/buynext');
+    const pr = (p) => ({ high: 'bad', medium: 'warn', low: '' }[p] || '');
+    app.innerHTML = `<h1>Recommended next buys</h1>
+      <p class="muted">Ranked by what each purchase unlocks: looks from your style guide that have no first-choice piece, gaps in the 20-piece capsule, accessories the guide names, thin rotations, and accent colours missing near your face. Coverage today: ${r.coverage.good} of ${r.coverage.total} weather and occasion cells green.</p>
+      ${r.recommendations.length ? `<div class="grid cols-2">${r.recommendations.map(x => `<div class="card">
+        <div class="card-head"><h3>${x.rank}. ${esc(x.title)}</h3><span class="chip ${pr(x.priority)}">${esc(x.priority)}</span></div>
+        ${x.colours && x.colours.length ? `<div class="chips" style="margin-bottom:8px">${x.colours.map(c => `<span class="chip accent">${esc(c)}</span>`).join('')}</div>` : ''}
+        <ul class="rationale" style="margin-top:0">${x.why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
+        ${x.unlocks.length ? `<div class="small muted" style="margin-top:8px">Unlocks: ${x.unlocks.map(u => esc(u)).join(', ')}</div>` : ''}
+      </div>`).join('')}</div>` : '<div class="card empty"><h3>Nothing to buy</h3><p>Every look, capsule piece and accessory is covered.</p></div>'}
+      ${r.plenty.length ? `<div class="card" style="margin-top:16px"><h3>Already plenty of</h3><p class="small muted">Buying more of these changes nothing the stylist can do.</p><div class="chips">${r.plenty.map(p => `<span class="chip">${esc(title(p.type))} · ${p.count}</span>`).join('')}</div></div>` : ''}`;
   }
 
   // ---------- PACK ----------

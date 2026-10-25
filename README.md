@@ -62,6 +62,8 @@ Events can also carry a **lean**: relaxed pulls toward tees and sneakers, elevat
 
 **Finish the look** takes the pieces you have already chosen, slot by slot, and fills the rest; the occasion is inferred from your picks unless you name one or a look, and you can type a temperature, rain chance and conditions to dress for instead of the forecast. Your picks and weather stay locked through Swap and Try another.
 
+**Buy next** ranks purchases by what each unlocks: looks whose first-choice piece is missing or substituted, gaps in the 20-piece capsule, accessories the guide names, thin top rotations per occasion, accent colours absent near the face, and any coverage gap. It also lists what the closet already has plenty of.
+
 **Pack** builds a trip bag: give it days, expected high and low, rain chance, whether laundry is available, and how many of each look you need. The planner fills the most constrained outfits first and rewards reusing anything already packed; shirts serve one outfit, bottoms and layers several, shoes and outerwear all of them. It tries several orderings and keeps the smallest bag, then shows the bag grouped by category with how many outfits each piece serves.
 
 **Wear this** logs the outfit, bumps wear counts, and marks pieces dirty once they hit their wash threshold. Dirty items drop out of suggestions until **Laundry done**.
@@ -96,6 +98,7 @@ test/          node:test suites
 | `POST /api/outfits/feedback` | Love it (saves to Fab) or never again (bans the combo) |
 | `GET/PUT/DELETE /api/fab`, `POST /api/fab/:id/wear` | Saved outfits |
 | `POST /api/pack` | Trip packing plan |
+| `GET /api/buynext` | Ranked purchase recommendations |
 | `GET/POST/PUT/DELETE /api/items` | Inventory; `POST /api/items/classify`, `/from-links` and `/bulk` for bulk entry |
 | `GET/POST/DELETE /api/events` | Calendar entries with a dress code |
 | `GET /api/weather`, `PUT /api/weather/override` | Forecast and manual weather |

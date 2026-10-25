@@ -496,7 +496,7 @@ function buildOutfit(items, occasionKey, opts = {}) {
 
   const ranked = enumerate(pools, ctx, items);
   if (!ranked.length) {
-    return { occasion: occasionKey, complete: false, items: [], missing: missingSlots({}, occ), accessories: [], score: null, rationale: ['Nothing in the closet is eligible for this occasion yet.'], weather: wx, alternatives: {} };
+    return { occasion: occasionKey, label: occ.label, look: occ.look ? { key: occ.look.key, name: occ.look.name, summary: occ.look.summary } : null, lean, complete: false, fit: 'incomplete', items: [], slots: {}, missing: missingSlots({}, occ), accessories: [], score: null, notes: [], rationale: ['Nothing in the closet is eligible for this occasion yet.'], weather: wx, alternatives: {}, comboKey: '', fab: false };
   }
   const best = ranked[0];
   const chosen = best.combo;
